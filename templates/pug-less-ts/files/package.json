@@ -1,19 +1,16 @@
 {
-  "name": "webpack-template-pug-scss-ts",
+  "name": "webpack-template-pug-less-ts",
   "private": true,
   "version": "0.0.2",
-  "description": "Webpack starter template: Pug + SCSS + TypeScript",
+  "description": "Webpack starter template: Pug + Less + TypeScript",
   "scripts": {
     "dev": "webpack serve --mode=development",
     "build": "webpack --mode=production",
-    "preview": "npm run build && http-server dist --port 4323 -o"
+    "preview": "npm run build && http-server dist --port 4324 -o"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
     "@types/node": "^25.1.0",
     "autoprefixer": "^10.4.23",
-    "babel-loader": "^10.0.0",
     "css-loader": "^6.10.0",
     "dotenv": "^16.4.5",
     "http-server": "^14.1.1",
@@ -26,7 +23,11 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3",
     "webpack-merge": "^5.10.0",
-    "@razerspine/webpack-core": "^1.1.6"
+    "@razerspine/webpack-core": "^1.1.6",
+    "less": "^4.5.1",
+    "less-loader": "^12.3.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@razerspine/pug-ui-kit": "^1.2.1"

@@ -8,9 +8,5 @@
     "template": "pug",
     "style": "less",
     "script": "js"
-  },
-  "devDependencies": {
-    "less": "^4.5.1",
-    "less-loader": "^12.3.0"
   }
 }

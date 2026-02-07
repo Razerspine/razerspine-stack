@@ -42,7 +42,6 @@ module.exports = (env = {}, argv = {}) => {
   });
 
   if (mode === "development") {
-    console.log(baseConfig.module.rules);
     return createDevConfig(baseConfig);
   }
 

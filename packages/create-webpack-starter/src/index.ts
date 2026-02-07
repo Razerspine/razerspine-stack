@@ -10,7 +10,6 @@ import {templates} from './templates';
 import {copyTemplate} from './copier';
 import {installDeps} from './installer';
 import {log} from './logger';
-import {mergePackageJson} from './package-merger';
 
 process.on('unhandledRejection', (err: any) => {
     if (err?.isTtyError || err?.name === 'ExitPromptError') {
@@ -77,23 +76,6 @@ async function run() {
             spinner.start('Copying template...');
             await copyTemplate(template.filesPath, targetDir);
             spinner.succeed('Template copied');
-        }
-
-        // --- Merge dependencies
-        if (!dryRun && template.meta) {
-            const {dependencies, devDependencies} = template.meta;
-
-            if (
-                (dependencies && Object.keys(dependencies).length > 0) ||
-                (devDependencies && Object.keys(devDependencies).length > 0)
-            ) {
-                spinner.start('Merging template dependencies...');
-                await mergePackageJson(targetDir, {
-                    dependencies,
-                    devDependencies
-                });
-                spinner.succeed('Dependencies merged');
-            }
         }
 
         // --- Script cleanup (JS vs TS)
