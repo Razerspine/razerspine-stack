@@ -1,6 +1,6 @@
 {
   "name": "create-webpack-starter",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Create a webpack starter with Pug, SCSS, TS and more",
   "bin": {
     "create-webpack-starter": "bin/index.js"

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.4] - 2026-02-07
+
+### Added
+- End-to-end (E2E) test suite for CLI behavior
+- Tests for:
+  - basic project creation
+  - template selection
+  - `--dry-run` mode
+  - invalid template handling
+- Temporary directory management with automatic cleanup
+- Internal testing documentation (`docs/testing.md`)
+
+### Changed
+- Improved CLI test reliability by aligning tests with real user usage patterns
+
+### Notes
+- No changes to CLI runtime behavior
+- This release focuses on test stability and maintainability
+
+
 ## [0.2.3] - 2026-02-06
 
 ### Added
