@@ -1,6 +1,21 @@
 # Changelog
 
-## [0.2.4] - 2026-02-07
+## [0.2.6] - 2026-02-08
+
+### Fixed
+- Ignored `node_modules/` and `dist/` directories when copying templates
+- Prevented leaking local development artifacts into generated projects
+
+### Improved
+- Better developer experience for local template development
+- More predictable project output regardless of template workspace state
+
+### Notes
+- No changes to CLI API or user-facing commands
+- Templates remain fully standalone after generation
+
+
+## [0.2.4 - 0.2.5] - 2026-02-07
 
 ### Added
 - End-to-end (E2E) test suite for CLI behavior
