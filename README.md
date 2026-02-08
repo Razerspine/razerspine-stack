@@ -83,6 +83,22 @@ npx create-webpack-starter
 
 ---
 
+## Release process
+
+Publishing is performed manually via GitHub Actions.
+
+The release pipeline includes:
+
+- full build
+- end-to-end tests
+- version existence guard
+- npm publish via OIDC + 2FA
+
+For details, see:
+- `docs/release.md`
+- `docs/release-checklist.md`
+---
+
 ## Status
 This monorepo is actively developed and used as the source of truth
 for all official webpack starter templates.
