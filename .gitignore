@@ -1,12 +1,16 @@
 .DS_Store
 .idea
 _ignore
-starter-source/package-lock.json
+
+# Ignore all lock files by default
 package-lock.json
+
+# BUT allow root package-lock.json
+!/package-lock.json
+
+# Ignore dependencies and builds everywhere
+node_modules
+dist
 coverage
 coverage.lcov
-node_modules
-starter-source/node_modules
-starter-source/dist
 public
-dist
