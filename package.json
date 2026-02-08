@@ -4,6 +4,7 @@
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "npm run build -ws",
-    "dev:cli": "npm run dev -w create-webpack-starter"
+    "dev:cli": "npm run dev -w create-webpack-starter",
+    "test:e2e": "npm run test:e2e -w create-webpack-starter"
   }
 }

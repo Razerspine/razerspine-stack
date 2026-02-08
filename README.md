@@ -1,18 +1,34 @@
 # webpack-starter-monorepo
 
-Monorepo for `create-webpack-starter` CLI and official webpack starter templates.
+Monorepo for the `create-webpack-starter` CLI and official webpack starter templates.
+
+This repository contains everything needed to generate and maintain
+production-ready webpack projects with Pug, SCSS/Less, JavaScript or TypeScript.
+
+---
 
 ## Packages
 
 ```text
 packages/
 ├─ create-webpack-starter    # CLI — npx create-webpack-starter
-└─ templates                 # Official project templates
-   ├─ pug-less-js
-   ├─ pug-less-ts
-   ├─ pug-scss-js
-   └─ pug-scss-ts
+├─ webpack-core              # Shared webpack configuration & loaders
+└─ pug-ui-kit                # Optional Pug UI helpers (mixins, styles)
 ```
+
+---
+
+## Templates
+
+```text
+templates/
+├─ pug-less-js
+├─ pug-less-ts
+├─ pug-scss-js
+└─ pug-scss-ts
+```
+
+---
 
 ## Philosophy
 
@@ -36,29 +52,37 @@ No hidden magic.
 No runtime coupling.  
 Generated projects are yours forever.
 
+---
+
 ## Development
 
-This repository uses npm workspaces.
+### This repository uses npm workspaces.
 
-Install all workspace dependencies:
+#### Install all workspace dependencies:
 ```bash
 npm install
 ```
 
-Build all packages:
+#### Build all packages:
 
 ```bash
 npm run build
 ```
 
-Local CLI testing:
+#### Local CLI testing:
 
 ```bash
 npm run dev:cli
 ```
 
-End users should use
+#### End users should use
 
 ```bash
 npx create-webpack-starter
 ```
+
+---
+
+## Status
+This monorepo is actively developed and used as the source of truth
+for all official webpack starter templates.
