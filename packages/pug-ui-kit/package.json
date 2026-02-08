@@ -18,6 +18,9 @@
     "LICENSE",
     "CHANGELOG.md"
   ],
+  "scripts": {
+    "build": "echo \"pug-ui-kit: nothing to build\""
+  },
   "style": "scss/ui-kit.scss",
   "less": "less/ui-kit.less",
   "author": "Razerspine",
@@ -26,6 +29,7 @@
     "url": "https://github.com/Razerspine/webpack-starter-monorepo",
     "directory": "packages/pug-ui-kit"
   },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/pug-ui-kit#readme",
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
