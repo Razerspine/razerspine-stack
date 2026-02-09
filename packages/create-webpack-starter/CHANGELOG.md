@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.7] - 2026-02-09
+
+### Fixed
+- Fixed ESM/CommonJS incompatibilities on Node.js 18+ by pinning CLI dependencies to stable CommonJS versions:
+  - `inquirer@^8.2.6`
+  - `ora@^5.4.1`
+- Prevented CLI crashes caused by `ERR_REQUIRE_ESM` when running under Node.js 18 and CI environments
+
+### Improved
+- Improved E2E test stability in CI by running CLI in fully non-interactive mode
+- CLI tests now explicitly pass `--template` flag to avoid interactive prompts in non-TTY environments
+- Ensured consistent CLI behavior across Node.js versions 18, 20, 22+
+
+### Notes
+- No changes to CLI public API or user-facing commands
+- This release focuses on runtime compatibility, CI stability, and long-term Node.js support
+
+
 ## [0.2.6] - 2026-02-08
 
 ### Fixed
