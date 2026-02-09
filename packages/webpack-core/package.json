@@ -8,7 +8,6 @@
     "pug",
     "pug-plugin"
   ],
-
   "license": "ISC",
   "author": "Razerspine",
   "type": "commonjs",
