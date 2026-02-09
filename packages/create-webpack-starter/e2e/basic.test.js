@@ -10,7 +10,7 @@ import {createTempDir} from './helpers/temp-dir.js';
   const projectName = 'test-app';
   const projectPath = path.join(cwd, projectName);
 
-  await runCLI([projectName, '--no-install'], {cwd});
+  await runCLI([projectName, '--template', 'pug-scss-js'], {cwd});
 
   assert.ok(
     fs.existsSync(projectPath),

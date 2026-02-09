@@ -10,7 +10,7 @@ import {createTempDir} from './helpers/temp-dir.js';
   const projectName = 'test-dry-run-app';
   const projectPath = path.join(cwd, projectName);
 
-  await runCLI([projectName, '--dry-run'], {cwd});
+  await runCLI([projectName, '--template', 'pug-scss-js', '--dry-run'], {cwd});
 
   assert.ok(
     !fs.existsSync(projectPath),
