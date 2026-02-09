@@ -75,6 +75,12 @@ npm run build
 npm run dev:cli
 ```
 
+#### CLI e2e tests
+
+```bash
+npm run test:e2e
+```
+
 #### End users should use
 
 ```bash
