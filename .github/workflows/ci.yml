@@ -24,5 +24,5 @@ jobs:
       - name: Build all packages
         run: npm run build
 
-      - name: Run create-webpack-starter E2E tests
+      - name: Run @razerspine/create-webpack-starter E2E tests
         run: npm run test:e2e
