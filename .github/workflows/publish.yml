@@ -39,7 +39,9 @@ jobs:
             exit 1
           fi
 
+      - name: Ensure no npm token is used
+        run: npm config set registry https://registry.npmjs.org/
+
       - name: Publish (OIDC)
         working-directory: packages/create-webpack-starter
         run: npm publish --access public --provenance
-
