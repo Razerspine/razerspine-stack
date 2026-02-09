@@ -1,6 +1,6 @@
 # Getting Started
 
-`create-webpack-starter` is a CLI tool to quickly scaffold a modern
+`@razerspine/create-webpack-starter` is a CLI tool to quickly scaffold a modern
 webpack-based project using Pug templates and popular style/script stacks.
 
 ---
@@ -15,7 +15,7 @@ webpack-based project using Pug templates and popular style/script stacks.
 ## Create a project
 
 ```bash
-npx create-webpack-starter my-app
+npx @razerspine/create-webpack-starter my-app
 cd my-app
 npm run dev
 ```

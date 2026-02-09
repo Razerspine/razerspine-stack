@@ -1,6 +1,6 @@
 # Templates
 
-`create-webpack-starter` ships with ready-to-use templates based on real
+`@razerspine/create-webpack-starter` ships with ready-to-use templates based on real
 production setups.
 
 ---

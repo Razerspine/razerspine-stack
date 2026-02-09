@@ -3,7 +3,7 @@
 This project uses **end-to-end (E2E) tests** to verify real CLI behavior.
 
 The goal of these tests is to simulate how a real user interacts with
-`create-webpack-starter` via `npx`, including file system side effects.
+`@razerspine/create-webpack-starter` via `npx`, including file system side effects.
 
 ---
 

@@ -1,4 +1,4 @@
-# create-webpack-starter
+# @razerspine/create-webpack-starter
 
 Create a modern webpack project using ready-to-use templates.
 
@@ -7,13 +7,13 @@ Create a modern webpack project using ready-to-use templates.
 ## Usage
 
 ```bash
-npx create-webpack-starter my-app
+npx @razerspine/create-webpack-starter my-app
 ```
 
 With options:
 
 ```bash
-npx create-webpack-starter my-app \
+npx @razerspine/create-webpack-starter my-app \
 --template pug-scss-ts \
 --no-install
 ```
