@@ -1,42 +1,122 @@
-## Architecture
+# Architecture
 
-### Purpose
+## Purpose
 
 This repository is a **monorepo** that hosts:
 
-* a public CLI (`create-webpack-starter`)
-* official project templates
-* shared internal packages (e.g. `webpack-core`, `pug-ui-kit`)
+- a public CLI (`create-webpack-starter`)
+- official project templates
+- shared internal packages (e.g. `webpack-core`, `pug-ui-kit`)
 
 The monorepo exists to ensure:
 
-* consistent development experience
-* shared tooling and conventions
-* atomic changes across related packages
+- consistent development experience
+- shared tooling and conventions
+- atomic changes across related packages
 
-### Core Principles
+---
+
+## Core Principles
 
 **Strict separation of responsibilities**
 
-* CLI handles:
-
-  * user interaction (prompts, flags)
-  * template selection
-  * file copying
-  * dependency installation
-
-* Templates handle:
-
-  * full project structure
-  * dependencies
-  * webpack configuration
-  * assets and source code
+- CLI handles:
+  - user interaction (prompts, flags)
+  - template selection
+  - file copying
+  - dependency installation
+- Templates handle:
+  - full project structure
+  - dependencies
+  - webpack configuration
+  - assets and source code
 
 Generated projects have **no runtime dependency** on the CLI.
 
-### Package Types
+---
+
+## Package Types
 
 * `create-webpack-starter` – published CLI
 * `templates/*` – source templates (not npm packages)
 * `webpack-core` – shared webpack logic (npm package)
 * `pug-ui-kit` – UI assets & mixins (npm package)
+
+--- 
+
+## Workspace dependency model
+
+This repository uses **npm workspaces**, which affects how and where
+`node_modules` directories are created.
+
+### Important behavior
+
+When running `npm install` from the repository root:
+
+- npm builds a **single dependency graph** for all workspace packages
+- dependencies are **hoisted to the root `node_modules/` whenever possible**
+- individual workspace packages may **not have their own `node_modules/` directory**
+
+This is expected and correct behavior.
+
+### Practical consequences
+
+- A workspace package **can work correctly without a local `node_modules/` directory**
+- Node.js resolves dependencies by walking up the directory tree to the root
+- The presence or absence of `node_modules/` inside a workspace package
+  is an implementation detail, not a guarantee
+
+Example:
+
+```text
+root/
+├─ node_modules/
+│  └─ inquirer
+├─ packages/
+│  └─ create-webpack-starter/
+│     └─ (no node_modules/)
+```
+
+In this case, create-webpack-starter correctly resolves inquirer
+from the root node_modules.
+
+### Package-specific notes
+
+- `webpack-core`
+  - may have its own `node_modules` if dependencies cannot be fully hoisted
+- `pug-ui-kit`
+  - does not have `node_modules` because it has no runtime dependencies
+- `create-webpack-starter`
+  - relies on hoisted dependencies in the root workspace
+
+This behavior is intentional and should not be “fixed”.
+
+---
+
+## Templates and dependency installation
+
+Directories under `templates/` are **not npm workspaces**.
+
+npm does not install dependencies for templates automatically.
+
+Template projects receive their dependencies only when:
+
+- the CLI copies the template into a target directory
+- the CLI runs `npm install` inside the generated project
+
+#### Local template development
+
+During local template development, `node_modules/` and `dist/` directories
+may exist inside template folders.
+
+These directories:
+
+- are ignored by git
+- are ignored during template copying
+- are never shipped to end users
+
+This guarantees:
+
+- clean generated projects
+- predictable installs
+- no leakage of local development artifacts

@@ -89,6 +89,29 @@ npx create-webpack-starter
 
 ---
 
+## Dependency installation model
+
+This monorepo uses **npm workspaces**.
+
+When running `npm install` from the repository root:
+
+- dependencies for all workspace packages are installed together
+- most dependencies are hoisted into the root `node_modules/`
+- individual packages may not have their own `node_modules` directories
+
+This is expected npm behavior and does not indicate a broken setup.
+
+Template directories under `templates/` are **not workspaces**.
+Their dependencies are installed only when the CLI generates a project
+and runs `npm install` in the target directory.
+
+> Note:
+> The presence or absence of `node_modules` inside a package directory
+> should not be relied upon. Always run commands from the repository root
+> unless explicitly stated otherwise.
+
+---
+
 ## Release process
 
 Publishing is performed manually via GitHub Actions.
