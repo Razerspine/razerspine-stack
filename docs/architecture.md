@@ -1,6 +1,6 @@
-# Architecture
+## Architecture
 
-## Purpose
+### Purpose
 
 This repository is a **monorepo** that hosts:
 
@@ -16,7 +16,7 @@ The monorepo exists to ensure:
 
 ---
 
-## Core Principles
+### Core Principles
 
 **Strict separation of responsibilities**
 
@@ -35,7 +35,7 @@ Generated projects have **no runtime dependency** on the CLI.
 
 ---
 
-## Package Types
+### Package Types
 
 * `create-webpack-starter` – published CLI
 * `templates/*` – source templates (not npm packages)
@@ -44,12 +44,12 @@ Generated projects have **no runtime dependency** on the CLI.
 
 --- 
 
-## Workspace dependency model
+### Workspace dependency model
 
 This repository uses **npm workspaces**, which affects how and where
 `node_modules` directories are created.
 
-### Important behavior
+#### Important behavior
 
 When running `npm install` from the repository root:
 
@@ -59,7 +59,7 @@ When running `npm install` from the repository root:
 
 This is expected and correct behavior.
 
-### Practical consequences
+#### Practical consequences
 
 - A workspace package **can work correctly without a local `node_modules/` directory**
 - Node.js resolves dependencies by walking up the directory tree to the root
@@ -80,7 +80,7 @@ root/
 In this case, create-webpack-starter correctly resolves inquirer
 from the root node_modules.
 
-### Package-specific notes
+#### Package-specific notes
 
 - `webpack-core`
   - may have its own `node_modules` if dependencies cannot be fully hoisted
@@ -93,7 +93,7 @@ This behavior is intentional and should not be “fixed”.
 
 ---
 
-## Templates and dependency installation
+### Templates and dependency installation
 
 Directories under `templates/` are **not npm workspaces**.
 

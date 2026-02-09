@@ -38,9 +38,6 @@ npm run test:e2e
 
 ---
 
-
----
-
 ## 5. Publish (manual, recommended)
 
 - [ ] Open terminal
