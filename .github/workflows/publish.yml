@@ -41,4 +41,5 @@ jobs:
 
       - name: Publish (OIDC)
         working-directory: packages/create-webpack-starter
-        run: npm publish --access public
+        run: npm publish --access public --provenance
+
