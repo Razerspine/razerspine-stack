@@ -7,14 +7,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo.git",
+    "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
     "directory": "packages/create-webpack-starter"
   },
   "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/create-webpack-starter#readme",
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
-
   "files": [
     "bin",
     "dist",
