@@ -1,6 +1,6 @@
 # webpack-starter-monorepo
 
-Monorepo for the `@razerspine/create-webpack-starter` CLI and official webpack starter templates.
+Monorepo for the `create-webpack-starter` CLI and official webpack starter templates.
 
 This repository contains everything needed to generate and maintain
 production-ready webpack projects with Pug, SCSS/Less, JavaScript or TypeScript.
@@ -78,7 +78,7 @@ npm run dev:cli
 #### End users should use
 
 ```bash
-npx @razerspine/create-webpack-starter
+npx create-webpack-starter
 ```
 
 ---

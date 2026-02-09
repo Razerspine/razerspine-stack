@@ -1,23 +1,5 @@
 # Changelog
 
-## [0.2.8] - 2026-02-09
-
-### Changed
-- Renamed npm package to scoped name: `@razerspine/create-webpack-starter`
-- Updated all documentation and references to use the scoped package name
-
-### Fixed
-- Unblocked automated publishing via GitHub Actions using npm Trusted Publisher (OIDC)
-- Resolved npm publish failures caused by attempting to publish an unscoped package from CI
-
-### Notes
-- This change does not affect CLI behavior or usage
-- The scoped package name is required for secure, non-interactive CI publishing with provenance support
-- Existing users should install the CLI using:
-  ```bash
-  npx @razerspine/create-webpack-starter
-  ```
-
 ## [0.2.7] - 2026-02-09
 
 ### Fixed

@@ -38,14 +38,22 @@ npm run test:e2e
 
 ---
 
-## 5. Publish
-
-- [ ] Open GitHub Actions
-- [ ] Run **Publish** workflow manually
-- [ ] Confirm npm publish in browser (2FA)
-- [ ] Verify package on npmjs.com
 
 ---
+
+## 5. Publish (manual, recommended)
+
+- [ ] Open terminal
+- [ ] Navigate to package directory:
+  ```bash
+  cd packages/create-webpack-starter
+  ```
+- [ ] Run publish command:
+  ```bash
+  npm publish --access public
+  ```
+- [ ] Confirm publish in browser (2FA)
+- [ ] Verify package on npmjs.com
 
 ## 6. Post-publish
 
