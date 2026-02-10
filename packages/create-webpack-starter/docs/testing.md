@@ -15,6 +15,7 @@ e2e/
 ├── template.test.js # Explicit template selection
 ├── dry-run.test.js # --dry-run behavior
 ├── invalid-template.test.js # Invalid template handling
+├── style-script.test.js # --style + --script resolution
 ├── constants/
 │ └── temp-prefix.js # Prefix for temp directories
 ├── helpers/
@@ -24,6 +25,15 @@ e2e/
 └── package.json
 ```
 
+Some tests use `--template` explicitly to ensure backward compatibility
+and non-interactive behavior.
+
+Other tests verify the new recommended workflow using:
+
+- `--style`
+- `--script`
+
+This ensures that template resolution logic remains stable over time.
 
 ---
 

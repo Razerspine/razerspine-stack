@@ -1,6 +1,6 @@
 {
   "name": "create-webpack-starter",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "Create a webpack starter with Pug, SCSS, TS and more",
   "bin": {
     "create-webpack-starter": "bin/index.js"
@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc",
     "test:cleanup": "node e2e/helpers/cleanup.js",
-    "test:e2e": "npm run build && npm run test:cleanup && (node e2e/basic.test.js && node e2e/template.test.js && node e2e/dry-run.test.js && node e2e/invalid-template.test.js); npm run test:cleanup",
+    "test:e2e": "npm run build && npm run test:cleanup && (node e2e/basic.test.js && node e2e/template.test.js && node e2e/dry-run.test.js && node e2e/invalid-template.test.js && node e2e/style-script.test.js); npm run test:cleanup",
     "dev": "ts-node src/index.ts",
     "prepublishOnly": "npm run build"
   },

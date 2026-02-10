@@ -16,6 +16,21 @@ production setups.
 
 ---
 
+## Template resolution
+
+By default, users do **not** select templates directly.
+
+The CLI resolves the correct template automatically based on:
+
+- selected style preprocessor (`--style`)
+- selected script language (`--script`)
+
+Explicit template selection via `--template` is still supported for:
+- advanced usage
+- CI pipelines
+- debugging purposes
+
+
 ## How templates work
 
 Each template provides:

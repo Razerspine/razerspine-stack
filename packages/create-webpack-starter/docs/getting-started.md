@@ -21,11 +21,23 @@ npm run dev
 ```
 #### This will:
 
-* Ask you to choose a template 
-* Copy the template files 
-* Merge dependencies 
-* Install packages 
-* Prepare a ready-to-run project
+- Ask for project name (if not provided)
+- Ask you to choose:
+  - style preprocessor (SCSS or Less)
+  - script language (JavaScript or TypeScript)
+- Automatically resolve the best matching template
+- Copy template files
+- Install dependencies
+- Prepare a ready-to-run project
+
+#### Non-interactive usage (CI / automation):
+
+```bash
+npx create-webpack-starter my-app \
+  --style scss \
+  --script ts \
+  --no-install
+```
 
 ---
 

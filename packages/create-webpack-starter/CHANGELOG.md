@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.0] - 2026-02-10
+
+### Added
+- New CLI workflow based on feature selection:
+  - `--style (scss | less)`
+  - `--script (js | ts)`
+- Automatic template resolution via internal `resolveTemplateKey`
+- Interactive prompts now guide users through style and script selection instead of raw template names
+- New E2E tests covering `--style + --script` CLI usage
+
+### Changed
+- Template selection prompt has been removed from the default interactive flow
+- CLI UX is now feature-oriented instead of template-oriented
+- Documentation updated to reflect the new recommended usage pattern
+
+### Notes
+- `--template` option is still supported for advanced and CI use cases
+- No breaking changes for existing users
+- Node.js >= 18 remains required
+
+
 ## [0.2.7] - 2026-02-09
 
 ### Fixed

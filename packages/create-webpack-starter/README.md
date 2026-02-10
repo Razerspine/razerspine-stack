@@ -10,7 +10,16 @@ Create a modern webpack project using ready-to-use templates.
 npx create-webpack-starter my-app
 ```
 
-With options:
+#### Non-interactive usage (recommended for CI):
+
+```bash
+npx create-webpack-starter my-app \
+  --style scss \
+  --script ts \
+  --no-install
+```
+
+#### Advanced usage (explicit template):
 
 ```bash
 npx create-webpack-starter my-app \
@@ -22,20 +31,23 @@ npx create-webpack-starter my-app \
 
 ## Options
 
-| Option              | Description                     |
-| ------------------- | ------------------------------- |
-| `--template <name>` | Skip prompt and select template |
-| `--no-install`      | Skip dependency installation    |
-| `--dry-run`         | Show what would be done         |
+| Option                   | Description                              |
+|--------------------------|------------------------------------------|
+| `--style <scss or less>` | Select CSS preprocessor for the project  |
+| `--script <js or ts>`    | Select script language for the project   |
+| `--template <name>`      | Explicit template selection (advanced)   |
+| `--no-install`           | Skip dependency installation             |
+| `--dry-run`              | Show what would be done                  |
 
 ---
 
 ## Available templates
-* pug-less-js
-* pug-less-ts
-* pug-scss-js
-* pug-scss-ts
 
+- pug-less-js
+- pug-less-ts
+- pug-scss-js
+- pug-scss-ts
+> ⚠️ Templates are resolved automatically based on --style and --script.
 ---
 
 ## Documentation
