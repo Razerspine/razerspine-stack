@@ -4,6 +4,8 @@ import {templates, TemplateKey} from './templates';
 
 type CliOptions = {
     template?: TemplateKey;
+    style?: 'scss' | 'less';
+    script: 'js' | 'ts';
     install?: boolean;
     dryRun?: boolean;
 };
@@ -19,6 +21,8 @@ export async function getCliContext(): Promise<{
     program
         .argument('[project-name]', 'Project name')
         .option('-t, --template <template>', 'Template name')
+        .option('--style <style>', 'Style preprocessor (scss or less)')
+        .option('--script <script>', 'Script type (js or ts)')
         .option('--no-install', 'Skip npm install')
         .option('--dry-run', 'Do not write files');
 
