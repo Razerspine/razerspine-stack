@@ -22,8 +22,8 @@ export async function getCliContext(): Promise<{
     program
         .argument('[project-name]', 'Project name')
         .option('-t, --template <template>', 'Template name')
-        .option('--style <style>', 'Style preprocessor (scss or less)')
-        .option('--script <script>', 'Script type (js or ts)')
+        .option('--style <style>', 'Style preprocessor (scss | less)')
+        .option('--script <script>', 'Script language (js | ts)')
         .option('--no-install', 'Skip npm install')
         .option('--dry-run', 'Do not write files');
 
@@ -49,33 +49,57 @@ export async function getCliContext(): Promise<{
 
     let template: TemplateKey | undefined = options.template;
 
-    // --- RESOLVE TEMPLATE FROM STYLE + SCRIPT (only if template not provided)
-    if (!template) {
+    // --- RESOLVE FROM FLAGS (--style + --script)
+    if (!template && options.style && options.script) {
         const resolved = resolveTemplateKey({
             style: options.style,
             script: options.script
         });
 
-        if (resolved) {
-            template = resolved;
+        if (!resolved) {
+            throw new Error(
+                `No template for style="${options.style}" and script="${options.script}"`
+            );
         }
+
+        template = resolved;
     }
 
-    // --- ASK TEMPLATE IF NOT PROVIDED
+    // --- ASK STYLE + SCRIPT (interactive fallback)
     if (!template) {
-        const answer = await inquirer.prompt<{ template: TemplateKey }>([
+        const answers = await inquirer.prompt<{
+            style: 'scss' | 'less';
+            script: 'js' | 'ts';
+        }>([
             {
                 type: 'list',
-                name: 'template',
-                message: 'Choose a template:',
-                choices: Object.values(templates).map(t => ({
-                    name: t.meta.description,
-                    value: t.key
-                }))
+                name: 'style',
+                message: 'Style preprocessor:',
+                choices: [
+                    {name: 'SCSS', value: 'scss'},
+                    {name: 'Less', value: 'less'}
+                ]
+            },
+            {
+                type: 'list',
+                name: 'script',
+                message: 'Scripts:',
+                choices: [
+                    {name: 'JavaScript', value: 'js'},
+                    {name: 'TypeScript', value: 'ts'}
+                ]
             }
         ]);
 
-        template = answer.template;
+        const resolved = resolveTemplateKey(answers);
+
+        if (!resolved) {
+            throw new Error(
+                `No template for style="${answers.style}" and script="${answers.script}"`
+            );
+        }
+
+        template = resolved;
     }
 
     if (!template || !templates[template]) {
