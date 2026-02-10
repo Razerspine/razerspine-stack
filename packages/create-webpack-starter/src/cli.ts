@@ -1,6 +1,7 @@
 import {Command} from 'commander';
 import inquirer from 'inquirer';
 import {templates, TemplateKey} from './templates';
+import {resolveTemplateKey} from './template-resolver';
 
 type CliOptions = {
     template?: TemplateKey;
@@ -47,6 +48,18 @@ export async function getCliContext(): Promise<{
     }
 
     let template: TemplateKey | undefined = options.template;
+
+    // --- RESOLVE TEMPLATE FROM STYLE + SCRIPT (only if template not provided)
+    if (!template) {
+        const resolved = resolveTemplateKey({
+            style: options.style,
+            script: options.script
+        });
+
+        if (resolved) {
+            template = resolved;
+        }
+    }
 
     // --- ASK TEMPLATE IF NOT PROVIDED
     if (!template) {
