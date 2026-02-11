@@ -11,11 +11,57 @@ This package is automatically included in templates generated via the CLI. To in
 npm install @razerspine/pug-ui-kit
 ```
 
-## 🛠 Webpack Configuration
+## 🎨 Styling Options
 
-### 1. Webpack (Pug Mixins)
+You now have **three ways** to use the styles:
 
-To avoid complex relative paths, use the includePaths provided by the package:
+### 1. Use compiled production CSS (Recommended for simple setups)
+
+Fully prefixed and minified:
+```scss
+@import "@razerspine/pug-ui-kit/style/style.min.css";
+```
+
+Non-minified version:
+```scss
+@import "@razerspine/pug-ui-kit/style/style.css";
+```
+- ✔ Includes vendor prefixes
+- ✔ Cross-browser ready
+- ✔ No Sass setup required
+
+### 2. Use SCSS (Advanced / Customizable)
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+If overriding settings:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/settings" with (
+  $font-path: "/my-custom-path/fonts"
+);
+
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+### 3. Use LESS
+
+```less
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+Override font path:
+
+```less
+@font-path: "/my-custom-path/fonts";
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+## 🛠 Webpack Configuration (Pug Mixins)
+
+To avoid complex relative paths:
 
 ```js
 const uiKit = require('@razerspine/pug-ui-kit');
@@ -31,27 +77,12 @@ module.exports = {
 };
 ```
 
-### 2. Styles (SCSS/LESS)
-The package provides full styling for all components.
-If you only need specific parts (e.g., just variables and the table), you can import them individually.
-
-Note: Always import settings first, as other components depend on them.
-
-#### For SCSS:
-
-```scss
-// In your main.scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+Then:
+```pug
+include ~pug-ui-kit/btn.pug
 ```
 
-#### For LESS:
-
-```less
-// In your main.less
-@import "@razerspine/pug-ui-kit/less/ui-kit";
-```
-
-## 🚀 Usage
+## 🚀 Usage Examples
 
 #### Button
 
@@ -389,7 +420,9 @@ include ~pug-ui-kit/single-select.pug
 
 * mixins/ - reusable Pug components. 
 * scss/ - complete SCSS kit (Settings, Components, Themes, Layout). 
-* less/ - complete LESS version for alternative workflows. 
+* less/ - complete LESS version for alternative workflows.
+* style/    → Compiled CSS output (since v1.3.0)
+* fonts/    → Roboto font family
 * index.js - path resolution helper.
 
 ## 🧱 Components Included
@@ -401,6 +434,18 @@ include ~pug-ui-kit/single-select.pug
 * input-checkbox.pug
 * input-radio.pug
 * single-select.pug
+
+## ⚙ Build (for contributors)
+
+```bash
+npm run build
+```
+
+**This will:**
+
+- Compile SCSS
+- Run PostCSS + Autoprefixer
+- Generate minified CSS
 
 ## 📄 License
 This project is licensed under the ISC License.

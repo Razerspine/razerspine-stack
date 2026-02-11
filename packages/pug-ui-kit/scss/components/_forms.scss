@@ -1,8 +1,9 @@
+@use "sass:map";
 @use '../settings/index' as *;
 
 .form-group {
   margin-bottom: .75rem;
-  @media screen and (min-width: map-get($breakpoints, lg)) {
+  @media screen and (min-width: map.get($breakpoints, lg)) {
     margin-bottom: 1rem;
   }
 

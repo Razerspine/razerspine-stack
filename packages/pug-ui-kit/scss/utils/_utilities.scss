@@ -1,5 +1,7 @@
 @use 'sass:math';
 @use 'helpers';
+@use "sass:map";
+@use "sass:meta";
 
 // SPACING utilities: m- p- (margin/padding) with directions
 $space-map: (0: 0rem, 1: 0.5rem, 2: 1rem, 3: 1.5rem, 4: 2rem);
@@ -7,8 +9,8 @@ $directions: ("" : "", t: "-top", r: "-right", b: "-bottom", l: "-left", x: ("-l
 $scales: 0 1 2 3 4;
 
 @function helpers-space($key) {
-  @if map-has-key($space-map, $key) {
-    @return map-get($space-map, $key);
+  @if map.has-key($space-map, $key) {
+    @return map.get($space-map, $key);
   } @else {
     @warn "Unknown spacing key `#{$key}`. Returning 0rem.";
     @return 0rem;
@@ -17,33 +19,45 @@ $scales: 0 1 2 3 4;
 
 @each $d, $prop in $directions {
   @each $s in $scales {
-    // Margin class
-    $m-class: if($d == "", ".m-#{$s}", ".m-#{$d}-#{$s}");
-    #{$m-class} {
-      @if $d == "" {
+
+    // =====================
+    // Margin
+    // =====================
+    @if $d == "" {
+      .m-#{$s} {
         margin: helpers-space($s);
-      } @else if type-of($prop) == 'list' {
-        @each $p in $prop {
-          margin#{$p}: helpers-space($s);
+      }
+    } @else {
+      .m-#{$d}-#{$s} {
+        @if meta.type-of($prop) == 'list' {
+          @each $p in $prop {
+            margin#{$p}: helpers-space($s);
+          }
+        } @else {
+          margin#{$prop}: helpers-space($s);
         }
-      } @else {
-        margin#{$prop}: helpers-space($s);
       }
     }
 
-    // Padding class
-    $p-class: if($d == "", ".p-#{$s}", ".p-#{$d}-#{$s}");
-    #{$p-class} {
-      @if $d == "" {
+    // =====================
+    // Padding
+    // =====================
+    @if $d == "" {
+      .p-#{$s} {
         padding: helpers-space($s);
-      } @else if type-of($prop) == 'list' {
-        @each $p in $prop {
-          padding#{$p}: helpers-space($s);
+      }
+    } @else {
+      .p-#{$d}-#{$s} {
+        @if meta.type-of($prop) == 'list' {
+          @each $p in $prop {
+            padding#{$p}: helpers-space($s);
+          }
+        } @else {
+          padding#{$prop}: helpers-space($s);
         }
-      } @else {
-        padding#{$prop}: helpers-space($s);
       }
     }
+
   }
 }
 

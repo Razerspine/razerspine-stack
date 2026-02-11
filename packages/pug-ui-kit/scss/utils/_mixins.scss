@@ -1,7 +1,8 @@
+@use "sass:map";
 @use '../settings/index' as *;
 
 @function breakpoint($key) {
-  @return map-get($breakpoints, $key);
+  @return map.get($breakpoints, $key);
 }
 
 @mixin respond-to($key) {

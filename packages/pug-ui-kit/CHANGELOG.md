@@ -1,5 +1,38 @@
 # Changelog
 
+# Changelog
+
+## [1.3.0] - 2026-02-11
+
+### Added
+- **Production CSS build pipeline**
+  - Compiles SCSS into `style/style.css`
+  - Generates minified version `style/style.min.css`
+  - Adds vendor prefixes via PostCSS + Autoprefixer
+- **New build scripts**
+  - `clean`
+  - `build:css`
+  - `build:postcss`
+  - `build` (full pipeline)
+- **Distributable CSS output**
+  - Users can now import compiled CSS directly:
+    ```scss
+    @import "@razerspine/pug-ui-kit/style/style.min.css";
+    ```
+
+### Changed
+- Migrated SCSS utilities to modern Dart Sass syntax
+  - Replaced deprecated global built-in functions
+  - Removed deprecated `if()` Sass function usage
+  - Updated `map-get` → `map.get`
+- Improved forward-compatibility with Dart Sass 3.0+
+
+### Notes
+- No breaking changes.
+- Existing SCSS/LESS usage remains fully supported.
+- CSS build output is optional — advanced users can still consume SCSS/LESS sources directly.
+
+
 ## [1.2.2] - 2026-02-08
 
 ### Added

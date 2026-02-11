@@ -1,3 +1,4 @@
+@use "sass:map";
 @use '../settings/index' as *;
 
 .aside {
@@ -5,7 +6,7 @@
   display: flex;
   justify-content: flex-start;
   padding: 0 $gutter;
-  @media screen and (min-width: map-get($breakpoints, lg)) {
+  @media screen and (min-width: map.get($breakpoints, lg)) {
     padding: 0;
   }
 }
@@ -16,7 +17,7 @@
   border-radius: $border-radius;
   padding: $gutter;
   width: 100%;
-  @media screen and (min-width: map-get($breakpoints, lg)) {
+  @media screen and (min-width: map.get($breakpoints, lg)) {
     padding: calc($gutter * 2);
   }
 }
