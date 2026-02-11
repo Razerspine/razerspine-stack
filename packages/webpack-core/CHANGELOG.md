@@ -8,6 +8,16 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.1.7] - 2026-02-11
+
+### Changed
+- Updated `README.md`
+- Updated `package.json` metadata (keywords, published files)
+
+### Stable Release Note
+- **Important:** Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use. This release marks the stable baseline.
+
+
 ## [1.1.6] - 2026-02-05
 
 ### Changed

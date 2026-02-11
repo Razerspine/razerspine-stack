@@ -7,6 +7,15 @@ template-driven builds using `pug-plugin`.
 
 ---
 
+## ⚠️ Important
+
+Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use.
+
+Please use:
+```bash
+npm install @razerspine/webpack-core@^1.1.6
+```
+
 ## Designed for
 
 This package is developed as part of the  
