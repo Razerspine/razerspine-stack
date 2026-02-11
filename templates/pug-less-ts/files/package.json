@@ -30,6 +30,6 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.2.1"
+    "@razerspine/pug-ui-kit": "^1.3.1"
   }
 }
