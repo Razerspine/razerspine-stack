@@ -30,7 +30,8 @@ export async function getCliContext(): Promise<{
     program.parse(process.argv);
 
     const options = program.opts<CliOptions>();
-
+    const hasStyle = Boolean(options.style);
+    const hasScript = Boolean(options.script);
     let projectName = program.args[0] as string | undefined;
 
     // --- ASK PROJECT NAME IF NOT PROVIDED
@@ -48,6 +49,18 @@ export async function getCliContext(): Promise<{
     }
 
     let template: TemplateKey | undefined = options.template;
+
+    if (options.template) {
+        console.warn('⚠️  Warning: --template is deprecated. Use --style and --script instead.');
+    }
+
+    if (hasStyle !== hasScript) {
+        throw new Error('Both --style and --script must be provided together');
+    }
+
+    if (options.template && options.style && options.script) {
+        console.warn('⚠️  Warning: --template overrides --style and --script');
+    }
 
     // --- RESOLVE FROM FLAGS (--style + --script)
     if (!template && options.style && options.script) {

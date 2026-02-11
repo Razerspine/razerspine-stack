@@ -31,13 +31,13 @@ npx create-webpack-starter my-app \
 
 ## Options
 
-| Option                   | Description                              |
-|--------------------------|------------------------------------------|
-| `--style <scss or less>` | Select CSS preprocessor for the project  |
-| `--script <js or ts>`    | Select script language for the project   |
-| `--template <name>`      | Explicit template selection (advanced)   |
-| `--no-install`           | Skip dependency installation             |
-| `--dry-run`              | Show what would be done                  |
+| Option                   | Description                                      |
+|--------------------------|--------------------------------------------------|
+| `--style <scss or less>` | Select CSS preprocessor (required with --script) |
+| `--script <js or ts>`    | Select script language (required with --style)   |
+| `--template <name>`      | Explicit template selection (deprecated)         |
+| `--no-install`           | Skip dependency installation                     |
+| `--dry-run`              | Show what would be done                          |
 
 ---
 

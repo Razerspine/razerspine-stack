@@ -25,10 +25,10 @@ The CLI resolves the correct template automatically based on:
 - selected style preprocessor (`--style`)
 - selected script language (`--script`)
 
-Explicit template selection via `--template` is still supported for:
-- advanced usage
-- CI pipelines
-- debugging purposes
+Explicit template selection via `--template` is supported but deprecated.
+
+New projects should prefer `--style` and `--script`,
+which allow the CLI to resolve templates automatically.
 
 
 ## How templates work

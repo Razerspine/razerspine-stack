@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.1] - 2026-02-11
+
+### Added
+- Strict validation for feature-based CLI flags:
+  - CLI now throws an error if only one of `--style` or `--script` is provided
+  - Both flags must be passed together
+
+### Changed
+- `--template` option is now officially marked as **deprecated**
+- CLI displays a deprecation warning when `--template` is used
+- CLI displays a warning when `--template` is used together with `--style` / `--script`
+- Improved internal resolution priority:
+  - `--template` overrides feature flags
+  - `--style + --script` are resolved only when `--template` is not provided
+
+### Notes
+- No breaking changes
+- Existing CI workflows using `--template` continue to work
+- Feature-based selection (`--style + --script`) remains the recommended approach
+
+
 ## [0.3.0] - 2026-02-10
 
 ### Added
