@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/pug-ui-kit",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Shared Pug mixins for Webpack Starter templates",
   "keywords": [
     "pug",
@@ -8,6 +8,7 @@
     "mixins"
   ],
   "main": "index.js",
+  "style": "style/style.min.css",
   "files": [
     "mixins",
     "fonts",
@@ -25,14 +26,6 @@
     "build": "npm run clean && npm run build:css && npm run build:postcss",
     "clean": "rm -rf style",
     "prepublishOnly": "npm run build"
-  },
-  "style": "scss/ui-kit.scss",
-  "less": "less/ui-kit.less",
-  "exports": {
-    ".": "./index.js",
-    "./style": "./style/style.min.css",
-    "./style/style.css": "./style/style.css",
-    "./style/style.min.css": "./style/style.min.css"
   },
   "author": "Razerspine",
   "repository": {

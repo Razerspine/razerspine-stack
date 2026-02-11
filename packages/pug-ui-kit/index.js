@@ -5,6 +5,7 @@ module.exports = {
     fonts: path.join(__dirname, 'fonts'),
     scss: path.join(__dirname, 'scss'),
     less: path.join(__dirname, 'less'),
+    style: path.join(__dirname, 'style'),
     mixins: path.join(__dirname, 'mixins')
   },
   // helper

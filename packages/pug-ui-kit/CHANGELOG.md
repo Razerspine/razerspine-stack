@@ -1,6 +1,10 @@
 # Changelog
 
-# Changelog
+## [1.3.1] - 2026-02-11
+
+### Fixed
+- Fixed broken SCSS imports caused by incorrect "exports" configuration in v1.3.0.
+- Restored compatibility with sass-loader and webpack.
 
 ## [1.3.0] - 2026-02-11
 
