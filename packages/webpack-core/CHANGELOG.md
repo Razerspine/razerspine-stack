@@ -8,11 +8,14 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
-## [1.1.8] - 2026-02-12
+## [1.2.0] - 2026-02-12
 
 ### Changed
-- Updated `createDevConfig` to watch all files recursively in `src/` directory (`src/**/*`).
-- Replaced restrictive file extension list in `devServer.watchFiles` with a catch-all pattern to ensure the dev server reacts to all asset changes (images, json, new styles, etc.).
+- **Enhanced File Watching:** Updated `createDevConfig` to watch all files recursively in the `src/` directory (`src/**/*`). This ensures `webpack-dev-server` reacts to changes in any file type (images, JSON, new assets) without manual configuration.
+- **Improved Dev Routing:** Configured `historyApiFallback` in development mode.
+  - Set `disableDotRule: true` to allow dots in URLs (useful for complex routing).
+  - Added a global rewrite rule to serve `/404.html` for any non-existent paths, enabling better local testing of 404 error pages and SPA-like navigation.
+- **DevServer Optimization:** Set `hot: false` and `liveReload: true` as a stable default for multi-page template builds to ensure consistent page refreshes upon file changes.
 
 ---
 
