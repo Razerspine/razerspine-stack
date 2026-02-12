@@ -6,18 +6,6 @@ const {
 } = require("@razerspine/webpack-core");
 const uiKit = require("@razerspine/pug-ui-kit");
 
-/**
- * createBaseConfig:
- *  - mode: development | production
- *  - scripts: js | ts
- *  - styles: scss | less
- *  - templates: {
- *  -    entry: 'src/views/pages'
- *  - },
- *  - resolve: {
- *  -   alias: {...your_aliases}
- *  - }
- */
 module.exports = (env = {}, argv = {}) => {
   const mode = argv?.mode || env?.mode || process.env.NODE_ENV || "development";
 
