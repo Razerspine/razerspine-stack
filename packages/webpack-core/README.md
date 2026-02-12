@@ -32,7 +32,7 @@ templates, but can also be used independently.
 - **Flexibility:** Since v1.2.1, you can override any part of the dev or prod configuration using an optional `options` argument.
 - **Stability:** `pug-plugin` is used to compile templates, and asset paths are resolved by webpack.
 - **Template-driven**: Webpack JS entry is intentionally disabled. Builds are driven by template entries in `src/views/pages`.
-  - **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent asset resolution issues in templates.
+- **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent asset resolution issues in templates.
 
 ---
 
