@@ -8,6 +8,14 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.1.8] - 2026-02-12
+
+### Changed
+- Updated `createDevConfig` to watch all files recursively in `src/` directory (`src/**/*`).
+- Replaced restrictive file extension list in `devServer.watchFiles` with a catch-all pattern to ensure the dev server reacts to all asset changes (images, json, new styles, etc.).
+
+---
+
 ## [1.1.7] - 2026-02-11
 
 ### Changed
@@ -17,6 +25,7 @@ required to ensure correct behavior in both development and production modes.
 ### Stable Release Note
 - **Important:** Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use. This release marks the stable baseline.
 
+---
 
 ## [1.1.6] - 2026-02-05
 
