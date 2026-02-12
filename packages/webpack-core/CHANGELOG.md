@@ -8,6 +8,18 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.2.1] - 2026-02-12
+
+### Added
+- **Flexible Configurations:** Added an optional `options` argument to both `createDevConfig` and `createProdConfig`.
+- Users can now override default `devServer` settings or Webpack production optimizations without losing the base functionality.
+- Integrated `webpack-merge` into `createDevConfig` for safer property merging.
+
+### Fixed
+- Updated internal documentation and clarified version history in `CHANGELOG.md`.
+
+---
+
 ## [1.2.0] - 2026-02-12
 
 ### Changed

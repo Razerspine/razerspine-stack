@@ -2,19 +2,20 @@ import type {Configuration} from 'webpack';
 import {merge} from 'webpack-merge';
 
 export function createProdConfig(
-    baseConfig: Configuration
+    baseConfig: Configuration,
+    options: Configuration = {}
 ): Configuration {
-    return merge(baseConfig, {
+    const defaultConfig: Configuration = {
         devtool: 'source-map',
         optimization: {
             minimize: true,
-            // ⚠️ splitChunks deliberately disabled
-            // pug-plugin manages assets & entries itself
             splitChunks: false,
             runtimeChunk: false,
         },
         performance: {
             hints: false,
         },
-    });
+    };
+
+    return merge(baseConfig, defaultConfig, options);
 }

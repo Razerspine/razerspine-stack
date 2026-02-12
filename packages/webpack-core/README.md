@@ -13,7 +13,7 @@ Versions prior to 1.1.6 were part of a stabilization phase and are not recommend
 
 Please use:
 ```bash
-npm install @razerspine/webpack-core@^1.1.6
+npm install @razerspine/webpack-core@^1.2.1
 ```
 
 ## Designed for
@@ -28,35 +28,22 @@ templates, but can also be used independently.
 
 ## Design principles
 
-- Webpack is responsible for:
-  - module resolution
-  - aliases (`resolve.alias`)
-  - asset handling
-
-- Loaders and plugins:
-  - do not define aliases
-  - do not depend on UI kits
-  - do not assume project structure
-
-- `pug-plugin` is used only to compile templates  
-  Asset paths are resolved by webpack.
-
-- Webpack JS entry is intentionally disabled  
-  Builds are driven by template entries.
-
-- No aggressive production optimizations by default  
-  (e.g. no `splitChunks`)
+- **Webpack is responsible for**: module resolution, aliases (`resolve.alias`), and asset handling.
+- **Flexibility:** Since v1.2.1, you can override any part of the dev or prod configuration using an optional `options` argument.
+- **Stability:** `pug-plugin` is used to compile templates, and asset paths are resolved by webpack.
+- **Template-driven**: Webpack JS entry is intentionally disabled. Builds are driven by template entries in `src/views/pages`.
+  - **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent asset resolution issues in templates.
 
 ---
 
 ## Features
 
-- Pug templates support
-- JavaScript / TypeScript
-- SCSS / Less
-- Environment-aware configuration
-- No hardcoded aliases
-- Production-safe defaults
+- **Pug templates support** with auto-discovery.
+- **JavaScript / TypeScript** integration.
+- **SCSS / Less** styling support.
+- **Recursive File Watching**: Dev server watches all changes in src/**/*.
+- **SPA-friendly Dev Server**: Integrated historyApiFallback (redirects to 404.html).
+- **Customizable**: Easily override devServer or optimization settings.
 
 ---
 
@@ -69,6 +56,8 @@ npm install @razerspine/webpack-core
 ---
 
 ## Usage
+
+### Basic Setup
 
 ```js
 const path = require('path');
@@ -83,8 +72,8 @@ module.exports = (env = {}, argv = {}) => {
 
   const baseConfig = createBaseConfig({
     mode,
-    scripts: 'js',
-    styles: 'less',
+    scripts: 'js', // or 'ts'
+    styles: 'scss', // or 'less'
     templates: {
       entry: 'src/views/pages',
     },
@@ -92,19 +81,57 @@ module.exports = (env = {}, argv = {}) => {
       alias: {
         '@views': path.resolve(process.cwd(), 'src/views'),
         '@styles': path.resolve(process.cwd(), 'src/assets/styles'),
-        '@scripts': path.resolve(process.cwd(), 'src/assets/scripts'),
-        '@images': path.resolve(process.cwd(), 'src/assets/images'),
       },
     },
   });
 
-  return mode === 'development'
-    ? createDevConfig(baseConfig)
-    : createProdConfig(baseConfig);
+  if (mode === 'development') {
+    return createDevConfig(baseConfig);
+  }
+
+  return createProdConfig(baseConfig);
 };
 ```
 
+### Customizing Configuration (v1.2.1+)
+
+You can now pass an optional second argument to `createDevConfig` and `createProdConfig` to override defaults:
+
+```js
+// Customizing the Dev Server (port, open browser, etc.)
+if (mode === 'development') {
+  return createDevConfig(baseConfig, {
+    port: 3000,
+    open: true,
+    // extra devServer options...
+  });
+}
+
+// Customizing Production (minification, performance hints, etc.)
+if (mode === 'production') {
+  return createProdConfig(baseConfig, {
+    performance: {
+        hints: 'warning',
+    }
+  });
+}
+```
+
 ---
+
+## API Reference
+
+`createDevConfig(baseConfig, options?)`
+
+- `baseConfig`: The configuration returned by createBaseConfig.
+- `options`: (Optional) webpack-dev-server configuration object.
+- **Default behavior**: Watches `src/**/*`, uses port `8080`, and rewrites 404s to `/404.html`.
+
+`createProdConfig(baseConfig, options?)`
+
+- `baseConfig`: The configuration returned by createBaseConfig.
+- `options`: (Optional) Webpack configuration object for production overrides.
+- **Default behavior**: Enables source maps, minification, and disables `splitChunks` for template compatibility.
 
 ## 📄 License
 This project is licensed under the ISC License.
