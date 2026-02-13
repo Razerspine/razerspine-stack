@@ -37,10 +37,11 @@ Generated projects have **no runtime dependency** on the CLI.
 
 ### Package Types
 
-* `create-webpack-starter` – published CLI
-* `templates/*` – source templates (not npm packages)
-* `webpack-core` – shared webpack logic (npm package)
-* `pug-ui-kit` – UI assets & mixins (npm package)
+- `create-webpack-starter` – published CLI
+- `webpack-core` – shared webpack configuration (npm package)
+- `pug-ui-kit` – UI assets & mixins (npm package)
+- `starter-core-scripts` – shared frontend services (npm package)
+- `templates/*` – source templates (not npm packages)
 
 --- 
 
@@ -93,6 +94,29 @@ This behavior is intentional and should not be “fixed”.
 
 ---
 
+---
+
+### Shared runtime packages
+
+The monorepo contains shared runtime packages used by templates:
+
+- `@razerspine/webpack-core`
+- `@razerspine/pug-ui-kit`
+- `@razerspine/starter-core-scripts`
+
+These are published npm packages.
+
+Templates declare them as normal semver dependencies
+(e.g. `"^0.2.0"`), not as workspace dependencies.
+
+This guarantees that:
+
+- Generated projects are fully standalone
+- No workspace references leak into published templates
+- CLI users always receive stable, published versions
+
+---
+
 ### Templates and dependency installation
 
 Directories under `templates/` are **not npm workspaces**.
@@ -120,3 +144,19 @@ This guarantees:
 - clean generated projects
 - predictable installs
 - no leakage of local development artifacts
+
+---
+
+### Dependency strategy
+
+Templates must never use:
+
+- `workspace:*`
+- `file:`
+- local path references
+
+Templates must always depend on published npm versions
+of shared packages using semver ranges (e.g. `^0.2.0`).
+
+The CLI is responsible only for copying templates
+and running `npm install` in the target directory.

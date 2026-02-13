@@ -11,9 +11,10 @@ production-ready webpack projects with Pug, SCSS/Less, JavaScript or TypeScript.
 
 ```text
 packages/
-├─ create-webpack-starter    # CLI — npx create-webpack-starter
-├─ webpack-core              # Shared webpack configuration & loaders
-└─ pug-ui-kit                # Optional Pug UI helpers (mixins, styles)
+├─ create-webpack-starter      # CLI — npx create-webpack-starter
+├─ webpack-core                # Shared webpack configuration & loaders
+├─ pug-ui-kit                  # Optional Pug UI helpers
+└─ starter-core-scripts        # Shared frontend services (theme, i18n, api)
 ```
 
 ---
@@ -29,6 +30,19 @@ templates/
 ```
 
 ---
+
+## Shared Runtime Packages
+
+Templates rely on published runtime packages:
+
+- `@razerspine/webpack-core`
+- `@razerspine/pug-ui-kit`
+- `@razerspine/starter-core-scripts`
+
+These packages are versioned and published independently.
+
+Generated projects depend on stable npm versions,
+not on the monorepo workspace.
 
 ## Philosophy
 

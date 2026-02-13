@@ -44,6 +44,26 @@ Templates are **copied**, not referenced — you fully own the result.
 
 ---
 
+## Shared runtime packages
+
+All templates depend on official shared packages:
+
+- `@razerspine/webpack-core`
+- `@razerspine/pug-ui-kit`
+- `@razerspine/starter-core-scripts`
+
+`starter-core-scripts` provides:
+
+- ThemeService
+- TranslationService
+- ApiService
+- ConsoleLogger
+
+These packages are regular npm dependencies.
+They are copied as semver dependencies into the generated project.
+
+---
+
 ## Aliases in templates
 
 Common aliases available in Pug, JS, and styles:

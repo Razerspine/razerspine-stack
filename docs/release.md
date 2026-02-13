@@ -109,3 +109,17 @@ Not included:
 ---
 
 This process is intentionally boring, explicit, and safe.
+
+---
+
+## Release order
+
+When releasing shared packages:
+
+1. Publish `starter-core-scripts`
+2. Publish `webpack-core` (if changed)
+3. Publish `pug-ui-kit` (if changed)
+4. Update template dependency versions
+5. Publish `create-webpack-starter`
+
+Templates must reference published versions before the CLI release.
