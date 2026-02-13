@@ -1,5 +1,67 @@
 ## Architecture
 
+
+### 🔷 System Architecture Diagram (Mermaid)
+
+```mermaid
+flowchart TD
+
+%% =========================
+%% Generator Layer
+%% =========================
+subgraph L1[Generator Layer]
+    CLI["create-webpack-starter CLI"]
+end
+
+%% =========================
+%% Project Layer
+%% =========================
+subgraph L2[Project Layer]
+    TEMPLATES["Templates (copied into project)"]
+    PROJECT["Generated Project"]
+end
+
+%% =========================
+%% Runtime Layer
+%% =========================
+subgraph L3[Shared Runtime Packages (published to npm)]
+    CORE["@razerspine/webpack-core"]
+    UI["@razerspine/pug-ui-kit"]
+    SCRIPTS["@razerspine/starter-core-scripts"]
+end
+
+%% =========================
+%% Build Layer
+%% =========================
+subgraph L4[Build Layer]
+    WEBPACK["Webpack & Loaders"]
+end
+
+%% Flow
+CLI -->|"copies files + runs npm install"| TEMPLATES
+TEMPLATES --> PROJECT
+
+PROJECT -->|"depends on"| CORE
+PROJECT -->|"depends on"| UI
+PROJECT -->|"depends on"| SCRIPTS
+
+CORE --> WEBPACK
+
+%% Important constraint
+CLI -.->|"no runtime dependency"| PROJECT
+```
+
+---
+
+### Architectural Boundaries
+
+- The CLI is a generator tool and is never used at runtime.
+- Templates are copied into the generated project.
+- Shared runtime packages are published to npm and versioned independently.
+- The generated project is fully standalone.
+
+---
+
 ### Purpose
 
 This repository is a **monorepo** that hosts:
