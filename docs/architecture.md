@@ -9,22 +9,22 @@ flowchart TD
 %% =========================
 %% Generator Layer
 %% =========================
-subgraph L1[Generator Layer]
+subgraph L1["Generator Layer"]
     CLI["create-webpack-starter CLI"]
 end
 
 %% =========================
 %% Project Layer
 %% =========================
-subgraph L2[Project Layer]
-    TEMPLATES["Templates (copied into project)"]
+subgraph L2["Project Layer"]
+    TEMPLATES["Templates copied into project"]
     PROJECT["Generated Project"]
 end
 
 %% =========================
 %% Runtime Layer
 %% =========================
-subgraph L3[Shared Runtime Packages (published to npm)]
+subgraph L3["Shared Runtime Packages - published to npm"]
     CORE["@razerspine/webpack-core"]
     UI["@razerspine/pug-ui-kit"]
     SCRIPTS["@razerspine/starter-core-scripts"]
@@ -33,22 +33,22 @@ end
 %% =========================
 %% Build Layer
 %% =========================
-subgraph L4[Build Layer]
-    WEBPACK["Webpack & Loaders"]
+subgraph L4["Build Layer"]
+    WEBPACK["Webpack and Loaders"]
 end
 
 %% Flow
-CLI -->|"copies files + runs npm install"| TEMPLATES
+CLI -->|copies files and runs npm install| TEMPLATES
 TEMPLATES --> PROJECT
 
-PROJECT -->|"depends on"| CORE
-PROJECT -->|"depends on"| UI
-PROJECT -->|"depends on"| SCRIPTS
+PROJECT -->|depends on| CORE
+PROJECT -->|depends on| UI
+PROJECT -->|depends on| SCRIPTS
 
-CORE --> WEBPACK
+CORE -->|extends config| WEBPACK
 
 %% Important constraint
-CLI -.->|"no runtime dependency"| PROJECT
+CLI -.->|no runtime dependency| PROJECT
 ```
 
 ---
