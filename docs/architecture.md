@@ -1,9 +1,10 @@
 ## Architecture
 
 
-### 🔷 System Architecture Diagram (Mermaid)
+### System Architecture Diagram (Mermaid)
 
 ```mermaid
+%%{init: { 'flowchart': { 'rankSpacing': 70, 'nodeSpacing': 45, 'curve': 'basis' } } }%%
 flowchart TD
 
 %% =========================
@@ -24,8 +25,7 @@ end
 %% =========================
 %% Runtime Layer
 %% =========================
-subgraph L3 ["Shared Runtime Packages<br/>(published to npm)"]
-    direction TB
+subgraph L3 ["Shared Runtime Packages (published to npm)"]
     CORE["@razerspine/webpack-core"]
     UI["@razerspine/pug-ui-kit"]
     SCRIPTS["@razerspine/starter-core-scripts"]
@@ -38,7 +38,9 @@ subgraph L4 ["Build Layer"]
     WEBPACK["Webpack and Loaders"]
 end
 
-%% Flow
+%% =========================
+%% Connections (Flow)
+%% =========================
 CLI -- "copies files and<br/>runs npm install" --> TEMPLATES
 TEMPLATES --> PROJECT
 
@@ -48,12 +50,15 @@ PROJECT -- "depends on" --> SCRIPTS
 
 CORE -- "extends config" --> WEBPACK
 
-%% Important constraint
+%% Important constraint (dashed line)
 CLI -.->|"no runtime<br/>dependency"| PROJECT
 
-%% Styling for clarity
-style L3 fill:#2d2d2d,stroke:#666,stroke-width:2px
-style PROJECT fill:#1e1e1e,stroke:#fff,stroke-width:2px
+%% Styling
+classDef default fill:#1f2937,stroke:#9ca3af,stroke-width:1px,color:#fff
+style L1 fill:none,stroke:#374151,stroke-dasharray: 5 5
+style L2 fill:none,stroke:#374151,stroke-dasharray: 5 5
+style L3 fill:none,stroke:#374151,stroke-dasharray: 5 5
+style L4 fill:none,stroke:#374151,stroke-dasharray: 5 5
 ```
 
 ---
