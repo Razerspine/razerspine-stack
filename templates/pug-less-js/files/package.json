@@ -31,6 +31,7 @@
     "less-loader": "^12.3.0"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.3.1"
+    "@razerspine/pug-ui-kit": "^1.3.1",
+    "@razerspine/starter-core-scripts": "^0.2.0"
   }
 }
