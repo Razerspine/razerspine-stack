@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1] - 2026-02-14
+
+### Added
+- **Structured README.md** — added a new structured `README.md`
+
+### Notes
+- Documentation changes do not affect runtime behavior; they simplify migration and configuration for SCSS/LESS users.
+
+---
+
 ## [1.4.0] - 2026-02-14
 
 ### Changed
@@ -28,11 +38,15 @@
 - SCSS/LESS users who relied on automatic Roboto injection must now explicitly import the fonts layer.
 - Update README.md
 
+---
+
 ## [1.3.1] - 2026-02-11
 
 ### Fixed
 - Fixed broken SCSS imports caused by incorrect "exports" configuration in v1.3.0.
 - Restored compatibility with sass-loader and webpack.
+
+---
 
 ## [1.3.0] - 2026-02-11
 
@@ -64,6 +78,7 @@
 - Existing SCSS/LESS usage remains fully supported.
 - CSS build output is optional — advanced users can still consume SCSS/LESS sources directly.
 
+---
 
 ## [1.2.2] - 2026-02-08
 
@@ -77,10 +92,14 @@
 - This release does not change runtime behavior.
 - The update ensures smooth CI execution when building all workspace packages together.
 
+---
+
 ## [1.2.1] - 2026-02-03
 
 ### Fixed
 - **SCSS Scope**: Fixed "Undefined variable" error in `_fonts.scss` by explicitly importing settings module via `@use`.
+
+---
 
 ## [1.2.0] - 2026-02-03
 ### Added
@@ -109,10 +128,14 @@ If you wish to use a custom font path (e.g., a CDN or a different local folder),
 @import "@razerspine/pug-ui-kit/less/ui-kit.less";
 ```
 
+---
+
 ## [1.1.0] - 2026-02-03
 ### Added
 - **Styles**: Full SCSS and LESS support for all UI components.
 - **Architecture**: Added global settings, grid system, and themes (light/dark).
+
+---
 
 ## [1.0.1] - 2026-02-03
 

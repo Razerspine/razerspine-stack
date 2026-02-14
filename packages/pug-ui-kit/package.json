@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/pug-ui-kit",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Shared Pug mixins for Webpack Starter templates",
   "keywords": [
     "pug",
