@@ -166,8 +166,6 @@ This behavior is intentional and should not be “fixed”.
 
 ---
 
----
-
 ### Shared runtime packages
 
 The monorepo contains shared runtime packages used by templates:
