@@ -27,7 +27,7 @@ This approach favors correctness, security, and human awareness over speed.
 
 ## Why publish is manual
 
-Publishing an npm package is **irreversible**.
+Publishing a npm package is **irreversible**.
 
 A manual trigger ensures that:
 
@@ -46,7 +46,6 @@ npm classic tokens are deprecated and discouraged.
 
 This repository uses:
 
-- GitHub Actions OIDC
 - browser-based npm confirmation
 - enforced 2FA / session-based authentication
 
@@ -56,19 +55,6 @@ This repository uses:
 - no token rotation
 - same security level as local `npm publish`
 - future-proof with npm’s official direction
-
----
-
-## What is verified before publish
-
-Before `npm publish` runs, CI ensures:
-
-1. Dependencies are installable
-2. All workspace packages build successfully
-3. CLI end-to-end tests pass
-4. The version **does not already exist on npm**
-
-If **any step fails**, publishing is blocked.
 
 ---
 
@@ -97,14 +83,14 @@ Not included:
 
 ## Responsibility split
 
-| Concern | Responsible |
-|------|------------|
-| Version bump | Human |
-| Changelog | Human |
-| Build | CI |
-| Tests | CI |
-| Publish trigger | Human |
-| Authentication | npm + browser |
+| Concern         | Responsible   |
+|-----------------|---------------|
+| Version bump    | Human         |
+| Changelog       | Human         |
+| Build           | CI            |
+| Tests           | CI            |
+| Publish trigger | Human         |
+| Authentication  | npm + browser |
 
 ---
 
