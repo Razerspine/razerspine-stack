@@ -4,7 +4,7 @@
 ### System Architecture Diagram (Mermaid)
 
 ```mermaid
-%%{init: { 'flowchart': { 'rankSpacing': 70, 'nodeSpacing': 45, 'curve': 'basis' } } }%%
+%%{init: { 'flowchart': { 'rankSpacing': 100, 'nodeSpacing': 120, 'curve': 'basis' } } }%%
 flowchart TD
 
 %% =========================
