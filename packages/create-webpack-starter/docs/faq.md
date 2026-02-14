@@ -41,4 +41,4 @@ This starter focuses on template-driven projects.
 ## Where to report issues?
 
 GitHub:
-https://github.com/Razerspine/webpack-starter-monorepo
+https://github.com/Razerspine/webpack-starter-monorepo/issues
