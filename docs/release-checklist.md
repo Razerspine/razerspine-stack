@@ -52,6 +52,8 @@ npm run test:e2e
 - [ ] Confirm publish in browser (2FA)
 - [ ] Verify package on npmjs.com
 
+---
+
 ## 6. Post-publish
 
 - [ ] Install package via npx create-webpack-starter
