@@ -21,7 +21,6 @@ module.exports = (env = {}, argv = {}) => {
         "@views": path.resolve(process.cwd(), "src/views"),
         "@styles": path.resolve(process.cwd(), "src/assets/styles"),
         "@scripts": path.resolve(process.cwd(), "src/assets/scripts"),
-        "@fonts": path.resolve(process.cwd(), "src/assets/fonts"),
         "@images": path.resolve(process.cwd(), "src/assets/images"),
         "@icons": path.resolve(process.cwd(), "src/assets/icons"),
         "pug-ui-kit": uiKit.paths.mixins,

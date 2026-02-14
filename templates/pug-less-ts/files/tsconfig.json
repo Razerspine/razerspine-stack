@@ -9,7 +9,6 @@
       "@views/*": ["views/*"],
       "@styles/*": ["assets/styles/*"],
       "@scripts/*": ["assets/scripts/*"],
-      "@fonts/*": ["assets/fonts/*"],
       "@images/*": ["assets/images/*"],
       "@icons/*": ["assets/icons/*"]
     },
