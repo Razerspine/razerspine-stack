@@ -11,6 +11,8 @@ This package is automatically included in templates generated via the CLI. To in
 npm install @razerspine/pug-ui-kit
 ```
 
+---
+
 ## 🎨 Styling Options
 
 You now have **three ways** to use the styles:
@@ -46,6 +48,34 @@ If overriding settings:
 @use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
 ```
 
+### 2.1 Fonts (SCSS)
+
+Since **v1.4.0**, font-face declarations are separated into an optional layer.
+
+By default, `ui-kit` does NOT inject any `@font-face`
+
+If you want to use the bundled Roboto font:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/fonts";
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+If you prefer your own font:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/ui-kit" with (
+  $font-family: 'Inter', system-ui, sans-serif
+);
+```
+
+Available typography variables (SCSS):
+
+```scss
+$font-family: "Roboto", system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+$base-font-size: 14px;
+```
+
 ### 3. Use LESS
 
 ```less
@@ -58,6 +88,88 @@ Override font path:
 @font-path: "/my-custom-path/fonts";
 @import "@razerspine/pug-ui-kit/less/ui-kit";
 ```
+
+### 3.1 Fonts (LESS)
+Font-face declarations are optional.
+
+To use bundled Roboto:
+
+```less
+@import "@razerspine/pug-ui-kit/less/fonts";
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+Override typography variables:
+
+```less
+@font-family: "Inter", system-ui, sans-serif;
+@base-font-size: 16px;
+
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+---
+
+## 🔄 Migration Guide (v1.4.0)
+
+**What changed**?
+
+`@font-face` declarations are no longer automatically included in `ui-kit`.
+
+This only affects SCSS/LESS users who relied on implicit Roboto injection.
+
+Compiled CSS users are not affected.
+
+**If you were using SCSS**:
+
+**Before (≤1.3.x)**:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+**After (≥1.4.0)**:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/fonts";
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+**If you were using LESS**:
+
+**Before**:
+
+```less
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+**After**:
+
+```less
+@import "@razerspine/pug-ui-kit/less/fonts";
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+**If you want to use your own font**
+
+Simply override typography variables:
+
+**SCSS**
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/ui-kit" with (
+  $font-family: 'Inter', system-ui, sans-serif
+);
+```
+
+**LESS**
+
+```less
+@font-family: "Inter", system-ui, sans-serif;
+@import "@razerspine/pug-ui-kit/less/ui-kit";
+```
+
+---
 
 ## 🛠 Webpack Configuration (Pug Mixins)
 
@@ -81,6 +193,8 @@ Then:
 ```pug
 include ~pug-ui-kit/btn.pug
 ```
+
+---
 
 ## 🚀 Usage Examples
 
@@ -416,24 +530,92 @@ include ~pug-ui-kit/single-select.pug
 ])
 ```
 
+---
+
+## 🔎 Font Architecture (Since v1.4.0)
+
+`@razerspine/pug-ui-kit` no longer injects `@font-face` automatically.
+
+**This improves**:
+
+- flexibility
+- performance control
+- design system neutrality
+- compatibility with enterprise setups
+
+**You are free to**:
+
+- use the bundled Roboto
+- use a CDN
+- use a variable font
+- use system fonts only
+- disable custom fonts entirely
+
+The UI Kit controls typography styling, not font delivery.
+
+---
+
 ## 📂 Package Structure
 
-* mixins/ - reusable Pug components. 
-* scss/ - complete SCSS kit (Settings, Components, Themes, Layout). 
-* less/ - complete LESS version for alternative workflows.
-* style/    → Compiled CSS output (since v1.3.0)
-* fonts/    → Roboto font family
-* index.js - path resolution helper.
+- mixins/ - reusable Pug components. 
+- scss/ - complete SCSS kit (Settings, Components, Themes, Layout).
+- less/ - complete LESS version for alternative workflows.
+- style/    → Compiled CSS output (since v1.3.0)
+- index.js - path resolution helper.
+
+#### SCSS: 
+```text
+scss/
+├── ui-kit.scss        → Main entry (full style system)
+├── fonts.scss         → Optional font-face layer (Roboto)
+├── base/              → Reset & base styles
+├── settings/          → Design tokens (variables, typography, breakpoints)
+├── themes/            → Light & dark themes
+├── layout/            → Grid and layout system
+├── components/        → UI components
+└── utils/             → Mixins, helpers, utilities
+```
+
+#### LESS:
+```text
+less/
+├── ui-kit.less        → Main entry (full style system)
+├── fonts.less         → Optional font-face layer (Roboto)
+├── base/              → Reset & base styles
+├── settings/          → Design tokens (variables, typography, breakpoints)
+├── themes/            → Light & dark themes
+├── layout/            → Grid and layout system
+├── components/        → UI components
+└── utils/             → Mixins, helpers, utilities
+```
+
+#### Entry
+
+`ui-kit` is the main style entry point and includes:
+
+- base reset
+- design tokens
+- themes
+- layout system
+- components
+-utilities
+
+It does not include font-face declarations.
+If you want bundled Roboto fonts, import the `fonts` layer explicitly.
+
+---
 
 ## 🧱 Components Included
 
-* btn.pug
-* data-table.pug
-* form-input.pug
-* form-textarea.pug
-* input-checkbox.pug
-* input-radio.pug
-* single-select.pug
+- btn.pug
+- data-table.pug
+- form-input.pug
+- form-textarea.pug
+- input-checkbox.pug
+- input-radio.pug
+- single-select.pug
+
+---
 
 ## ⚙ Build (for contributors)
 
@@ -446,6 +628,8 @@ npm run build
 - Compile SCSS
 - Run PostCSS + Autoprefixer
 - Generate minified CSS
+
+---
 
 ## 📄 License
 This project is licensed under the ISC License.

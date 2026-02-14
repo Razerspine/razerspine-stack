@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.4.0] - 2026-02-14
+
+### Changed
+- **Font Architecture Refactor**
+  - Removed automatic `@font-face` injection from `ui-kit` entry.
+  - Font declarations moved to a separate optional layer:
+    - `scss/fonts.scss`
+    - `less/fonts.less`
+- Improved flexibility for custom typography setups.
+- Prevented unintended font bundling in advanced projects.
+
+### Added
+
+- New optional font entry files:
+  - `@razerspine/pug-ui-kit/scss/fonts`
+  - `@razerspine/pug-ui-kit/less/fonts`
+- Explicit documentation for typography variables:
+  - `$font-family`
+  - `$base-font-size`
+  - `@font-family`
+  - `@base-font-size`
+
+### Notes
+
+- No breaking changes for users importing compiled CSS (`style/style.css` or `style.min.css`).
+- SCSS/LESS users who relied on automatic Roboto injection must now explicitly import the fonts layer.
+- Update README.md
+
 ## [1.3.1] - 2026-02-11
 
 ### Fixed
