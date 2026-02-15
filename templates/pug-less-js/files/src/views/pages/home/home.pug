@@ -1,7 +1,5 @@
 extends @views/layout/simple.pug
-
-block variables
-  - title = 'Webpack starter template'
+include @views/mixins/code.pug
 
 append style
   link(rel='stylesheet' href='./style.less')
@@ -10,5 +8,77 @@ append script
   script(src='./home.js')
 
 block content
-  section.container
-    h1.title-h2 Webpack starter template: Pug + Less + JavaScript
+  section.section.m-b-4
+    .container
+      h1.title-h1.m-b-2 Webpack Starter Template
+      p.title-h5.slate-500 Pug + Less + JS - Production-ready foundation
+
+  // =============================
+  // What's Included
+  // =============================
+
+  section.section.m-b-4
+    .container
+      h2.title-h2.m-b-2 What’s Included
+      .row.m-b-2
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2 ⚙ Webpack Core
+            p
+              | Stable, minimal webpack configuration with alias support,
+              | environment separation and production-ready setup.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2 🎨 Layout System
+            p
+              | Pug-based layout structure with reusable header,
+              | footer and optional sidebar layouts.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2 🌍 Runtime Services
+            p
+              | ThemeService, TranslationService and ApiService
+              | included via shared npm packages.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2 📦 Clean Architecture
+            p
+              | CLI is only a generator. Generated project
+              | has no runtime dependency on the CLI.
+
+  // =============================
+  // Project Structure Section
+  // =============================
+
+  section.section
+    .container
+      h2.title-h2.m-b-2 Project Structure
+      .card.m-b-2
+        +code('text')
+          | src/
+          |   assets/
+          |     i18n/
+          |     icons/
+          |     images/
+          |     scripts/
+          |     styles/
+          |   views/
+          |     layout/
+          |     mixins/
+          |     pages/
+
+      .card
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Add new pages in:
+          +code('text-inline') views/pages
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Add translations in:
+          +code('text-inline') assets/i18n
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Use aliases like:
+          +code('text-inline') @styles
+          +code('text-inline') @scripts
+          +code('text-inline') @images
