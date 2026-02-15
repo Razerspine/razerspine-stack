@@ -1,10 +1,36 @@
 {
   "name": "webpack-starter-monorepo",
+  "version": "1.0.0",
   "private": true,
-  "workspaces": ["packages/*"],
+  "description": "Monorepo for create-webpack-starter CLI and official Pug-based webpack starter templates.",
+  "keywords": [
+    "webpack",
+    "starter",
+    "pug",
+    "scss",
+    "less",
+    "typescript",
+    "javascript",
+    "monorepo",
+    "cli",
+    "frontend"
+  ],
+  "author": "Razerspine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+  },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "npm run build -ws",
     "dev:cli": "npm run dev -w create-webpack-starter",
+    "build:cli": "npm run build -w create-webpack-starter",
     "test:e2e": "npm run test:e2e -w create-webpack-starter"
   }
 }
