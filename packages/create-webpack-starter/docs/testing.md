@@ -1,84 +1,102 @@
 # Testing
 
-This project uses **end-to-end (E2E) tests** to verify real CLI behavior.
+This project uses **end-to-end (E2E) tests** to validate real CLI behavior.
 
-The goal of these tests is to simulate how a real user interacts with
-`create-webpack-starter` via `npx`, including file system side effects.
+Since this is a CLI tool, correctness is defined by:
+
+- filesystem side effects
+- argument validation
+- template resolution
+- real process execution
 
 ---
 
-## Test structure
+## Test Structure
 
-```md
+```
 e2e/
-├── basic.test.js # Basic project creation
-├── template.test.js # Explicit template selection
-├── dry-run.test.js # --dry-run behavior
-├── invalid-template.test.js # Invalid template handling
-├── style-script.test.js # --style + --script resolution
+├── basic.test.js
+├── partial-flags.test.js
+├── dry-run.test.js
+├── unknown-option.test.js
+├── style-script.test.js
 ├── constants/
-│ └── temp-prefix.js # Prefix for temp directories
+│   └── temp-prefix.js
 ├── helpers/
-│ ├── run-cli.js # Spawns CLI process
-│ ├── temp-dir.js # Creates isolated temp directory
-│ └── cleanup.js # Cleans up old temp directories
+│   ├── run-cli.js
+│   ├── temp-dir.js
+│   └── cleanup.js
 └── package.json
 ```
 
-Some tests use `--template` explicitly to ensure backward compatibility
-and non-interactive behavior.
+---
 
-Other tests verify the new recommended workflow using:
+## What Is Tested
 
-- `--style`
-- `--script`
+### Core Behavior
 
-This ensures that template resolution logic remains stable over time.
+- Basic project creation
+- Feature-based template resolution
+- `--style` + `--script` validation
+- Partial flag rejection
+- Unknown option handling
+- `--dry-run` behavior
+
+### Validation Rules
+
+- `--style` and `--script` must be provided together
+- Unknown flags cause the CLI to exit with an error
+- Template resolution is fully feature-driven
 
 ---
 
-## Key principles
+## Testing Principles
 
-- Tests invoke the CLI **exactly as a user would**  
-  (no direct imports of internal modules).
-- CLI arguments always represent **project names**, not absolute paths.
-- The working directory (`cwd`) controls where the project is created.
-- Each test runs in an isolated temporary directory.
-- All temporary directories share a common prefix.
-
----
-
-## Temporary directories
-
-All test-created directories use the prefix: `create-webpack-starter`
-A cleanup script removes stale directories from `/tmp` before and after tests.
+- CLI is invoked exactly like a user would via `node dist/index.js`
+- No internal module imports are used
+- Tests run in isolated temporary directories
+- CLI arguments represent project names, not absolute paths
+- Working directory (`cwd`) controls where projects are created
 
 ---
 
-## Running tests
+## Temporary Directories
+
+All test-created directories use the prefix:
+
+```
+create-webpack-starter-*
+```
+
+A cleanup script removes stale directories from `/tmp`
+before and after test execution.
+
+---
+
+## Running Tests
 
 ```bash
 npm run test:e2e
 ```
 
-#### This command:
-* Cleans up old temp directories 
-* Runs all E2E tests sequentially
-* Cleans up again after completion
+This command:
 
-#### You can also run cleanup manually:
-
-```bash
-npm run test:cleanup
-```
+1. Cleans up old temporary directories
+2. Builds the CLI
+3. Runs all E2E tests sequentially
+4. Cleans up again after completion
 
 ---
 
-## Why E2E only?
+## Why E2E Only?
 
-Since this is a CLI tool, behavior matters more than internal structure.
-E2E tests ensure that:
-* prompts work
-* files are created correctly
-* flags behave as expected
-* real-world usage remains stable over time
+CLI correctness is behavioral.
+
+Unit tests cannot guarantee:
+
+- correct argument parsing
+- real template copying
+- actual filesystem results
+- proper process exit codes
+
+E2E tests ensure real-world usage remains stable over time.

@@ -1,33 +1,45 @@
 ## Testing
 
-### Test Strategy
+### Strategy
 
 This repository uses **end-to-end (E2E) testing** for the CLI.
 
-Unit tests are intentionally avoided for CLI behavior, as correctness is defined by:
+Unit tests are intentionally avoided for CLI behavior.
 
-* filesystem side-effects
-* real dependency installation
-* real template copying
+Correctness is defined by:
+
+- filesystem side effects
+- template copying
+- argument validation
+- process exit codes
+
+---
 
 ### E2E Scope
 
 E2E tests validate:
 
-* basic project creation
-* template selection
-* `--dry-run` behavior
-* invalid template handling
+- basic project creation
+- feature-based template resolution
+- partial flag validation
+- unknown option handling
+- `--dry-run` behavior
+
+---
 
 ### Temporary Directories
 
-Tests create projects in OS temp directories using a fixed prefix:
+Tests create projects in OS temporary directories
+using a fixed prefix:
 
 ```
 create-webpack-starter-*
 ```
 
-A cleanup helper removes all matching directories before and after test runs.
+A cleanup helper removes all matching directories
+before and after test runs.
+
+---
 
 ### Commands
 
@@ -37,6 +49,7 @@ npm run test:e2e
 
 This command:
 
-1. Cleans temp directories
-2. Runs all E2E tests sequentially
-3. Cleans temp directories again
+1. Cleans temporary directories
+2. Builds the CLI
+3. Runs all E2E tests sequentially
+4. Cleans temporary directories again
