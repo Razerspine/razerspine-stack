@@ -5,13 +5,22 @@
 ### Breaking
 
 - Removed deprecated `--template` option
-- Template selection is now strictly feature-based (`--style + --script`)
+- Template selection is now strictly feature-based (`--style` + `--script`)
 - CLI no longer supports explicit template selection
 
+### Added
+
+- New E2E tests:
+  - partial flag validation
+  - unknown option handling
+- Improved CLI contract validation
+
 ### Improved
+
 - Simplified CLI logic
-- Reduced surface API
+- Reduced public surface API
 - Fully feature-driven UX
+- More robust E2E coverage
 
 ---
 
