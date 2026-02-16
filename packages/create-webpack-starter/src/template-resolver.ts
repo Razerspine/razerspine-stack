@@ -12,8 +12,10 @@ export function resolveTemplateKey(
 
     if (!style || !script) return null;
 
+    type FeatureKey = `${'scss' | 'less'}:${'js' | 'ts'}`;
+
     // canonical mapping
-    const map: Record<string, TemplateKey> = {
+    const map: Record<FeatureKey, TemplateKey> = {
         'scss:js': 'pug-scss-js',
         'scss:ts': 'pug-scss-ts',
         'less:js': 'pug-less-js',

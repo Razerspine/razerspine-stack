@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.0] - 2026-02-16
+
+### Breaking
+
+- Removed deprecated `--template` option
+- Template selection is now strictly feature-based (`--style + --script`)
+- CLI no longer supports explicit template selection
+
+### Improved
+- Simplified CLI logic
+- Reduced surface API
+- Fully feature-driven UX
+
+---
+
 ## [0.3.1] - 2026-02-11
 
 ### Added
@@ -20,6 +35,7 @@
 - Existing CI workflows using `--template` continue to work
 - Feature-based selection (`--style + --script`) remains the recommended approach
 
+---
 
 ## [0.3.0] - 2026-02-10
 
@@ -41,6 +57,7 @@
 - No breaking changes for existing users
 - Node.js >= 18 remains required
 
+---
 
 ## [0.2.7] - 2026-02-09
 
@@ -59,6 +76,7 @@
 - No changes to CLI public API or user-facing commands
 - This release focuses on runtime compatibility, CI stability, and long-term Node.js support
 
+---
 
 ## [0.2.6] - 2026-02-08
 
@@ -74,6 +92,7 @@
 - No changes to CLI API or user-facing commands
 - Templates remain fully standalone after generation
 
+---
 
 ## [0.2.4 - 0.2.5] - 2026-02-07
 
@@ -94,6 +113,7 @@
 - No changes to CLI runtime behavior
 - This release focuses on test stability and maintainability
 
+---
 
 ## [0.2.3] - 2026-02-06
 
@@ -108,6 +128,7 @@
 - This release stabilizes documentation visibility for mono-repo setups
 - No functional changes to CLI behavior
 
+---
 
 ## [0.2.2] - 2026-02-06
 
@@ -116,6 +137,8 @@
 
 ### Notes
 - Republished package as **0.2.2**.
+
+---
 
 ## [0.2.1] - 2026-02-06
 
@@ -126,6 +149,7 @@
 ### Changed
 - Included `docs`, `README.md`, `LICENSE`, and `CHANGELOG.md` in npm package
 
+---
 
 ## [0.2.0] - 2026-02-06
 

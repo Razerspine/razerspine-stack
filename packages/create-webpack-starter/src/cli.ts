@@ -4,9 +4,8 @@ import {templates, TemplateKey} from './templates';
 import {resolveTemplateKey} from './template-resolver';
 
 type CliOptions = {
-    template?: TemplateKey;
     style?: 'scss' | 'less';
-    script: 'js' | 'ts';
+    script?: 'js' | 'ts';
     install?: boolean;
     dryRun?: boolean;
 };
@@ -21,7 +20,6 @@ export async function getCliContext(): Promise<{
 
     program
         .argument('[project-name]', 'Project name')
-        .option('-t, --template <template>', 'Template name')
         .option('--style <style>', 'Style preprocessor (scss | less)')
         .option('--script <script>', 'Script language (js | ts)')
         .option('--no-install', 'Skip npm install')
@@ -48,22 +46,14 @@ export async function getCliContext(): Promise<{
         projectName = answer.projectName;
     }
 
-    let template: TemplateKey | undefined = options.template;
-
-    if (options.template) {
-        console.warn('⚠️  Warning: --template is deprecated. Use --style and --script instead.');
-    }
+    let template: TemplateKey | undefined;
 
     if (hasStyle !== hasScript) {
         throw new Error('Both --style and --script must be provided together');
     }
 
-    if (options.template && options.style && options.script) {
-        console.warn('⚠️  Warning: --template overrides --style and --script');
-    }
-
     // --- RESOLVE FROM FLAGS (--style + --script)
-    if (!template && options.style && options.script) {
+    if (hasStyle && hasScript) {
         const resolved = resolveTemplateKey({
             style: options.style,
             script: options.script
