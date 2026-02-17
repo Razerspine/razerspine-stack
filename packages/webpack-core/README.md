@@ -12,6 +12,7 @@ template-driven builds using `pug-plugin`.
 Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use.
 
 Please use:
+
 ```bash
 npm install @razerspine/webpack-core@^1.2.1
 ```
@@ -29,10 +30,15 @@ templates, but can also be used independently.
 ## Design principles
 
 - **Webpack is responsible for**: module resolution, aliases (`resolve.alias`), and asset handling.
-- **Flexibility:** Since v1.2.1, you can override any part of the dev or prod configuration using an optional `options` argument.
+- **Flexibility:** Since v1.2.1, you can override any part of the dev or prod configuration using an optional `options`
+  argument.
 - **Stability:** `pug-plugin` is used to compile templates, and asset paths are resolved by webpack.
-- **Template-driven**: Webpack JS entry is intentionally disabled. Builds are driven by template entries in `src/views/pages`.
-- **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent asset resolution issues in templates.
+- **Template-driven**: Webpack JS entry is intentionally disabled. Builds are driven by template entries in
+  `src/views/pages`.
+- **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent
+  asset resolution issues in templates.
+- **Validated configuration layer (v1.2.2+)**: Core options are validated before build initialization to prevent silent
+  runtime failures.
 
 ---
 
@@ -41,9 +47,23 @@ templates, but can also be used independently.
 - **Pug templates support** with auto-discovery.
 - **JavaScript / TypeScript** integration.
 - **SCSS / Less** styling support.
-- **Recursive File Watching**: Dev server watches all changes in src/**/*.
+- **Recursive File Watching**: Dev server watches all changes in `src/**/*`.
 - **SPA-friendly Dev Server**: Integrated historyApiFallback (redirects to 404.html).
 - **Customizable**: Easily override devServer or optimization settings.
+- **Configuration validation layer**
+- **Automatic browser open in development (v1.2.2+)**
+
+---
+
+## What’s New in v1.2.2
+
+- Added `validateCoreOptions()` inside `createBaseConfig`
+  - Validates `mode`, `scripts`, and `styles`
+  - Ensures templates entry directory exists before Webpack starts
+- Added `debug` flag support in base config
+- Dev server now opens the browser automatically (`open: true` by default)
+
+> No breaking changes were introduced.
 
 ---
 
@@ -111,7 +131,7 @@ if (mode === 'development') {
 if (mode === 'production') {
   return createProdConfig(baseConfig, {
     performance: {
-        hints: 'warning',
+      hints: 'warning',
     }
   });
 }
@@ -121,11 +141,30 @@ if (mode === 'production') {
 
 ## API Reference
 
+`createBaseConfig(options)`
+
+Core configuration factory.
+
+**Options include**:
+
+- `mode` — `'development' | 'production'`
+- `scripts` — `'js' | 'ts'`
+- `styles` — `'scss' | 'less'`
+- `templates.entry` — Path to template pages directory
+- `resolve.alias` — Webpack aliases
+- `debug — (v1.2.2+)` Enables debug mode support
+
+All options are validated before initialization.
+
+---
+
 `createDevConfig(baseConfig, options?)`
 
 - `baseConfig`: The configuration returned by createBaseConfig.
 - `options`: (Optional) webpack-dev-server configuration object.
 - **Default behavior**: Watches `src/**/*`, uses port `8080`, and rewrites 404s to `/404.html`.
+
+---
 
 `createProdConfig(baseConfig, options?)`
 
@@ -134,4 +173,5 @@ if (mode === 'production') {
 - **Default behavior**: Enables source maps, minification, and disables `splitChunks` for template compatibility.
 
 ## 📄 License
+
 This project is licensed under the ISC License.
