@@ -29,7 +29,7 @@ module.exports = (env = {}, argv = {}) => {
   });
 
   if (mode === "development") {
-    return createDevConfig(baseConfig, { open: true });
+    return createDevConfig(baseConfig);
   }
 
   return createProdConfig(baseConfig);
