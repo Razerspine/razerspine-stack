@@ -35,5 +35,6 @@ export function createBaseConfig(options: ConfigOptionType) {
             extensions: ['.ts', '.tsx', '.js', '.json'],
             alias: options.resolve?.alias ?? {}
         },
+        debug: true,
     };
 }

@@ -12,6 +12,7 @@ export function createDevConfig(
 ): DevConfig {
     const defaultDevServer: DevServerConfiguration = {
         hot: false,
+        open: true,
         liveReload: true,
         compress: true,
         port: 8080,
