@@ -60,7 +60,6 @@ templates, but can also be used independently.
 - Added `validateCoreOptions()` inside `createBaseConfig`
   - Validates `mode`, `scripts`, and `styles`
   - Ensures templates entry directory exists before Webpack starts
-- Added `debug` flag support in base config
 - Dev server now opens the browser automatically (`open: true` by default)
 
 > No breaking changes were introduced.
@@ -152,7 +151,6 @@ Core configuration factory.
 - `styles` — `'scss' | 'less'`
 - `templates.entry` — Path to template pages directory
 - `resolve.alias` — Webpack aliases
-- `debug — (v1.2.2+)` Enables debug mode support
 
 All options are validated before initialization.
 

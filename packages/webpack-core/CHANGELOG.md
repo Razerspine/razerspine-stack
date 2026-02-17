@@ -8,7 +8,7 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
-## [1.2.2] - 2026-02-17
+## [1.2.3] - 2026-02-17
 
 ### Added
 
@@ -16,8 +16,6 @@ required to ensure correct behavior in both development and production modes.
   - Validates `mode`, `scripts`, and `styles` values.
   - Ensures the templates entry directory exists before Webpack initialization.
   - Prevents silent runtime failures in pug-plugin due to invalid configuration.
-- **Base Config Debug Flag**: Added `debug` option support in `createBaseConfig` for future diagnostics and
-  configuration inspection improvements.
 
 ### Changed
 
