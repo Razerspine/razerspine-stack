@@ -10,66 +10,50 @@ append script
 block content
   section.section.m-b-4
     .container
-      h1.title-h1.m-b-2 Webpack Starter Template
-      p.title-h5.slate-500 Pug + Less + TS - Production-ready foundation
+      h1.title-h1.m-b-2.text-gradient-deep.text-center Webpack Starter Template
+      p.title-h5.slate-500.text-center Pug + Less + TS - Production-ready foundation
 
-  // =============================
-  // What's Included
-  // =============================
+  section.section.m-b-4
+    .container
+      .card
+        h3.title-h4.m-b-1 🟢 App is running successfully
+        p.slate-500 Webpack development server is active and ready.
 
   section.section.m-b-4
     .container
       h2.title-h2.m-b-2 What’s Included
-      .row.m-b-2
+      .row.row--gap-25
         .col-12.col-md-6
           .card
-            h3.title-h4.m-b-2 ⚙ Webpack Core
+            h3.title-h4.m-b-2.text-gradient-soft Webpack Core
             p
               | Stable, minimal webpack configuration with alias support,
               | environment separation and production-ready setup.
 
         .col-12.col-md-6
           .card
-            h3.title-h4.m-b-2 🎨 Layout System
+            h3.title-h4.m-b-2.text-gradient-soft Layout System
             p
               | Pug-based layout structure with reusable header,
               | footer and optional sidebar layouts.
 
         .col-12.col-md-6
           .card
-            h3.title-h4.m-b-2 🌍 Runtime Services
+            h3.title-h4.m-b-2.text-gradient-soft Runtime Services
             p
               | ThemeService, TranslationService and ApiService
               | included via shared npm packages.
 
         .col-12.col-md-6
           .card
-            h3.title-h4.m-b-2 📦 Clean Architecture
+            h3.title-h4.m-b-2.text-gradient-soft Clean Architecture
             p
               | CLI is only a generator. Generated project
               | has no runtime dependency on the CLI.
 
-  // =============================
-  // Project Structure Section
-  // =============================
-
   section.section
     .container
-      h2.title-h2.m-b-2 Project Structure
-      .content.m-b-2
-        +code('text')
-          | src/
-          |   assets/
-          |     i18n/
-          |     icons/
-          |     images/
-          |     scripts/
-          |     styles/
-          |   views/
-          |     layout/
-          |     mixins/
-          |     pages/
-
+      h1.title-h2.m-b-2 What next
       .content
         .d-flex.flex-row
           p.title-h6.m-r-1 Add new pages in:
@@ -79,6 +63,8 @@ block content
           +code('text-inline') assets/i18n
         .d-flex.flex-row
           p.title-h6.m-r-1 Use aliases like:
+          +code('text-inline') @views
           +code('text-inline') @styles
           +code('text-inline') @scripts
           +code('text-inline') @images
+          +code('text-inline') @icons

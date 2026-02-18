@@ -1,5 +1,3 @@
-include ~pug-ui-kit/btn.pug
-
 - const gitHubLink = "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/create-webpack-starter#create-webpack-starter";
 
 header.header
@@ -8,17 +6,6 @@ header.header
       .logo
         img.logo__icon(src='@images/logo.svg' alt='logo' loading='lazy')
     .header__col
-      +btn(
-        null,
-        'icon',
-        'icon-medium',
-        {
-          type: 'button',
-          id: 'themeSwitcher',
-          'aria-label': 'Toggle theme'
-        },
-        'light-mode'
-      )
       a.btn.btn--icon.btn--icon-medium(href=gitHubLink target='_blank')
         svg.button-icon.icon--icon-medium(role="img")
           use(xlink:href="#icon-git-hub" href="#icon-git-hub")
