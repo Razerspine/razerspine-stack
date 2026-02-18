@@ -1,6 +1,9 @@
 extends @views/layout/simple.pug
 include @views/mixins/code.pug
 
+block variables
+  - title = 'Template pug-less-js';
+
 append style
   link(rel='stylesheet' href='./style.less')
 
@@ -10,14 +13,14 @@ append script
 block content
   section.section.m-b-4
     .container
-      h1.title-h1.m-b-2.text-gradient-deep.text-center Webpack Starter Template
-      p.title-h5.slate-500.text-center Pug + Less + JS - Production-ready foundation
+      h1.title-h1.m-b-1.text-gradient-deep.text-center Webpack Starter Template
+      p.title-h5.slate-500.text-center Production-ready foundation
 
   section.section.m-b-4
     .container
-      .card
-        h3.title-h4.m-b-1 🟢 App is running successfully
-        p.slate-500 Webpack development server is active and ready.
+      .card.card--padding.d-flex.flex-center
+        h3.title-h5.text-center.m-b-1 🟢 App is running successfully
+        p.slate-500.text-center Webpack development server is active and ready.
 
   section.section.m-b-4
     .container
