@@ -44,12 +44,13 @@ Non-minified:
 
 ✔ Includes vendor prefixes  
 ✔ Cross-browser ready  
-✔ No Sass configuration required
+✔ Dark mode support via `html[data-theme="dark"]`
 
 ---
 
 ## 2️⃣ Use SCSS (Customizable)
 
+The UI Kit uses `!default` flags, allowing you to override any part of the theme.
 ```scss
 @use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
 ```
@@ -83,16 +84,14 @@ Override variables:
 
 # 🎨 Styling System
 
-The UI Kit is a full style system including:
+##### The UI Kit is a full style system including:
 
-- Base reset
-- Design tokens (variables, typography, breakpoints)
-- Themes (light / dark)
-- Layout system
-- UI components
-- Utilities & helpers
+- **Design Tokens**: Comprehensive palette (50-900) for Brand and Neutral colors.
+- **Themes**: Built-in Light and Dark modes using CSS Variables.
+- **Base reset**: Modern CSS reset.
+- **Layout & Components**: Grid system and reusable UI elements.
 
-The main entry file:
+#### The main entry file:
 
 SCSS:
 ```scss
@@ -103,6 +102,17 @@ LESS:
 ```less
 @import "@razerspine/pug-ui-kit/less/ui-kit";
 ```
+
+#### Theme Variables (CSS)
+
+The system maps SCSS/LESS tokens to native CSS variables (example):
+
+| CSS Variable      | Default (Light)     | Default (Dark)       |
+|-------------------|---------------------|----------------------|
+| `--brand-500`     | `#6366f1` (Indigo)  | Inherited            |
+| `--bg-color`      | `#fafafa` (Zinc 50) | `#09090b` (Zinc 950) |
+| `--text-primary`  | `#18181b`           | `#f4f4f5`            |
+| `--border-subtle` | `#e4e4e7`           | `#27272a`            |
 
 ---
 
@@ -270,15 +280,15 @@ include ~pug-ui-kit/btn.pug
 +btn('Save', 'primary', 'small', { type: 'submit' })
 ```
 
-Parameters:
+#### Parameters:
 
-| Param | Type | Default | Description |
-|-------|------|----------|-------------|
-| text | String | null | Button text |
-| variant | String | 'primary' | Style modifier |
-| size | String | 'medium' | Size modifier |
-| attrs | Object | `{ type: 'button' }` | Extra attributes |
-| iconName | String | null | SVG sprite icon |
+| Param    | Type   | Default              | Description      |
+|----------|--------|----------------------|------------------|
+| text     | String | null                 | Button text      |
+| variant  | String | 'primary'            | Style modifier   |
+| size     | String | 'medium'             | Size modifier    |
+| attrs    | Object | `{ type: 'button' }` | Extra attributes |
+| iconName | String | null                 | SVG sprite icon  |
 
 ---
 
@@ -361,7 +371,7 @@ include ~pug-ui-kit/single-select.pug
 
 ```
 mixins/   → Pug components
-scss/     → Complete SCSS system
+scss/     → Complete SCSS system (with !default variables)
 less/     → Complete LESS system
 style/    → Compiled CSS output
 index.js  → Path resolution helper
