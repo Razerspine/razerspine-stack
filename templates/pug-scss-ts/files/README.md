@@ -21,6 +21,17 @@ npm run preview
 
 ---
 
+## Security Notice
+
+Dev-only audit warnings may appear due to transitive dependencies
+of build tools (e.g. glob / minimatch).
+
+These do not affect runtime or production bundles.
+
+Production dependencies are continuously monitored and must remain vulnerability-free.
+
+---
+
 ## 📂 Project Structure
 
 ```
