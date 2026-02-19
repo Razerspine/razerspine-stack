@@ -30,7 +30,7 @@
     "ts-loader": "^9.5.4"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.4.0",
+    "@razerspine/pug-ui-kit": "^1.5.0",
     "@razerspine/starter-core-scripts": "^0.2.0"
   }
 }
