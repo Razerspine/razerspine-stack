@@ -8,6 +8,33 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.3.0] - 2026-02-19
+
+### Changed
+
+- **Peer Dependency**: Updated `pug-plugin` peer dependency range from `^5` to `^5 || ^6`.
+  - Enables compatibility with `pug-plugin@6`.
+  - Removes installation conflicts when templates upgrade to the latest pug-plugin version.
+  - Preserves backward compatibility with existing templates using v5.
+- **Internal Dev Alignment**: Updated local `devDependencies` to use `pug-plugin@^6.0.0` for internal testing and
+  validation.
+
+### Security
+
+- Resolves npm audit warnings caused by transitive dependencies
+  (`js-beautify → editorconfig → glob → minimatch`).
+- No runtime changes were introduced.
+- No production bundle impact.
+
+### Notes
+
+- This release does **not introduce breaking changes**.
+- Public API remains unchanged.
+- Fully backward compatible with existing templates.
+- Recommended update before upgrading templates to `pug-plugin@6`.
+
+---
+
 ## [1.2.3] - 2026-02-17
 
 ### Added
