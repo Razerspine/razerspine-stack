@@ -1,30 +1,64 @@
+// --- Design Tokens (Variables) ---
+
+// Brand Palette (Indigo)
+$brand-50: #eef2ff !default;
+$brand-100: #e0e7ff !default;
+$brand-200: #c7d2fe !default;
+$brand-300: #a5b4fc !default;
+$brand-400: #818cf8 !default;
+$brand-500: #6366f1 !default;
+$brand-600: #4f46e5 !default;
+$brand-700: #4338ca !default;
+$brand-800: #3730a3 !default;
+$brand-900: #312e81 !default;
+
+// Neutral Palette (Zinc)
+$slate-50: #fafafa !default;
+$slate-100: #f4f4f5 !default;
+$slate-200: #e4e4e7 !default;
+$slate-300: #d4d4d8 !default;
+$slate-400: #a1a1aa !default;
+$slate-500: #71717a !default;
+$slate-600: #52525b !default;
+$slate-700: #3f3f46 !default;
+$slate-800: #27272a !default;
+$slate-900: #18181b !default;
+
+// Status
+$success: #10b981 !default;
+$warning: #f59e0b !default;
+$error: #ef4444 !default;
+$info: #0ea5e9 !default;
+
+// --- Root CSS Variables ---
+
 :root {
-  --brand-50: #eff6ff;
-  --brand-100: #dbeafe;
-  --brand-200: #bfdbfe;
-  --brand-300: #93c5fd;
-  --brand-400: #60a5fa;
-  --brand-500: #3b82f6;
-  --brand-600: #2563eb;
-  --brand-700: #1d4ed8;
-  --brand-800: #1e40af;
-  --brand-900: #1e3a8a;
+  --brand-50: #{$brand-50};
+  --brand-100: #{$brand-100};
+  --brand-200: #{$brand-200};
+  --brand-300: #{$brand-300};
+  --brand-400: #{$brand-400};
+  --brand-500: #{$brand-500};
+  --brand-600: #{$brand-600};
+  --brand-700: #{$brand-700};
+  --brand-800: #{$brand-800};
+  --brand-900: #{$brand-900};
 
-  --slate-50: #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-400: #94a3b8;
-  --slate-500: #64748b;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
+  --slate-50: #{$slate-50};
+  --slate-100: #{$slate-100};
+  --slate-200: #{$slate-200};
+  --slate-300: #{$slate-300};
+  --slate-400: #{$slate-400};
+  --slate-500: #{$slate-500};
+  --slate-600: #{$slate-600};
+  --slate-700: #{$slate-700};
+  --slate-800: #{$slate-800};
+  --slate-900: #{$slate-900};
 
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #0ea5e9;
+  --success: #{$success};
+  --warning: #{$warning};
+  --error: #{$error};
+  --info: #{$info};
 
   --bg-color: var(--slate-50);
   --bg-surface: #ffffff;
@@ -43,7 +77,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-outline: 0 0 12px rgba(0, 0, 0, 0.1);
 
-  --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   --checkbox-icon: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
   --radio-icon: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
 }
