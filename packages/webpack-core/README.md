@@ -1,4 +1,8 @@
 # @razerspine/webpack-core
+[![npm version](https://img.shields.io/npm/v/@razerspine/webpack-core.svg)](https://www.npmjs.com/package/@razerspine/webpack-core)
+[![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
+[![license](https://img.shields.io/npm/l/@razerspine/webpack-core.svg)](./LICENSE)
+
 
 Core webpack configuration and loaders for **Pug-based** projects.
 
