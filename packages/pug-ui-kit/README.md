@@ -1,5 +1,9 @@
 # @razerspine/pug-ui-kit
 
+[![npm version](https://img.shields.io/npm/v/@razerspine/pug-ui-kit.svg)](https://www.npmjs.com/package/@razerspine/pug-ui-kit)
+[![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
+[![license](https://img.shields.io/npm/l/@razerspine/pug-ui-kit.svg)](./LICENSE)
+
 Professional, modular UI Kit for **Pug (Jade)** templates.  
 Includes reusable mixins and a complete styling system (SCSS / LESS / compiled CSS).
 
