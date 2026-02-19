@@ -1,5 +1,9 @@
 # @razerspine/starter-core-scripts
 
+[![npm version](https://img.shields.io/npm/v/@razerspine/starter-core-scripts.svg)](https://www.npmjs.com/package/@razerspine/starter-core-scripts)
+[![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
+[![license](https://img.shields.io/npm/l/@razerspine/starter-core-scripts.svg)](./LICENSE)
+
 Core frontend services used by official webpack starter templates.
 
 This package provides production-ready utilities for:
