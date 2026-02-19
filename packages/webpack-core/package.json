@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/webpack-core",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Core webpack config and loaders for starter templates",
   "keywords": [
     "webpack",
@@ -10,6 +10,15 @@
   ],
   "license": "ISC",
   "author": "Razerspine",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "directory": "packages/webpack-core"
+  },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/webpack-core#readme",
+  "bugs": {
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+  },
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

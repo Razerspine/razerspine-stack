@@ -8,6 +8,16 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.4.1] - 2026-02-19
+
+### Changed
+
+- **Package Metadata**: Updated `package.json` to reflect its place within the monorepo.
+  - Added `repository` information pointing to the specific subdirectory.
+  - Added `homepage` and `bugs` URLs for better transparency and issue tracking.
+
+---
+
 ## [1.4.0] - 2026-02-19
 
 ### Changed
