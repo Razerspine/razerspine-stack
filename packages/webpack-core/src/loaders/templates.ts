@@ -1,33 +1,22 @@
 import PugPlugin from 'pug-plugin';
-import path from 'path';
 import fs from 'fs';
 import {ModeType} from '../types/mode-type';
 import {AppType} from '../types/app-type';
 
 export function templatesLoader(options: {
-    entry?: string;
+    entry: string;
     mode: ModeType;
-    appType?: AppType;
+    appType: AppType;
 }) {
-    const appType = options.appType ?? 'mpa';
+    const {entry, appType} = options;
 
-    const defaultEntry =
-        appType === 'spa'
-            ? 'src/views/app.pug'
-            : 'src/views/pages';
-
-    const resolvedEntry = path.resolve(
-        process.cwd(),
-        options.entry ?? defaultEntry
-    );
-
-    if (!fs.existsSync(resolvedEntry)) {
+    if (!fs.existsSync(entry)) {
         throw new Error(
-            `[webpack-core] Templates entry not found: ${resolvedEntry}`
+            `[webpack-core] Templates entry not found: ${entry}`
         );
     }
 
-    const stats = fs.statSync(resolvedEntry);
+    const stats = fs.statSync(entry);
 
     if (appType === 'spa' && !stats.isFile()) {
         throw new Error(
@@ -43,9 +32,9 @@ export function templatesLoader(options: {
 
     return [
         new PugPlugin({
-            entry: resolvedEntry,
+            entry,
             loaderOptions: {
-                method: 'compile',
+                method: 'compile'
             },
             filename: ({chunk}: any) => {
                 if (appType === 'spa') {
@@ -56,14 +45,12 @@ export function templatesLoader(options: {
                 if (name === 'home') name = 'index';
                 return `${name}.html`;
             },
-
             js: {
                 filename:
                     options.mode === 'production'
                         ? 'js/[name].[contenthash:8].js'
                         : 'js/[name].js',
             },
-
             css: {
                 filename:
                     options.mode === 'production'

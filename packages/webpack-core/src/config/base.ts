@@ -3,21 +3,19 @@ import {assetsLoader} from '../loaders/assets';
 import {scriptsLoader} from '../loaders/scripts';
 import {stylesLoader} from '../loaders/styles';
 import {templatesLoader} from '../loaders/templates';
-import {ModeType} from '../types/mode-type';
-import {AppType} from '../types/app-type';
 import {ConfigOptionType} from '../types/config-option-type';
 import {validateCoreOptions} from '../validation/validate-core-options';
+import {normalizeCoreOptions} from '../utils/normalize-core-options';
 
 export function createBaseConfig(options: ConfigOptionType) {
     validateCoreOptions(options);
-    const mode: ModeType = options.mode ?? 'development';
-    const appType: AppType = options.appType ?? 'mpa';
+    const normalized = normalizeCoreOptions(options);
 
     return {
-        mode,
+        mode: normalized.mode,
         context: process.cwd(),
         _meta: {
-            appType,
+            appType: normalized.appType,
         },
         output: {
             path: path.join(process.cwd(), 'dist'),
@@ -26,20 +24,20 @@ export function createBaseConfig(options: ConfigOptionType) {
         module: {
             rules: [
                 assetsLoader(),
-                scriptsLoader(options),
-                stylesLoader(options),
+                scriptsLoader(normalized),
+                stylesLoader(normalized),
             ],
         },
         plugins: [
             ...templatesLoader({
-                entry: options.templates?.entry,
-                mode,
-                appType,
+                entry: normalized.templates.entry,
+                mode: normalized.mode,
+                appType: normalized.appType,
             }),
         ],
         resolve: {
             extensions: ['.ts', '.tsx', '.js', '.json'],
-            alias: options.resolve?.alias ?? {}
+            alias: normalized.resolve.alias,
         },
     };
 }
