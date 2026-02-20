@@ -8,6 +8,54 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.5.0] - 2026-02-20
+
+### Added
+
+- **SPA Support (Experimental Stable API)**
+  - Introduced new `appType` option: `'mpa' | 'spa'`
+  - `mpa` remains the default mode (template directory driven)
+  - `spa` mode supports a single Pug entry file and outputs `index.html`
+  - Enables SPA-style projects while preserving template-driven architecture
+
+- **Options Normalization Layer**
+  - Introduced `normalizeCoreOptions()` (internal utility)
+  - Centralized default resolution for:
+    - `mode`
+    - `appType`
+    - `templates.entry`
+    - `resolve.alias`
+  - Eliminates duplicated fallback logic across config layers
+  - Establishes a single source of truth for configuration defaults
+
+- **Improved Templates Validation**
+  - Validation logic now differentiates between:
+    - Directory entry (MPA)
+    - Single file entry (SPA)
+  - Prevents incorrect entry usage at build initialization
+
+### Changed
+
+- **Architecture Refactor**
+  - Removed default resolution logic from `templatesLoader`
+  - Simplified `validateCoreOptions` to focus only on value validation
+  - Moved filesystem validation responsibility into template loader
+  - Improved internal separation of concerns
+
+- **Cleaner Internal API Design**
+  - Base config now operates on normalized options
+  - Reduced configuration coupling
+  - Improved long-term scalability (SSR / future app types)
+
+### Notes
+
+- No breaking changes were introduced.
+- Default behavior remains `mpa`.
+- Fully backward compatible with existing templates.
+- SPA mode is stable but recommended for controlled usage.
+
+---
+
 ## [1.4.1] - 2026-02-19
 
 ### Changed

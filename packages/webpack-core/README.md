@@ -11,38 +11,63 @@ template-driven builds using `pug-plugin`.
 
 ---
 
-## ⚠️ Important
-
-Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use.
-
-Please use:
-
-```bash
-npm install @razerspine/webpack-core@^1.2.1
-```
-
 ## Designed for
 
-This package is developed as part of the  
+Part of the
 [Webpack Starter Monorepo](https://github.com/Razerspine/webpack-starter-monorepo).
 
-It contains shared webpack configuration and loaders used by the starter
-templates, but can also be used independently.
+Can be used independently in any Pug-based project.
 
 ---
 
-## Design principles
+## Key Features
+
+- Pug template-driven builds (no implicit JS entry)
+- Multi-page (MPA) and Single-page (SPA) modes
+- JavaScript or TypeScript support
+- SCSS or Less support
+- Recursive file watching (`src/**/*`)
+- SPA-friendly dev server
+- Config validation layer
+- Centralized options normalization (v1.5.0+)
+- Fully customizable dev & prod configs
+
+---
+
+## Application Modes (v1.5.0+)
+
+### MPA (Default)
+
+```js
+appType: 'mpa'
+```
+
+- `templates.entry` must be a directory
+- Example: `src/views/pages`
+- Each page generates its own HTML file
+
+### SPA
+
+```js
+appType: 'spa'
+```
+
+- `templates.entry` must be a single Pug file
+- Example: `src/views/app.pug`
+- Always outputs: `index.html`
+
+---
+
+## Design Principles
 
 - **Webpack is responsible for**: module resolution, aliases (`resolve.alias`), and asset handling.
-- **Flexibility:** Since v1.2.1, you can override any part of the dev or prod configuration using an optional `options`
-  argument.
-- **Stability:** `pug-plugin` is used to compile templates, and asset paths are resolved by webpack.
-- **Template-driven**: Webpack JS entry is intentionally disabled. Builds are driven by template entries in
-  `src/views/pages`.
-- **Sensible Defaults**: No aggressive production optimizations (like `splitChunks`) are enabled by default to prevent
-  asset resolution issues in templates.
-- **Validated configuration layer (v1.2.2+)**: Core options are validated before build initialization to prevent silent
-  runtime failures.
+- **Template-driven architecture**: Webpack JS entry is intentionally disabled. Builds are driven by Pug template entries.
+- **MPA by default**: Directory-based page generation remains the primary mode.
+- **Optional SPA support (v1.5.0+)**: Single-entry template mode is supported without breaking MPA workflow.
+- **Stability-first production defaults**: No aggressive optimizations (e.g. `splitChunks`) are enabled by default to prevent template asset resolution issues.
+- **Validated configuration layer**: Core options are validated before Webpack initialization.
+- **Centralized option normalization (v1.5.0+)**: Default resolution is handled internally through a normalization layer to avoid configuration drift.
+- **Flexible overrides**: Dev and Prod configs can be extended safely via optional parameters.
 
 ---
 
@@ -56,17 +81,6 @@ templates, but can also be used independently.
 - **Customizable**: Easily override devServer or optimization settings.
 - **Configuration validation layer**
 - **Automatic browser open in development (v1.2.2+)**
-
----
-
-## What’s New in v1.2.2
-
-- Added `validateCoreOptions()` inside `createBaseConfig`
-  - Validates `mode`, `scripts`, and `styles`
-  - Ensures templates entry directory exists before Webpack starts
-- Dev server now opens the browser automatically (`open: true` by default)
-
-> No breaking changes were introduced.
 
 ---
 
@@ -95,6 +109,7 @@ module.exports = (env = {}, argv = {}) => {
 
   const baseConfig = createBaseConfig({
     mode,
+    appType: 'mpa', // or 'spa'
     scripts: 'js', // or 'ts'
     styles: 'scss', // or 'less'
     templates: {
@@ -142,6 +157,22 @@ if (mode === 'production') {
 
 ---
 
+## Architecture Principles
+- Webpack handles module resolution and asset processing
+- PugPlugin handles template compilation
+- No implicit webpack JS entry
+- No aggressive production optimizations by default
+- Options validated before build initialization
+- Defaults resolved through a normalization layer (v1.5.0+)
+
+---
+
+## Stability
+
+Versions prior to 1.1.6 were part of a stabilization phase and are not recommended for production use.
+
+---
+
 ## API Reference
 
 `createBaseConfig(options)`
@@ -173,6 +204,8 @@ All options are validated before initialization.
 - `baseConfig`: The configuration returned by createBaseConfig.
 - `options`: (Optional) Webpack configuration object for production overrides.
 - **Default behavior**: Enables source maps, minification, and disables `splitChunks` for template compatibility.
+
+---
 
 ## 📄 License
 
