@@ -11,25 +11,34 @@ export function templatesLoader(options: {
 }) {
     const appType = options.appType ?? 'mpa';
 
+    const defaultEntry =
+        appType === 'spa'
+            ? 'src/views/app.pug'
+            : 'src/views/pages';
+
     const resolvedEntry = path.resolve(
         process.cwd(),
-        options.entry ?? 'src/views/pages/'
+        options.entry ?? defaultEntry
     );
 
-    if (appType === 'spa') {
-        if (!fs.existsSync(resolvedEntry)) {
-            throw new Error(
-                `[webpack-core] SPA entry file not found: ${resolvedEntry}`
-            );
-        }
+    if (!fs.existsSync(resolvedEntry)) {
+        throw new Error(
+            `[webpack-core] Templates entry not found: ${resolvedEntry}`
+        );
+    }
 
-        const stats = fs.statSync(resolvedEntry);
+    const stats = fs.statSync(resolvedEntry);
 
-        if (stats.isDirectory()) {
-            throw new Error(
-                `[webpack-core] SPA requires a single pug file as templates.entry`
-            );
-        }
+    if (appType === 'spa' && !stats.isFile()) {
+        throw new Error(
+            `[webpack-core] SPA requires a single pug file as templates.entry`
+        );
+    }
+
+    if (appType === 'mpa' && !stats.isDirectory()) {
+        throw new Error(
+            `[webpack-core] MPA requires templates.entry to be a directory`
+        );
     }
 
     return [
