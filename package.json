@@ -32,5 +32,9 @@
     "dev:cli": "npm run dev -w create-webpack-starter",
     "build:cli": "npm run build -w create-webpack-starter",
     "test:e2e": "npm run test:e2e -w create-webpack-starter"
+  },
+  "overrides": {
+    "glob": "13.0.6",
+    "minimatch": "10.2.2"
   }
 }

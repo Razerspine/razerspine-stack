@@ -7,6 +7,32 @@ production-ready webpack projects with Pug, SCSS/Less, JavaScript or TypeScript.
 
 ---
 
+## Dependency Overrides Policy
+
+The monorepo currently enforces explicit overrides for:
+
+- `glob`
+- `minimatch`
+
+These overrides align the toolchain with the latest secure dependency stack
+and mitigate a transitive `minimatch` ReDoS advisory present in older `glob` versions.
+
+Why this exists:
+
+- `js-beautify` depends on `glob@10`
+- `glob@10` pulls older `minimatch`
+- Upstream has not yet updated the dependency range
+
+This override is:
+
+- Build-time only
+- Tested for compatibility
+- Safe for the current toolchain
+
+The override will be removed once upstream packages adopt modern versions.
+
+---
+
 ## Packages
 
 ```text
