@@ -10,6 +10,19 @@ Production-ready webpack starter template using:
 
 ---
 
+## Dependency Alignment Notice
+
+This template includes a temporary dependency override for `glob` and `minimatch`.
+
+The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
+a known `minimatch` ReDoS advisory affecting older transitive versions.
+
+This change does **not** affect runtime behavior and only applies to build-time tooling.
+
+The override will be removed once upstream packages update their dependency ranges.
+
+---
+
 ## 🚀 Getting Started
 
 ```bash

@@ -32,5 +32,9 @@
   "dependencies": {
     "@razerspine/pug-ui-kit": "^1.5.0",
     "@razerspine/starter-core-scripts": "^0.2.0"
+  },
+  "overrides": {
+    "glob": "13.0.6",
+    "minimatch": "10.2.2"
   }
 }
