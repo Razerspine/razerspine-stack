@@ -29,12 +29,12 @@ Can be used independently in any Pug-based project.
 - Recursive file watching (`src/**/*`)
 - SPA-friendly dev server
 - Config validation layer
-- Centralized options normalization (v1.6.0+)
+- Centralized options normalization (v1.7.0+)
 - Fully customizable dev & prod configs
 
 ---
 
-## Application Modes (v1.6.0+)
+## Application Modes (v1.7.0+)
 
 ### MPA (Default)
 
@@ -63,10 +63,10 @@ appType: 'spa'
 - **Webpack is responsible for**: module resolution, aliases (`resolve.alias`), and asset handling.
 - **Template-driven architecture**: Webpack JS entry is intentionally disabled. Builds are driven by Pug template entries.
 - **MPA by default**: Directory-based page generation remains the primary mode.
-- **Optional SPA support (v1.6.0+)**: Single-entry template mode is supported without breaking MPA workflow.
+- **Optional SPA support (v1.7.0+)**: Single-entry template mode is supported without breaking MPA workflow.
 - **Stability-first production defaults**: No aggressive optimizations (e.g. `splitChunks`) are enabled by default to prevent template asset resolution issues.
 - **Validated configuration layer**: Core options are validated before Webpack initialization.
-- **Centralized option normalization (v1.6.0+)**: Default resolution is handled internally through a normalization layer to avoid configuration drift.
+- **Centralized option normalization (v1.7.0+)**: Default resolution is handled internally through a normalization layer to avoid configuration drift.
 - **Flexible overrides**: Dev and Prod configs can be extended safely via optional parameters.
 
 ---
@@ -163,7 +163,7 @@ if (mode === 'production') {
 - No implicit webpack JS entry
 - No aggressive production optimizations by default
 - Options validated before build initialization
-- Defaults resolved through a normalization layer (v1.6.0+)
+- Defaults resolved through a normalization layer (v1.7.0+)
 
 ---
 

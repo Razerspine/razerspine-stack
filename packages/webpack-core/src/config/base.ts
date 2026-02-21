@@ -6,7 +6,7 @@ import {templatesLoader} from '../loaders/templates';
 import {ConfigOptionType} from '../types/config-option-type';
 import {validateCoreOptions} from '../validation/validate-core-options';
 import {normalizeCoreOptions} from '../utils/normalize-core-options';
-import {LoaderOptionsPlugin, webpack} from 'webpack';
+import {LoaderOptionsPlugin} from 'webpack';
 
 export function createBaseConfig(options: ConfigOptionType) {
     validateCoreOptions(options);
