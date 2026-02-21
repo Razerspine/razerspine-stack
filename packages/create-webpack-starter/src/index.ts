@@ -2,6 +2,7 @@
 
 import path from 'path';
 import fs from 'fs-extra';
+import {readFile, writeFile} from 'fs/promises';
 import ora from 'ora';
 import inquirer from 'inquirer';
 
@@ -10,6 +11,7 @@ import {templates} from './templates';
 import {copyTemplate} from './copier';
 import {installDeps} from './installer';
 import {log} from './logger';
+import {patchWebpackConfig} from './patch-webpack-config';
 
 process.on('unhandledRejection', (err: any) => {
     if (err?.isTtyError || err?.name === 'ExitPromptError') {
@@ -25,6 +27,7 @@ async function run() {
         const {
             projectName,
             template: templateKey,
+            appType,
             noInstall,
             dryRun
         } = await getCliContext();
@@ -42,15 +45,15 @@ async function run() {
 
         log.info(`Creating project: ${projectName}`);
         log.info(`Template: ${templateKey}`);
+        log.info(`App type: ${appType}`);
 
-        // --- Copy template (SAFE)
+        // --- Copy template
         if (dryRun) {
             if (fs.existsSync(targetDir)) {
                 spinner.warn(`[dry-run] Directory "${projectName}" already exists`);
             }
             spinner.info('[dry-run] Template would be copied');
         } else {
-            // ⛔ overwrite decision happens ONLY here
             if (fs.existsSync(targetDir)) {
                 spinner.stop();
 
@@ -76,6 +79,11 @@ async function run() {
             spinner.start('Copying template...');
             await copyTemplate(template.filesPath, targetDir);
             spinner.succeed('Template copied');
+        }
+
+        // --- PATCH webpack.config.js
+        if (!dryRun) {
+            await patchWebpackConfig(targetDir, appType);
         }
 
         // --- Script cleanup (JS vs TS)

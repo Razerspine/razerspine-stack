@@ -6,6 +6,7 @@ import {resolveTemplateKey} from './template-resolver';
 type CliOptions = {
     style?: 'scss' | 'less';
     script?: 'js' | 'ts';
+    appType?: 'mpa' | 'spa';
     install?: boolean;
     dryRun?: boolean;
 };
@@ -13,6 +14,7 @@ type CliOptions = {
 export async function getCliContext(): Promise<{
     projectName: string;
     template: TemplateKey;
+    appType: 'mpa' | 'spa';
     noInstall: boolean;
     dryRun: boolean;
 }> {
@@ -22,6 +24,7 @@ export async function getCliContext(): Promise<{
         .argument('[project-name]', 'Project name')
         .option('--style <style>', 'Style preprocessor (scss | less)')
         .option('--script <script>', 'Script language (js | ts)')
+        .option('--app-type <type>', 'Application type (mpa | spa)')
         .option('--no-install', 'Skip npm install')
         .option('--dry-run', 'Do not write files');
 
@@ -32,7 +35,7 @@ export async function getCliContext(): Promise<{
     const hasScript = Boolean(options.script);
     let projectName = program.args[0] as string | undefined;
 
-    // --- ASK PROJECT NAME IF NOT PROVIDED
+    // --- ASK PROJECT NAME
     if (!projectName) {
         const answer = await inquirer.prompt<{ projectName: string }>([
             {
@@ -42,17 +45,21 @@ export async function getCliContext(): Promise<{
                 validate: v => !!v || 'Project name is required'
             }
         ]);
-
         projectName = answer.projectName;
     }
-
-    let template: TemplateKey | undefined;
 
     if (hasStyle !== hasScript) {
         throw new Error('Both --style and --script must be provided together');
     }
 
-    // --- RESOLVE FROM FLAGS (--style + --script)
+    // --- VALIDATE APP TYPE IF PROVIDED
+    if (options.appType && !['mpa', 'spa'].includes(options.appType)) {
+        throw new Error('Invalid --app-type. Expected "mpa" or "spa"');
+    }
+
+    let template: TemplateKey | undefined;
+
+    // --- RESOLVE TEMPLATE FROM FLAGS
     if (hasStyle && hasScript) {
         const resolved = resolveTemplateKey({
             style: options.style,
@@ -68,7 +75,7 @@ export async function getCliContext(): Promise<{
         template = resolved;
     }
 
-    // --- ASK STYLE + SCRIPT (interactive fallback)
+    // --- INTERACTIVE STYLE + SCRIPT
     if (!template) {
         const answers = await inquirer.prompt<{
             style: 'scss' | 'less';
@@ -109,9 +116,30 @@ export async function getCliContext(): Promise<{
         throw new Error(`Unknown template: ${template}`);
     }
 
+    // --- APP TYPE (FLAG OR INTERACTIVE)
+    let appType: 'mpa' | 'spa' = options.appType ?? 'mpa';
+
+    if (!options.appType) {
+        const answer = await inquirer.prompt<{ appType: 'mpa' | 'spa' }>([
+            {
+                type: 'list',
+                name: 'appType',
+                message: 'Application type:',
+                choices: [
+                    {name: 'Multi-page application (MPA)', value: 'mpa'},
+                    {name: 'Single-page application (SPA)', value: 'spa'}
+                ],
+                default: 'mpa'
+            }
+        ]);
+
+        appType = answer.appType;
+    }
+
     return {
         projectName,
         template,
+        appType,
         noInstall: options.install === false,
         dryRun: Boolean(options.dryRun)
     };
