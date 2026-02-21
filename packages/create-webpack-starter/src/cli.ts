@@ -33,9 +33,31 @@ export async function getCliContext(): Promise<{
     const options = program.opts<CliOptions>();
     const hasStyle = Boolean(options.style);
     const hasScript = Boolean(options.script);
+    const hasAppType = Boolean(options.appType);
     let projectName = program.args[0] as string | undefined;
 
-    // --- ASK PROJECT NAME
+    // -- VALIDATE FLAGS COMBINATION
+
+    const flagsCount = [hasStyle, hasScript, hasAppType].filter(Boolean).length;
+
+    if (flagsCount > 0 && flagsCount < 3) {
+        throw new Error('You must provide --app-type, --style and --script together, or use interactive mode');
+    }
+
+    if (options.appType && !['mpa', 'spa'].includes(options.appType)) {
+        throw new Error('Invalid --app-type. Expected "mpa" or "spa"');
+    }
+
+    if (options.style && !['scss', 'less'].includes(options.style)) {
+        throw new Error('Invalid --style. Expected "scss" or "less"');
+    }
+
+    if (options.script && !['js', 'ts'].includes(options.script)) {
+        throw new Error('Invalid --script. Expected "js" or "ts"');
+    }
+
+    // -- INTERACTIVE MODE
+
     if (!projectName) {
         const answer = await inquirer.prompt<{ projectName: string }>([
             {
@@ -45,42 +67,34 @@ export async function getCliContext(): Promise<{
                 validate: v => !!v || 'Project name is required'
             }
         ]);
+
         projectName = answer.projectName;
     }
 
-    if (hasStyle !== hasScript) {
-        throw new Error('Both --style and --script must be provided together');
-    }
+    let appType: 'mpa' | 'spa';
+    let style: 'scss' | 'less';
+    let script: 'js' | 'ts';
 
-    // --- VALIDATE APP TYPE IF PROVIDED
-    if (options.appType && !['mpa', 'spa'].includes(options.appType)) {
-        throw new Error('Invalid --app-type. Expected "mpa" or "spa"');
-    }
-
-    let template: TemplateKey | undefined;
-
-    // --- RESOLVE TEMPLATE FROM FLAGS
-    if (hasStyle && hasScript) {
-        const resolved = resolveTemplateKey({
-            style: options.style,
-            script: options.script
-        });
-
-        if (!resolved) {
-            throw new Error(
-                `No template for style="${options.style}" and script="${options.script}"`
-            );
-        }
-
-        template = resolved;
-    }
-
-    // --- INTERACTIVE STYLE + SCRIPT
-    if (!template) {
+    if (flagsCount === 3) {
+        appType = options.appType as 'mpa' | 'spa';
+        style = options.style as 'scss' | 'less';
+        script = options.script as 'js' | 'ts';
+    } else {
         const answers = await inquirer.prompt<{
+            appType: 'mpa' | 'spa';
             style: 'scss' | 'less';
             script: 'js' | 'ts';
         }>([
+            {
+                type: 'list',
+                name: 'appType',
+                message: 'Application type:',
+                choices: [
+                    {name: 'Multi-page application (MPA)', value: 'mpa'},
+                    {name: 'Single-page application (SPA)', value: 'spa'}
+                ],
+                default: 'mpa'
+            },
             {
                 type: 'list',
                 name: 'style',
@@ -101,39 +115,17 @@ export async function getCliContext(): Promise<{
             }
         ]);
 
-        const resolved = resolveTemplateKey(answers);
-
-        if (!resolved) {
-            throw new Error(
-                `No template for style="${answers.style}" and script="${answers.script}"`
-            );
-        }
-
-        template = resolved;
+        appType = answers.appType;
+        style = answers.style;
+        script = answers.script;
     }
+
+    // -- RESOLVE TEMPLATE
+
+    const template = resolveTemplateKey({appType, style, script});
 
     if (!template || !templates[template]) {
-        throw new Error(`Unknown template: ${template}`);
-    }
-
-    // --- APP TYPE (FLAG OR INTERACTIVE)
-    let appType: 'mpa' | 'spa' = options.appType ?? 'mpa';
-
-    if (!options.appType) {
-        const answer = await inquirer.prompt<{ appType: 'mpa' | 'spa' }>([
-            {
-                type: 'list',
-                name: 'appType',
-                message: 'Application type:',
-                choices: [
-                    {name: 'Multi-page application (MPA)', value: 'mpa'},
-                    {name: 'Single-page application (SPA)', value: 'spa'}
-                ],
-                default: 'mpa'
-            }
-        ]);
-
-        appType = answer.appType;
+        throw new Error(`No template found for appType="${appType}", style="${style}", script="${script}"`);
     }
 
     return {

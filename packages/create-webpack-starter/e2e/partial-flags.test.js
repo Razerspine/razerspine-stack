@@ -8,6 +8,8 @@ import { createTempDir } from './helpers/temp-dir.js';
   await runCLI(
     [
       projectName,
+      '--app-type',
+      'spa',
       '--style',
       'scss'
     ],

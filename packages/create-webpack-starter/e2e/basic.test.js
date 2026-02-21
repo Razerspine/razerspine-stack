@@ -13,6 +13,7 @@ import {createTempDir} from './helpers/temp-dir.js';
   await runCLI(
     [
       projectName,
+      '--app-type', 'mpa',
       '--style', 'scss',
       '--script', 'js',
       '--no-install'

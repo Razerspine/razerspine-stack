@@ -1,6 +1,7 @@
-import {TemplateKey} from './templates';
+import {templates, TemplateKey} from './templates';
 
 type ResolveInput = {
+    appType?: 'mpa' | 'spa';
     style?: 'scss' | 'less';
     script?: 'js' | 'ts';
 };
@@ -8,19 +9,18 @@ type ResolveInput = {
 export function resolveTemplateKey(
     input: ResolveInput
 ): TemplateKey | null {
-    const {style, script} = input;
+    const {appType, style, script} = input;
 
-    if (!style || !script) return null;
+    if (!appType || !style || !script) return null;
 
-    type FeatureKey = `${'scss' | 'less'}:${'js' | 'ts'}`;
+    for (const [key, template] of Object.entries(templates)) {
+        const features = template.meta.features;
 
-    // canonical mapping
-    const map: Record<FeatureKey, TemplateKey> = {
-        'scss:js': 'pug-scss-js',
-        'scss:ts': 'pug-scss-ts',
-        'less:js': 'pug-less-js',
-        'less:ts': 'pug-less-ts'
-    };
+        if (!features) continue;
 
-    return map[`${style}:${script}`] ?? null;
+        if (features.appType === appType && features.style === style && features.script === script) {
+            return key as TemplateKey;
+        }
+    }
+    return null;
 }

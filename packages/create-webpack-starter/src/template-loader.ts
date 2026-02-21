@@ -8,12 +8,11 @@ export type TemplateMeta = {
         node?: string;
     };
     features?: {
-        template?: string;
-        style?: string;
-        script?: string;
+        appType?: 'mpa' | 'spa';
+        template?: 'pug';
+        style?: 'scss' | 'less';
+        script?: 'js' | 'ts';
     };
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
 };
 
 export type LoadedTemplate = {

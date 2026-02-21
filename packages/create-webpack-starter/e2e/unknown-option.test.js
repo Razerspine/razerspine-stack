@@ -1,5 +1,5 @@
-import { runCLI } from './helpers/run-cli.js';
-import { createTempDir } from './helpers/temp-dir.js';
+import {runCLI} from './helpers/run-cli.js';
+import {createTempDir} from './helpers/temp-dir.js';
 
 (async () => {
   const cwd = createTempDir();
@@ -9,7 +9,7 @@ import { createTempDir } from './helpers/temp-dir.js';
     [
       projectName,
       '--template',
-      'pug-scss-ts'
+      'scss-ts'
     ],
     {
       cwd,

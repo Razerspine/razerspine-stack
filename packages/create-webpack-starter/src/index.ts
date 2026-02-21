@@ -10,7 +10,6 @@ import {templates} from './templates';
 import {copyTemplate} from './copier';
 import {installDeps} from './installer';
 import {log} from './logger';
-import {patchWebpackConfig} from './patch-webpack-config';
 
 process.on('unhandledRejection', (err: any) => {
     if (err?.isTtyError || err?.name === 'ExitPromptError') {
@@ -78,11 +77,6 @@ async function run() {
             spinner.start('Copying template...');
             await copyTemplate(template.filesPath, targetDir);
             spinner.succeed('Template copied');
-        }
-
-        // --- PATCH webpack.config.js
-        if (!dryRun) {
-            await patchWebpackConfig(targetDir, appType);
         }
 
         // --- Install deps
