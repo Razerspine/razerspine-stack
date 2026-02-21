@@ -1,4 +1,4 @@
-import type {Configuration as WebpackConfiguration} from 'webpack';
+import {Configuration as WebpackConfiguration, LoaderOptionsPlugin} from 'webpack';
 import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
 import {AppType} from '../types/app-type';
@@ -12,7 +12,10 @@ export function createDevConfig(
     baseConfig: BaseWebpackConfigType,
     options: DevServerConfiguration = {}
 ): DevConfig {
-    const appType: AppType = (baseConfig as BaseWebpackConfigType)._meta.appType ?? 'mpa';
+    const loaderPlugin = baseConfig.plugins?.find(
+        (p): p is LoaderOptionsPlugin => p instanceof LoaderOptionsPlugin
+    );
+    const appType: AppType = (loaderPlugin as any)?.options?.options?._meta?.appType ?? 'mpa';
     const historyApiFallBack: DevServerConfiguration['historyApiFallback'] = {
         disableDotRule: true,
         rewrites: [

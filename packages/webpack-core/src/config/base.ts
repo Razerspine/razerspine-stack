@@ -6,6 +6,7 @@ import {templatesLoader} from '../loaders/templates';
 import {ConfigOptionType} from '../types/config-option-type';
 import {validateCoreOptions} from '../validation/validate-core-options';
 import {normalizeCoreOptions} from '../utils/normalize-core-options';
+import {LoaderOptionsPlugin, webpack} from 'webpack';
 
 export function createBaseConfig(options: ConfigOptionType) {
     validateCoreOptions(options);
@@ -14,9 +15,6 @@ export function createBaseConfig(options: ConfigOptionType) {
     return {
         mode: normalized.mode,
         context: process.cwd(),
-        _meta: {
-            appType: normalized.appType,
-        },
         output: {
             path: path.join(process.cwd(), 'dist'),
             clean: true,
@@ -29,6 +27,13 @@ export function createBaseConfig(options: ConfigOptionType) {
             ],
         },
         plugins: [
+            new LoaderOptionsPlugin({
+                options: {
+                    _meta: {
+                        appType: normalized.appType,
+                    }
+                }
+            }),
             ...templatesLoader({
                 entry: normalized.templates.entry,
                 mode: normalized.mode,

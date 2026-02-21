@@ -8,7 +8,7 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
-## [1.5.0] - 2026-02-20
+## [1.6.0] - 2026-02-20
 
 ### Added
 
