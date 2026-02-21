@@ -13,6 +13,7 @@ module.exports = (env = {}, argv = {}) => {
     mode,
     scripts: "ts",
     styles: "less",
+    appType: "mpa",
     templates: {
       entry: "src/views/pages/",
     },
