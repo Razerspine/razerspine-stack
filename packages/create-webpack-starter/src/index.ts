@@ -2,7 +2,6 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import {readFile, writeFile} from 'fs/promises';
 import ora from 'ora';
 import inquirer from 'inquirer';
 
@@ -84,30 +83,6 @@ async function run() {
         // --- PATCH webpack.config.js
         if (!dryRun) {
             await patchWebpackConfig(targetDir, appType);
-        }
-
-        // --- Script cleanup (JS vs TS)
-        if (!dryRun && template.meta?.features?.script) {
-            const pkgPath = path.join(targetDir, 'package.json');
-            const pkg = await fs.readJson(pkgPath);
-
-            if (template.meta.features.script === 'ts') {
-                delete pkg.devDependencies?.['@babel/core'];
-                delete pkg.devDependencies?.['@babel/preset-env'];
-                delete pkg.devDependencies?.['babel-loader'];
-
-                await fs.remove(path.join(targetDir, '.babelrc'));
-                await fs.remove(path.join(targetDir, 'babel.config.js'));
-            }
-
-            if (template.meta.features.script === 'js') {
-                delete pkg.devDependencies?.['typescript'];
-                delete pkg.devDependencies?.['ts-loader'];
-
-                await fs.remove(path.join(targetDir, 'tsconfig.json'));
-            }
-
-            await fs.writeJson(pkgPath, pkg, {spaces: 2});
         }
 
         // --- Install deps
