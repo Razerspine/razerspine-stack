@@ -1,0 +1,73 @@
+extends @views/layout/simple.pug
+include @views/mixins/code.pug
+
+block variables
+  - title = 'Template pug-scss-ts';
+
+append style
+  link(rel='stylesheet' href='./style.scss')
+
+append script
+  script(src='./home.ts')
+
+block content
+  section.section.m-b-4
+    .container
+      h1.title-h1.m-b-1.text-gradient-deep.text-center Webpack Starter Template
+      p.title-h5.slate-500.text-center Production-ready foundation
+
+  section.section.m-b-4
+    .container
+      .card.card--padding.d-flex.flex-center
+        h3.title-h5.text-center.m-b-1 🟢 App is running successfully
+        p.slate-500.text-center Webpack development server is active and ready.
+
+  section.section.m-b-4
+    .container
+      h2.title-h2.m-b-2 What’s Included
+      .row.row--gap-25
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2.text-gradient-soft Webpack Core
+            p
+              | Stable, minimal webpack configuration with alias support,
+              | environment separation and production-ready setup.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2.text-gradient-soft Layout System
+            p
+              | Pug-based layout structure with reusable header,
+              | footer and optional sidebar layouts.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2.text-gradient-soft Runtime Services
+            p
+              | ThemeService, TranslationService and ApiService
+              | included via shared npm packages.
+
+        .col-12.col-md-6
+          .card
+            h3.title-h4.m-b-2.text-gradient-soft Clean Architecture
+            p
+              | CLI is only a generator. Generated project
+              | has no runtime dependency on the CLI.
+
+  section.section
+    .container
+      h1.title-h2.m-b-2 What next
+      .content
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Add new pages in:
+          +code('text-inline') views/pages
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Add translations in:
+          +code('text-inline') assets/i18n
+        .d-flex.flex-row
+          p.title-h6.m-r-1 Use aliases like:
+          +code('text-inline') @views
+          +code('text-inline') @styles
+          +code('text-inline') @scripts
+          +code('text-inline') @images
+          +code('text-inline') @icons

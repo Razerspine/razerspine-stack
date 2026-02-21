@@ -1,0 +1,13 @@
+{
+  "name": "spa-pug-scss-ts",
+  "description": "SPA: Pug + SCSS + TypeScript",
+  "engines": {
+    "node": ">=18"
+  },
+  "features": {
+    "appType": "spa",
+    "template": "pug",
+    "style": "scss",
+    "script": "ts"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "spa-pug-less-ts",
+  "description": "SPA: Pug + Less + TypeScript",
+  "engines": {
+    "node": ">=18"
+  },
+  "features": {
+    "appType": "spa",
+    "template": "pug",
+    "style": "less",
+    "script": "ts"
+  }
+}

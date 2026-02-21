@@ -1,0 +1,5 @@
+mixin code(lang)
+  - let cls = lang ? 'language-' + lang : ''
+  pre(class=cls)
+    code(class=cls)
+      block

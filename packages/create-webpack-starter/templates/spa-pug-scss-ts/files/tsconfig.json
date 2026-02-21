@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "es2019"],
+    "baseUrl": "src",
+    "paths": {
+      "@views/*": ["views/*"],
+      "@styles/*": ["assets/styles/*"],
+      "@scripts/*": ["assets/scripts/*"],
+      "@images/*": ["assets/images/*"],
+      "@icons/*": ["assets/icons/*"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}

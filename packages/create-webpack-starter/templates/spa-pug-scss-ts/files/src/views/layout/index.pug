@@ -1,0 +1,23 @@
+extends _base
+
+append variables
+
+append head
+
+append style
+  link(rel='stylesheet' href=require('@styles/main.scss'))
+
+append head
+  script(src=require('@scripts/app.ts'))
+
+block body
+  include _header
+
+  include _aside
+
+  main.main
+    .main__container
+      block content
+
+  include _footer
+  include _sprite

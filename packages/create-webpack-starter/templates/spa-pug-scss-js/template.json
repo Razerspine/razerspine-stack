@@ -1,0 +1,13 @@
+{
+  "name": "spa-pug-scss-js",
+  "description": "SPA: Pug + SCSS + JavaScript",
+  "engines": {
+    "node": ">=18"
+  },
+  "features": {
+    "appType": "spa",
+    "template": "pug",
+    "style": "scss",
+    "script": "js"
+  }
+}

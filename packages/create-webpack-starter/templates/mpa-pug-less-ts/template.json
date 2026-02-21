@@ -1,0 +1,13 @@
+{
+  "name": "mpa-pug-less-ts",
+  "description": "MPA: Pug + Less + TypeScript",
+  "engines": {
+    "node": ">=18"
+  },
+  "features": {
+    "appType": "mpa",
+    "template": "pug",
+    "style": "less",
+    "script": "ts"
+  }
+}

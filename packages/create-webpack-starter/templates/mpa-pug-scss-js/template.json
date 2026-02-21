@@ -1,0 +1,13 @@
+{
+  "name": "mpa-pug-scss-js",
+  "description": "MPA: Pug + SCSS + JavaScript",
+  "engines": {
+    "node": ">=18"
+  },
+  "features": {
+    "appType": "mpa",
+    "template": "pug",
+    "style": "scss",
+    "script": "js"
+  }
+}
