@@ -12,7 +12,7 @@
   "author": "Razerspine",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
     "directory": "packages/webpack-core"
   },
   "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/webpack-core#readme",
