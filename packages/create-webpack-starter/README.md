@@ -6,6 +6,8 @@
 
 Create a modern webpack project using production-ready SPA and MPA templates.
 
+> ⚠️ Versions prior to 1.1.0 do not include SPA support.
+
 ---
 
 ## 🚀 Quick Start

@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.1.0] - 2026-02-22
+
+### Added
+
+- SPA (Single Page Application) project type
+- New `--app-type (spa | mpa)` flag
+- Full SPA template matrix:
+  - `spa-pug-scss-ts`
+  - `spa-pug-scss-js`
+  - `spa-pug-less-ts`
+  - `spa-pug-less-js`
+- Router-based SPA architecture
+- Modular page structure for SPA templates
+- i18n-ready SPA scaffold
+- Updated documentation for SPA/MPA split
+
+### Breaking
+
+- `--app-type` flag is now required in non-interactive mode
+- Internal template matrix expanded (template keys changed)
+- CLI contract updated to include project architecture dimension
+
+### Removed
+
+- Legacy `--template` flow fully removed from documentation
+- Deprecated template-oriented mental model
+
+### Improved
+
+- Clear separation between SPA and MPA architectures
+- Stronger feature-driven CLI design
+- Better long-term extensibility of template matrix
+- Cleaner internal template resolution logic
+
+### Testing
+
+- Updated E2E tests for SPA support
+- Extended feature combination validation
+- Improved non-interactive coverage
+
+---
+
+## ⚠️ Versioning Notice
+
+Versions `0.3.0`, `0.3.1`, and `1.0.0` are now considered **legacy pre-architecture releases**.
+
+They introduced feature-based selection but did not include SPA/MPA separation.
+
+---
+
 ## [1.0.0] - 2026-02-16
 
 ### Breaking
