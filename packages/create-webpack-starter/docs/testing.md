@@ -13,19 +13,21 @@ Since this is a CLI tool, correctness is defined by:
 
 ## Test Structure
 
-```
+```text
 e2e/
 ├── basic.test.js
+├── spa-basic.test.js
+├── style-script.test.js
 ├── partial-flags.test.js
+├── invalid-values.test.js
 ├── dry-run.test.js
 ├── unknown-option.test.js
-├── style-script.test.js
-├── constants/
-│   └── temp-prefix.js
+├── constans/
+│ └── temp-prefix.js
 ├── helpers/
-│   ├── run-cli.js
-│   ├── temp-dir.js
-│   └── cleanup.js
+│ ├── run-cli.js
+│ ├── temp-dir.js
+│ └── cleanup.js
 └── package.json
 ```
 
@@ -35,40 +37,43 @@ e2e/
 
 ### Core Behavior
 
-- Basic project creation
-- Feature-based template resolution
+- Basic project creation (MPA)
+- SPA project creation
+- Feature-based resolution
+- `--app-type` validation
 - `--style` + `--script` validation
 - Partial flag rejection
+- Invalid value rejection
 - Unknown option handling
 - `--dry-run` behavior
 
-### Validation Rules
+---
 
-- `--style` and `--script` must be provided together
-- Unknown flags cause the CLI to exit with an error
-- Template resolution is fully feature-driven
+## Validation Rules
+
+- `--app-type`, `--style`, and `--script` must be provided together in non-interactive mode
+- Partial flags cause CLI exit
+- Invalid values cause CLI exit
+- Unknown flags cause CLI exit
 
 ---
 
 ## Testing Principles
 
-- CLI is invoked exactly like a user would via `node dist/index.js`
-- No internal module imports are used
+- CLI is invoked exactly like a user would (`node dist/index.js`)
+- No internal imports are used
 - Tests run in isolated temporary directories
-- CLI arguments represent project names, not absolute paths
-- Working directory (`cwd`) controls where projects are created
+- Working directory controls project creation location
+- Real filesystem effects are verified
 
 ---
 
 ## Temporary Directories
 
-All test-created directories use the prefix:
+All test directories use prefix: `create-webpack-starter-*`
 
-```
-create-webpack-starter-*
-```
 
-A cleanup script removes stale directories from `/tmp`
+Cleanup scripts remove stale directories from `/tmp`
 before and after test execution.
 
 ---
@@ -79,12 +84,12 @@ before and after test execution.
 npm run test:e2e
 ```
 
-This command:
+**This command**:
 
-1. Cleans up old temporary directories
-2. Builds the CLI
-3. Runs all E2E tests sequentially
-4. Cleans up again after completion
+- Cleans temporary directories
+- Builds the CLI
+- Runs all E2E tests
+- Cleans again after completion
 
 ---
 
@@ -92,11 +97,11 @@ This command:
 
 CLI correctness is behavioral.
 
-Unit tests cannot guarantee:
+**Unit tests cannot guarantee**:
 
-- correct argument parsing
 - real template copying
-- actual filesystem results
-- proper process exit codes
+- actual filesystem output
+- process exit codes
+- argument parsing correctness
 
-E2E tests ensure real-world usage remains stable over time.
+E2E ensures stability across Node.js versions and real-world usage.

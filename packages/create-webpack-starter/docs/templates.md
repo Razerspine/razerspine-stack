@@ -1,85 +1,102 @@
 # Templates
 
-`create-webpack-starter` ships with production-ready templates
-based on real webpack configurations.
+`create-webpack-starter` ships with production-ready SPA and MPA templates.
 
-Templates are resolved automatically based on selected features.
+Templates are resolved automatically based on three dimensions:
 
----
-
-## Feature Matrix
-
-| Style | Script | Template Key    |
-|-------|--------|-----------------|
-| Less  | JS     | `pug-less-js`   |
-| Less  | TS     | `pug-less-ts`   |
-| SCSS  | JS     | `pug-scss-js`   |
-| SCSS  | TS     | `pug-scss-ts`   |
-
-Users do **not** select template names directly.
-
-The CLI resolves the correct template internally using:
-
+- `--app-type`
 - `--style`
 - `--script`
 
-Both flags must be provided together in non-interactive mode.
+Users do **not** select template names directly.
 
 ---
 
-## How Template Resolution Works
+## Template Matrix
 
-1. User selects: style preprocessor and script language
-2. CLI validates the flags
-3. Template key is derived internally
-4. Template is copied into the target directory
+| App Type | Style | Script | Internal Key |
+|----------|--------|--------|--------------|
+| SPA      | SCSS   | TS     | `spa-pug-scss-ts` |
+| SPA      | SCSS   | JS     | `spa-pug-scss-js` |
+| SPA      | Less   | TS     | `spa-pug-less-ts` |
+| SPA      | Less   | JS     | `spa-pug-less-js` |
+| MPA      | SCSS   | TS     | `mpa-pug-scss-ts` |
+| MPA      | SCSS   | JS     | `mpa-pug-scss-js` |
+| MPA      | Less   | TS     | `mpa-pug-less-ts` |
+| MPA      | Less   | JS     | `mpa-pug-less-js` |
 
-Template names are considered **internal implementation details**.
+Template keys are considered **internal implementation details**.
 
 ---
 
-## Template Contents
+## How Resolution Works
 
-Each template includes:
+1. CLI validates flags
+2. CLI derives internal template key
+3. Template files are copied
+4. Dependencies are installed
 
-- Fully configured `webpack.config.js`
-- Production-ready loader setup
-- Folder structure
-- Pug integration
-- Asset handling
-- Aliases configuration
-- Integration with `@razerspine/webpack-core`
+In non-interactive mode, all feature flags must be provided.
 
-Templates are **copied**, not referenced.
+---
 
-The generated project is fully standalone.
+## SPA Template Structure
+
+SPA templates include:
+
+- Router setup
+- `app.ts` / `app.js` entry
+- Modular page folders
+- Layout system
+- i18n-ready structure
+- Production webpack configuration
+
+SPA is optimized for application-like behavior.
+
+---
+
+## MPA Template Structure
+
+MPA templates include:
+
+- Multi-entry configuration
+- Independent page outputs
+- Static HTML generation
+- SEO-friendly setup
+
+MPA is optimized for traditional websites.
+
+---
+
+## Template Philosophy
+
+Templates are:
+
+- Copied (not referenced)
+- Fully standalone
+- Production-ready
+- Extendable
+- Free from CLI runtime coupling
 
 ---
 
 ## Shared Runtime Packages
 
-All templates depend on official shared packages:
+Generated projects depend on:
 
 - `@razerspine/webpack-core`
 - `@razerspine/pug-ui-kit`
 - `@razerspine/starter-core-scripts`
 
-### starter-core-scripts provides:
-
-- ThemeService
-- TranslationService
-- ApiService
-- ConsoleLogger
-
-These are installed as regular semver dependencies in the generated project.
+These are installed as normal semver dependencies.
 
 ---
 
 ## Aliases
 
-Common aliases available in Pug, JS, and styles:
+Available out of the box:
 
-```
+```text
 @views
 @styles
 @scripts
@@ -88,4 +105,4 @@ Common aliases available in Pug, JS, and styles:
 @icons
 ```
 
-These aliases are configured via webpack and available out of the box.
+Configured via webpack and ready for use in Pug, JS, and styles.
