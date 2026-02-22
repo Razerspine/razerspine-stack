@@ -1,0 +1,6 @@
+templates/**/node_modules
+templates/**/dist
+templates/**/.cache
+templates/**/coverage
+templates/**/.DS_Store
+templates/**/package-lock.json
