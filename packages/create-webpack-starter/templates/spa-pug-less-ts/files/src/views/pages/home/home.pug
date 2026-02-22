@@ -1,26 +1,16 @@
-extends @views/layout/simple.pug
 include @views/mixins/code.pug
-
-block variables
-  - title = 'Template pug-less-ts';
-
-append style
-  link(rel='stylesheet' href='./style.less')
-
-append script
-  script(src='./home.ts')
 
 block content
   section.section.m-b-4
     .container
-      h1.title-h1.m-b-1.text-gradient-deep.text-center Webpack Starter Template
-      p.title-h5.slate-500.text-center Production-ready foundation
+      h1.title-h1.m-b-1.text-gradient-deep.text-center Webpack Starter Template (SPA)
+      p.title-h5.slate-500.text-center Production-ready SPA foundation
 
   section.section.m-b-4
     .container
-      .card.card--padding.d-flex.flex-center
-        h3.title-h5.text-center.m-b-1 🟢 App is running successfully
-        p.slate-500.text-center Webpack development server is active and ready.
+      .card.card--padding
+        h3.title-h5.text-center.w-100.m-b-1 🟢 SPA is running successfully
+        p.slate-500.text-center.w-100 Webpack development server is active and ready.
 
   section.section.m-b-4
     .container
@@ -35,10 +25,10 @@ block content
 
         .col-12.col-md-6
           .card
-            h3.title-h4.m-b-2.text-gradient-soft Layout System
+            h3.title-h4.m-b-2.text-gradient-soft Single Page App
             p
-              | Pug-based layout structure with reusable header,
-              | footer and optional sidebar layouts.
+              | One entry point (app.pug) serving as the shell.
+              | Ready for your custom TypeScript router or framework.
 
         .col-12.col-md-6
           .card
@@ -59,8 +49,8 @@ block content
       h1.title-h2.m-b-2 What next
       .content
         .d-flex.flex-row
-          p.title-h6.m-r-1 Add new pages in:
-          +code('text-inline') views/pages
+          p.title-h6.m-r-1 Initialize your Router in:
+          +code('text-inline') assets/scripts/app.ts
         .d-flex.flex-row
           p.title-h6.m-r-1 Add translations in:
           +code('text-inline') assets/i18n
@@ -70,4 +60,3 @@ block content
           +code('text-inline') @styles
           +code('text-inline') @scripts
           +code('text-inline') @images
-          +code('text-inline') @icons

@@ -1,35 +1,35 @@
-const path = require("path");
+const path = require('path');
 const {
   createBaseConfig,
   createDevConfig,
-  createProdConfig,
-} = require("@razerspine/webpack-core");
-const uiKit = require("@razerspine/pug-ui-kit");
+  createProdConfig
+} = require('@razerspine/webpack-core');
+const uiKit = require('@razerspine/pug-ui-kit');
 
 module.exports = (env = {}, argv = {}) => {
-  const mode = argv?.mode || env?.mode || process.env.NODE_ENV || "development";
+  const mode = argv?.mode || env?.mode || process.env.NODE_ENV || 'development';
 
   const baseConfig = createBaseConfig({
     mode,
-    scripts: "js",
-    styles: "scss",
-    appType: "spa",
+    scripts: 'js',
+    styles: 'scss',
+    appType: 'spa',
     templates: {
-      entry: "src/views/app.pug",
+      entry: 'src/views/app.pug'
     },
     resolve: {
       alias: {
-        "@views": path.resolve(process.cwd(), "src/views"),
-        "@styles": path.resolve(process.cwd(), "src/assets/styles"),
-        "@scripts": path.resolve(process.cwd(), "src/assets/scripts"),
-        "@images": path.resolve(process.cwd(), "src/assets/images"),
-        "@icons": path.resolve(process.cwd(), "src/assets/icons"),
-        "pug-ui-kit": uiKit.paths.mixins,
-      },
-    },
+        '@views': path.resolve(process.cwd(), 'src/views'),
+        '@styles': path.resolve(process.cwd(), 'src/assets/styles'),
+        '@scripts': path.resolve(process.cwd(), 'src/assets/scripts'),
+        '@images': path.resolve(process.cwd(), 'src/assets/images'),
+        '@icons': path.resolve(process.cwd(), 'src/assets/icons'),
+        'pug-ui-kit': uiKit.paths.mixins
+      }
+    }
   });
 
-  if (mode === "development") {
+  if (mode === 'development') {
     return createDevConfig(baseConfig);
   }
 

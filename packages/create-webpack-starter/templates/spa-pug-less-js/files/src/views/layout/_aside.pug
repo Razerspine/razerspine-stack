@@ -1,5 +1,5 @@
 - const navList = [
--   {name: 'Main', url: '/index.html'},
+-   {name: 'Page not found', url: '/404'},
 - ];
 
 aside.aside
@@ -7,4 +7,4 @@ aside.aside
     ul.list
       each item in navList
         li.list__item
-          a(href=item.url).list__link=item.name
+          a(href=item.url data-link).list__link=item.name

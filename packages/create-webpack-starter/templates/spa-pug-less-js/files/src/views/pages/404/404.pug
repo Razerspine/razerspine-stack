@@ -1,13 +1,5 @@
-extends @views/layout/simple.pug
-
-block variables
-  - title = '404 Page Not Found'
-
-append style
-  link(rel='stylesheet' href='./style.less')
-
 block content
-  section.section
+  section.page-section
     h1.title-h1 404
     h2.title-h3.m-b-3 Page Not Found
-    a.btn.btn--outline.btn--large(href='index.html') Back to main
+    a.btn.btn--outline.btn--large(href='/' data-link) Back to main
