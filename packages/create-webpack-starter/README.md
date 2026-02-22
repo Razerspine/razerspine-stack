@@ -1,6 +1,10 @@
 # create-webpack-starter
 
-Create a modern webpack project using ready-to-use, production-grade templates.
+[![npm version](https://img.shields.io/npm/v/create-webpack-starter.svg)](https://www.npmjs.com/package/create-webpack-starter)
+[![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
+[![license](https://img.shields.io/npm/l/create-webpack-starter.svg)](./LICENSE)
+
+Create a modern webpack project using production-ready SPA and MPA templates.
 
 ---
 
@@ -10,8 +14,9 @@ Create a modern webpack project using ready-to-use, production-grade templates.
 npx create-webpack-starter my-app
 ```
 
-This starts the interactive setup where you choose:
+**Starts an interactive setup where you choose**:
 
+- Project type (SPA or MPA)
 - Style preprocessor (SCSS or Less)
 - Script language (JavaScript or TypeScript)
 
@@ -21,39 +26,98 @@ This starts the interactive setup where you choose:
 
 ```bash
 npx create-webpack-starter my-app \
+  --app-type mpa \
   --style scss \
   --script ts \
   --no-install
 ```
 
-Both `--style` and `--script` must be provided together.
+All feature flags must be provided together in non-interactive mode.
 
 ---
 
 ## 🧩 Options
 
-| Option                   | Description                                                |
-|--------------------------|------------------------------------------------------------|
-| `--style <scss \| less>` | Select CSS preprocessor (required with `--script`)         |
-| `--script <js \| ts>`    | Select script language (required with `--style`)           |
-| `--no-install`           | Skip dependency installation                               |
-| `--dry-run`              | Show what would be done without writing files              |
+| Option                    | Description                         |
+|---------------------------|-------------------------------------|
+| `--app-type <spa \| mpa>` | Project architecture type           |
+| `--style <scss \| less>`  | CSS preprocessor                    |
+| `--script <js \| ts>`     | Script language                     |
+| `--no-install`            | Skip dependency installation        |
+| `--dry-run`               | Show actions without writing files  |
 
 ---
 
-## 📦 Template System
+## 🏗 Project Types
 
-Templates are resolved automatically based on selected features:
+### SPA (Single Page Application)
 
-| Style | Script | Template Key    |
-|-------|--------|-----------------|
-| Less  | JS     | `pug-less-js`   |
-| Less  | TS     | `pug-less-ts`   |
-| SCSS  | JS     | `pug-scss-js`   |
-| SCSS  | TS     | `pug-scss-ts`   |
+- Pug-based layout system
+- Router setup included
+- Modular page structure
+- TypeScript-ready architecture
+- i18n-ready structure
+- Production-optimized webpack config
 
-Users do not select template names directly.  
+**Best for**:
+
+- dashboards
+- admin panels
+- applications
+- client-side routed projects
+
+### MPA (Multi Page Application)
+
+- Multiple independent pages
+- Server-ready HTML output
+- Classic multi-entry webpack setup
+- SEO-friendly structure
+
+**Best for**:
+
+- landing pages
+- marketing sites
+- traditional multipage websites
+
+---
+
+## 📦 Template Resolution
+
+Templates are resolved automatically based on selected features.
+
+**Example combinations**:
+
+| Type | Style | Script | Internal Template Key |
+|------|-------|--------|-----------------------|
+| SPA  | SCSS  | TS     | `spa-pug-scss-ts`     |
+| SPA  | SCSS  | JS     | `spa-pug-scss-js`     |
+| SPA  | Less  | TS     | `spa-pug-less-ts`     |
+| SPA  | Less  | JS     | `spa-pug-less-js`     |
+| MPA  | SCSS  | TS     | `mpa-pug-scss-ts`     |
+| MPA  | SCSS  | JS     | `mpa-pug-scss-js`     |
+| MPA  | Less  | TS     | `mpa-pug-less-ts`     |
+| MPA  | Less  | JS     | `mpa-pug-less-js`     |
+
+Users never select template names directly.
 The CLI resolves the correct template internally.
+
+---
+
+## 📁 Generated SPA Structure (Example)
+
+```text
+src/
+  assets/
+  views/
+  types/
+  ...
+webpack.config.js
+tsconfig.json
+postcss.config.js
+```
+
+Templates are fully standalone.
+No hidden dependencies on the CLI package.
 
 ---
 
@@ -67,13 +131,6 @@ Detailed documentation is available in the `/docs` directory:
 - [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/faq.md)
 - [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/testing.md)
 
-The documentation explains:
-
-- how the CLI works internally
-- how templates are structured
-- design principles behind `@razerspine/webpack-core`
-- common customization patterns
-
 ---
 
 ## 📋 Requirements
@@ -85,35 +142,36 @@ The documentation explains:
 
 ## 🛠 How It Works
 
-1. CLI resolves the template based on selected features
-2. Template files are copied into the target directory
+1. CLI resolves template based on selected flags
+2. Files are copied into target directory
 3. Dependencies are installed (unless disabled)
-4. The project is ready to use
+4. Project is ready to run
 
 ---
 
 ## 🎁 What You Get
 
-- Preconfigured webpack setup
-- Pug templates
+- Production-grade webpack configuration
+- Pug template system
 - SCSS or Less support
 - JavaScript or TypeScript support
-- Production-ready build configuration
-- Clean, fully standalone project
+- SPA router (in SPA mode)
+- Clean scalable project structure
+- Fully standalone project
 
 ---
 
 ## 🧪 Testing
 
-This project uses end-to-end (E2E) tests to verify real CLI behavior:
+This project uses real end-to-end tests to verify:
 
-- project creation
-- feature-based resolution
+- project scaffolding
+- flag-based resolution
 - dry-run behavior
-- invalid flags handling
-- unknown option handling
+- invalid combinations handling
+- filesystem correctness
 
-Tests simulate real `npx` usage and verify filesystem side effects.
+Tests simulate real `npx` usage.
 
 ---
 
