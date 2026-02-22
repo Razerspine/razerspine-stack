@@ -4,61 +4,45 @@
 ### System Architecture Diagram (Mermaid)
 
 ```mermaid
-%%{init: { 'flowchart': { 'rankSpacing': 100, 'nodeSpacing': 120, 'curve': 'basis' } } }%%
+%%{init: { 'flowchart': { 'rankSpacing': 100, 'nodeSpacing': 120 } } }%%
 flowchart TD
 
-%% =========================
-%% Generator Layer
-%% =========================
 subgraph L1 ["Generator Layer"]
     CLI["create-webpack-starter CLI"]
+    RESOLVER["Template Resolver<br/>(style + script + appType)"]
+    PATCH["patchWebpackConfig.ts<br/>(conditional)"]
 end
 
-%% =========================
-%% Project Layer
-%% =========================
-subgraph L2 ["Project Layer"]
-    TEMPLATES["Templates copied<br/>into project"]
-    PROJECT["Generated Project"]
+subgraph L2 ["Template Layer"]
+    TEMPLATE["Selected Template<br/>(SPA or MPA)"]
 end
 
-%% =========================
-%% Runtime Layer
-%% =========================
-subgraph L3 ["Shared Runtime Packages (published to npm)"]
+subgraph L3 ["Generated Project"]
+    PROJECT["Standalone Project"]
+end
+
+subgraph L4 ["Shared Runtime Packages"]
     CORE["@razerspine/webpack-core"]
     UI["@razerspine/pug-ui-kit"]
     SCRIPTS["@razerspine/starter-core-scripts"]
 end
 
-%% =========================
-%% Build Layer
-%% =========================
-subgraph L4 ["Build Layer"]
-    WEBPACK["Webpack and Loaders"]
+subgraph L5 ["Build Layer"]
+    WEBPACK["Webpack & Loaders"]
 end
 
-%% =========================
-%% Connections (Flow)
-%% =========================
-CLI -- "copies files and<br/>runs npm install" --> TEMPLATES
-TEMPLATES --> PROJECT
+CLI --> RESOLVER
+RESOLVER --> TEMPLATE
+TEMPLATE --> PROJECT
+PATCH -.-> PROJECT
 
-PROJECT -- "depends on" --> CORE
-PROJECT -- "depends on" --> UI
-PROJECT -- "depends on" --> SCRIPTS
+PROJECT --> CORE
+PROJECT --> UI
+PROJECT --> SCRIPTS
 
-CORE -- "extends config" --> WEBPACK
+CORE --> WEBPACK
 
-%% Important constraint (dashed line)
-CLI -.->|"no runtime<br/>dependency"| PROJECT
-
-%% Styling
-classDef default fill:#1f2937,stroke:#9ca3af,stroke-width:1px,color:#fff
-style L1 fill:none,stroke:#374151,stroke-dasharray: 5 5
-style L2 fill:none,stroke:#374151,stroke-dasharray: 5 5
-style L3 fill:none,stroke:#374151,stroke-dasharray: 5 5
-style L4 fill:none,stroke:#374151,stroke-dasharray: 5 5
+CLI -.->|"no runtime dependency"| PROJECT
 ```
 
 ---
@@ -104,6 +88,34 @@ The monorepo exists to ensure:
   - assets and source code
 
 Generated projects have **no runtime dependency** on the CLI.
+
+---
+
+### Application Types (SPA vs MPA)
+
+Templates may represent different application architectures:
+
+- **MPA (Multi Page Application)**  
+  Multiple entry points and HTML pages.  
+  Optimized for static sites and content-heavy projects.
+
+- **SPA (Single Page Application)**  
+  Single entry point with client-side routing.  
+  Optimized for app-like behavior.
+
+The CLI resolves:
+
+- style (scss / less)
+- script (js / ts)
+- appType (spa / mpa)
+
+The selected template defines the project structure.
+The CLI does not modify architectural logic.
+
+If necessary, `patchWebpackConfig.ts` may apply minimal,
+explicit configuration adjustments after template copying.
+
+Templates remain the source of truth.
 
 ---
 

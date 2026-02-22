@@ -48,12 +48,33 @@ packages/
 ## Templates
 
 ```text
-templates/
-├─ pug-less-js
-├─ pug-less-ts
-├─ pug-scss-js
-└─ pug-scss-ts
+create-webpack-starter/templates/
+├─ mpa-pug-less-js
+├─ mpa-pug-less-ts
+├─ mpa-pug-scss-js
+├─ mpa-pug-scss-ts
+├─ spa-pug-less-js
+├─ spa-pug-less-ts
+├─ spa-pug-scss-js
+└─ spa-pug-scss-ts
 ```
+
+---
+
+## Application Types
+
+Templates may implement different architectures:
+
+- **MPA** — multi-page static structure
+- **SPA** — single entry application
+
+The CLI resolves:
+
+- style stack (scss / less)
+- script stack (js / ts)
+- application type (spa / mpa)
+
+Each combination maps to a concrete template.
 
 ---
 
@@ -91,6 +112,28 @@ This repository follows a strict separation of responsibilities.
 No hidden magic.  
 No runtime coupling.  
 Generated projects are yours forever.
+
+---
+
+## High-Level Architecture
+
+This monorepo separates concerns strictly:
+
+- CLI → project generator only
+- Templates → full project structure
+- Runtime packages → shared build/runtime logic
+- Generated projects → fully standalone
+
+The CLI:
+
+- selects a template (style + script + app type)
+- copies files
+- optionally applies config patches
+- runs dependency installation
+
+It never participates in runtime.
+
+Generated projects contain no dependency on the CLI.
 
 ---
 
