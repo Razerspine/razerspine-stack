@@ -2,7 +2,7 @@ import path from 'path';
 import {assetsLoader} from '../loaders/assets';
 import {scriptsLoader} from '../loaders/scripts';
 import {stylesLoader} from '../loaders/styles';
-import {templatesLoader} from '../loaders/templates';
+import {pugRule, templatesLoader} from '../loaders/templates';
 import {ConfigOptionType} from '../types/config-option-type';
 import {validateCoreOptions} from '../validation/validate-core-options';
 import {normalizeCoreOptions} from '../utils/normalize-core-options';
@@ -21,6 +21,7 @@ export function createBaseConfig(options: ConfigOptionType) {
         },
         module: {
             rules: [
+                pugRule(),
                 assetsLoader(),
                 scriptsLoader(normalized),
                 stylesLoader(normalized),

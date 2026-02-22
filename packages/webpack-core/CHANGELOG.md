@@ -8,7 +8,33 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
-## [1.7.0] - 2026-02-20
+## [1.7.2] - 2026-02-22
+
+### Added
+
+- **Universal Pug Loading Strategy**
+  - Introduced `pugRule()` with `oneOf` logic to handle different Pug contexts.
+  - **Component Support**: Pug files imported via JS/TS are now compiled into functions (`method: 'compile'`), enabling
+    Angular-like component architecture.
+  - **Static Entry Support**: Pug files used as entry points continue to render as static HTML (`method: 'render'`).
+  - This dual-mode approach ensures SPA components work seamlessly without breaking existing MPA templates.
+- **Dynamic SPA Routing Infrastructure**
+  - Added support for client-side routing by decoupling Pug templates from the global layout in SPA mode.
+  - Enabled support for `document.title` updates and `data-link` interception within the starter templates.
+
+### Changed
+
+- **Refactored** `templatesLoader`
+  - Decoupled loader logic from the `PugPlugin` instance.
+  - Removed global `loaderOptions` from `PugPlugin` to delegate responsibility to the new specialized `pugRule()`.
+  - Improved compatibility between dynamic imports and static page generation.
+- **Clean Architecture Alignment**
+  - Updated `base.ts` to include `pugRule()` in `module.rules`, establishing a standard for how assets are resolved across all 8
+  - template variations (JS/TS, SCSS/Less, MPA/SPA).
+
+---
+
+## [1.7.1] - 2026-02-22
 
 ### Added
 
