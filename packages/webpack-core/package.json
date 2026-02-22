@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/webpack-core",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Core webpack config and loaders for starter templates",
   "keywords": [
     "webpack",

@@ -30,9 +30,11 @@ export function templatesLoader(options: {
         );
     }
 
+    const pluginEntry = appType === 'spa' ? { index: entry } : entry;
+
     return [
         new PugPlugin({
-            entry,
+            entry: pluginEntry,
             loaderOptions: {
                 method: 'compile'
             },
