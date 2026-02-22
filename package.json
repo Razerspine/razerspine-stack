@@ -31,7 +31,9 @@
     "build": "npm run build -ws",
     "dev:cli": "npm run dev -w create-webpack-starter",
     "build:cli": "npm run build -w create-webpack-starter",
-    "test:e2e": "npm run test:e2e -w create-webpack-starter"
+    "test:e2e": "npm run test:e2e -w create-webpack-starter",
+    "templates:install": "bash scripts/install-templates.sh",
+    "templates:clean": "bash scripts/clean-templates.sh"
   },
   "overrides": {
     "glob": "13.0.6",
