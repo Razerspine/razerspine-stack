@@ -30,7 +30,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.5.0",
+    "@razerspine/pug-ui-kit": "^1.5.1",
     "@razerspine/starter-core-scripts": "^0.2.0"
   },
   "overrides": {
