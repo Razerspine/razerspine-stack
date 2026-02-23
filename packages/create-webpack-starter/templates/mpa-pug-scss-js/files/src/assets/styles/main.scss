@@ -1,6 +1,14 @@
 @use '@razerspine/pug-ui-kit/scss/fonts';
 @use '@razerspine/pug-ui-kit/scss/ui-kit' as *;
 
+.main-simple {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+}
+
 .layout-simple {
   background-image: linear-gradient(to right, rgba(49, 46, 129, 0.2) 1px, transparent 1px),
   linear-gradient(to bottom, rgba(49, 46, 129, 0.2) 1px, transparent 1px),
