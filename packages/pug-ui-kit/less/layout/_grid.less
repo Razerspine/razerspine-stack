@@ -31,7 +31,11 @@
   }
   .generate-col-span(@i - 1);
 }
-.generate-col-span(0) {} // terminator
+
+.generate-col-span(0) {
+}
+
+// terminator
 .generate-col-span(@columns);
 
 /* Responsive column spans
@@ -44,7 +48,11 @@
   }
   .generate-cols-for(@n - 1, @name);
 }
-.generate-cols-for(0, @name) {} // terminate recursion
+
+.generate-cols-for(0, @name) {
+}
+
+// terminate recursion
 
 // maybe-media: skip when bp equals 0 (reliable guard)
 .maybe-media(@bp, @name) when not (@bp = 0) {
@@ -52,15 +60,19 @@
     .generate-cols-for(@columns, @name);
   }
 }
-.maybe-media(@bp, @name) when (@bp = 0) {} // no-op for 0
 
-.generate-responsive(@idx) when (@idx > 0) {
+.maybe-media(@bp, @name) when (@bp = 0) {
+}
+
+// no-op for 0
+.generate-responsive(@idx, @max) when (@idx <= @max) {
   @name: extract(@bp-names, @idx);
   @bp: extract(@bp-values, @idx);
   .maybe-media(@bp, @name);
-  .generate-responsive(@idx - 1);
+  .generate-responsive(@idx + 1, @max);
 }
-.generate-responsive(length(@bp-names));
+
+.generate-responsive(1, length(@bp-names));
 
 /* full width column */
 .col-full {
@@ -76,19 +88,21 @@
     margin-left: calc((100% / @columns) * @i + (@gutter * @i));
   }
 
-  // responsive offsets for each breakpoint
-  .generate-offset-bp(@i, length(@bp-names));
+  .generate-offset-bp(@i, 1, length(@bp-names));
   .generate-offset(@i - 1);
 }
-.generate-offset(0) {} // terminate recursion
 
-.generate-offset-bp(@i, @idx) when (@idx > 0) {
+.generate-offset(0) {
+}
+
+// terminate recursion
+
+.generate-offset-bp(@i, @idx, @max) when (@idx <= @max) {
   @name: extract(@bp-names, @idx);
   @bp: extract(@bp-values, @idx);
   .maybe-offset-media(@bp, @name, @i);
-  .generate-offset-bp(@i, @idx - 1);
+  .generate-offset-bp(@i, @idx + 1, @max);
 }
-.generate-offset-bp(@i, 0) {} // terminate recursion
 
 // maybe-offset-media: skip when bp equals 0 (reliable guard)
 .maybe-offset-media(@bp, @name, @i) when not (@bp = 0) {
@@ -98,7 +112,11 @@
     }
   }
 }
-.maybe-offset-media(@bp, @name, @i) when (@bp = 0) {} // no-op for 0
+
+.maybe-offset-media(@bp, @name, @i) when (@bp = 0) {
+}
+
+// no-op for 0
 
 /* Kick off offset generation */
 .generate-offset(@columns);

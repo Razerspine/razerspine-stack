@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.1] - 2026-02-23
+
+### Fixed
+
+- LESS Grid System (Mobile-First Order)
+- Fixed a critical bug in the LESS version where md classes would override lg classes due to incorrect recursion order.
+- Refactored .generate-responsive and .generate-offset-bp to generate media queries in ascending order (sm → xl), ensuring proper CSS cascade.
+
+---
+
 ## [1.5.0] - 2026-02-19
 
 ### Added
