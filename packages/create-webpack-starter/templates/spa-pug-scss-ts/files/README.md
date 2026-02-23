@@ -1,25 +1,12 @@
 # SPA: Pug + SCSS + TypeScript
 
-Production-ready webpack starter template using:
+A production-ready Webpack starter template for building scalable Single Page Applications using:
 
-- Pug (templating)
-- SCSS (Sass)
-- TypeScript
-- Webpack 5
-- @razerspine/pug-ui-kit
-
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+- **Pug** - HTML templating
+- **SCSS (Sass)** - modular styling
+- **TypeScript** - type-safe application logic
+- **Webpack 5** - optimized build system
+- **@razerspine/pug-ui-kit** - modular UI system
 
 ---
 
@@ -32,22 +19,9 @@ npm run build
 npm run preview
 ```
 
----
+## 📦 Project Structure
 
-## Security Notice
-
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
-
-These do not affect runtime or production bundles.
-
-Production dependencies are continuously monitored and must remain vulnerability-free.
-
----
-
-## 📂 Project Structure
-
-```
+```text
 src/
   assets/
     i18n/
@@ -63,104 +37,41 @@ src/
 
 ---
 
-# 🎨 UI System — pug-ui-kit
+## 🎨 UI System @razerspine/pug-ui-kit
 
-This template includes **@razerspine/pug-ui-kit**, a modular UI system designed for Pug projects.
+Modular UI system for Pug-based projects.
 
-It provides:
+### Main Style Entry
 
-- Design tokens (colors, spacing, typography)
-- Light / Dark theme support
-- Layout system
-- UI components
-- Utility classes
-- Pug mixins (buttons, forms, tables, etc.)
-
-Main style entry:
-
-```
+```text
 assets/styles/main.scss
 ```
 
-Import:
-
 ```scss
 @use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
 ```
 
-If using bundled fonts (v1.4+):
+### Supports:
 
-```scss
-@use "@razerspine/pug-ui-kit/scss/fonts";
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
-```
-
----
-
-## 🧩 Using Pug Components
-
-Configure Webpack alias:
-
-```js
-const uiKit = require('@razerspine/pug-ui-kit');
-
-module.exports = {
-  resolve: {
-    alias: {
-      'pug-ui-kit': uiKit.paths.mixins,
-    },
-  },
-};
-```
-
-Then use inside Pug:
-
-```pug
-include ~pug-ui-kit/btn.pug
-
-+btn('Save', 'primary')
-```
+- Themes (light / dark)
+- Modular components
+- Utilities
+- Design tokens
+- Pug mixins
 
 ---
 
 ## 🔄 Runtime Services
 
-Included:
-
-- ThemeService
-- TranslationService
-- ApiService
-
-Example:
-
-```ts
-import ThemeService from '@scripts/theme-service';
-
-const theme = new ThemeService();
-theme.init();
-```
+- `ThemeService`
+- `TranslationService`
+- `ApiService`
 
 ---
 
-## 🌍 Internationalization
+## 🔗 Path Aliases
 
-Add translations in:
-
-```
-assets/i18n/
-```
-
-Use in markup:
-
-```html
-<h1 data-i18n="hero.title"></h1>
-```
-
----
-
-## 🔗 Aliases
-
-```
+```text
 @styles
 @scripts
 @images
@@ -170,12 +81,12 @@ Use in markup:
 
 ---
 
-## 🏗 Philosophy
+## 🏗 Architecture Principles
 
-- No runtime dependency on CLI
-- Fully standalone project
+- Framework-agnostic
+- Fully standalone
 - Modular UI system
-- Framework-agnostic architecture
+- Production-ready structure
 
 ---
 

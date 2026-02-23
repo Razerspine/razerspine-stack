@@ -1,25 +1,12 @@
 # SPA: Pug + SCSS + JavaScript
 
-Production-ready webpack starter template using:
+A production-ready Webpack starter template for building modern Single Page Applications using:
 
-- Pug
-- SCSS
-- Modern JavaScript (ES Modules)
-- Webpack 5
-- @razerspine/pug-ui-kit
-
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+- **Pug**
+- **SCSS (Sass)**
+- **Modern JavaScript (ES Modules)**
+- **Webpack 5**
+- **@razerspine/pug-ui-kit**
 
 ---
 
@@ -32,28 +19,31 @@ npm run build
 npm run preview
 ```
 
----
+## 📦 Project Structure
 
-## Security Notice
-
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
-
-These do not affect runtime or production bundles.
-
-Production dependencies are continuously monitored and must remain vulnerability-free.
-
----
-
-## 🎨 UI System — pug-ui-kit
-
-This template includes a complete UI system powered by:
-
-@razerspine/pug-ui-kit
-
-Main entry:
-
+```text
+src/
+  assets/
+    i18n/
+    icons/
+    images/
+    scripts/
+    styles/
+  views/
+    layout/
+    mixins/
+    pages/
 ```
+
+---
+
+## 🎨 UI System @razerspine/pug-ui-kit
+
+Modular UI system for Pug-based projects.
+
+### Main Style Entry
+
+```text
 assets/styles/main.scss
 ```
 
@@ -61,9 +51,9 @@ assets/styles/main.scss
 @use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
 ```
 
-Supports:
+### Supports:
 
-- Themes (light/dark)
+- Themes (light / dark)
 - Modular components
 - Utilities
 - Design tokens
@@ -73,21 +63,30 @@ Supports:
 
 ## 🔄 Runtime Services
 
-- ThemeService
-- TranslationService
-- ApiService
+- `ThemeService`
+- `TranslationService`
+- `ApiService`
 
 ---
 
-## 🔗 Aliases
+## 🔗 Path Aliases
 
-```
+```text
 @styles
 @scripts
 @images
 @icons
 @views
 ```
+
+---
+
+## 🏗 Architecture Principles
+
+- Framework-agnostic
+- Fully standalone
+- Modular UI system
+- Production-ready structure
 
 ---
 

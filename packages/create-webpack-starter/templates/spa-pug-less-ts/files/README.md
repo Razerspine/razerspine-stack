@@ -1,25 +1,12 @@
 # SPA: Pug + Less + TypeScript
 
-Production-ready webpack starter template using:
+A production-ready Webpack starter template for building scalable SPAs using:
 
-- Pug
-- Less
-- TypeScript
-- Webpack 5
-- @razerspine/pug-ui-kit
-
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+- **Pug**
+- **Less**
+- **TypeScript**
+- **Webpack 5**
+- **@razerspine/pug-ui-kit**
 
 ---
 
@@ -31,68 +18,75 @@ npm run dev
 npm run build
 npm run preview
 ```
-
 ---
 
-## Security Notice
+## 📦 Project Structure
 
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
-
-These do not affect runtime or production bundles.
-
-Production dependencies are continuously monitored and must remain vulnerability-free.
-
----
-
-# 🎨 UI System — pug-ui-kit
-
-Includes full Less-based UI system.
-
-Main entry:
-
+```text
+src/
+  assets/
+    i18n/
+    icons/
+    images/
+    scripts/
+    styles/
+  views/
+    layout/
+    mixins/
+    pages/
 ```
+
+---
+
+## 🎨 UI System @razerspine/pug-ui-kit
+
+Integrated modular UI system.
+
+### Main Style Entry
+
+```text
 assets/styles/main.less
 ```
 
-Import:
-
 ```less
 @import "@razerspine/pug-ui-kit/less/ui-kit";
 ```
 
-If using bundled fonts (v1.4+):
+Supports:
 
-```less
-@import "@razerspine/pug-ui-kit/less/fonts";
-@import "@razerspine/pug-ui-kit/less/ui-kit";
-```
-
-Provides:
-
-- Design tokens
-- Layout system
-- Components
+- Themes
+- Modular components
 - Utilities
-- Theme support
-
----
-
-## 🧩 Pug Components
-
-```pug
-include ~pug-ui-kit/btn.pug
-
-+btn('Submit', 'primary')
-```
+- Pug mixins
 
 ---
 
 ## 🔄 Runtime Services
 
-- ThemeService
-- TranslationService
-- ApiService
+- `ThemeService`
+- `TranslationService`
+- `ApiService`
+
+---
+
+## 🔗 Path Aliases
+
+```text
+@styles
+@scripts
+@images
+@icons
+@views
+```
+
+---
+
+## 🏗 Architecture Principles
+
+- Framework-agnostic
+- Standalone project
+- Modular UI architecture
+- Production-ready build setup
 
 ---
 

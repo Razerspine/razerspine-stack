@@ -1,25 +1,12 @@
 # SPA: Pug + Less + JavaScript
 
-Production-ready webpack starter template using:
+A production-ready Webpack starter template for building modern SPAs using:
 
-- Pug
-- Less
-- Modern JavaScript
-- Webpack 5
-- @razerspine/pug-ui-kit
-
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+- **Pug**
+- **Less**
+- **Modern JavaScript**
+- **Webpack 5**
+- **@razerspine/pug-ui-kit**
 
 ---
 
@@ -34,24 +21,31 @@ npm run preview
 
 ---
 
-## Security Notice
+## 📦 Project Structure
 
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
-
-These do not affect runtime or production bundles.
-
-Production dependencies are continuously monitored and must remain vulnerability-free.
+```text
+src/
+  assets/
+    i18n/
+    icons/
+    images/
+    scripts/
+    styles/
+  views/
+    layout/
+    mixins/
+    pages/
+```
 
 ---
 
-## 🎨 UI System — pug-ui-kit
+## 🎨 UI System @razerspine/pug-ui-kit
 
 Integrated modular UI system.
 
-Main style file:
+### Main Style Entry
 
-```
+```text
 assets/styles/main.less
 ```
 
@@ -63,16 +57,37 @@ Supports:
 
 - Themes
 - Modular components
-- Layout utilities
+- Utilities
 - Pug mixins
 
 ---
 
 ## 🔄 Runtime Services
 
-- ThemeService
-- TranslationService
-- ApiService
+- `ThemeService`
+- `TranslationService`
+- `ApiService`
+
+---
+
+## 🔗 Path Aliases
+
+```text
+@styles
+@scripts
+@images
+@icons
+@views
+```
+
+---
+
+## 🏗 Architecture Principles
+
+- Framework-agnostic
+- Standalone project
+- Modular UI architecture
+- Production-ready build setup
 
 ---
 
