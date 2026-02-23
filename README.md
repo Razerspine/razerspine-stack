@@ -195,6 +195,65 @@ and runs `npm install` in the target directory.
 
 ---
 
+## Template Development Utilities
+
+When developing or testing templates locally, it is often useful to:
+
+- install dependencies inside all template projects
+- clean generated artifacts (`node_modules`, `dist`, `package-lock.json`)
+- reset templates to a pure source state
+
+To simplify this workflow, the monorepo provides utility scripts.
+
+### Install dependencies in all templates
+
+This installs dependencies inside every:
+
+```text
+packages/create-webpack-starter/templates/*/files
+```
+
+Run:
+
+```bash
+npm run templates:install
+```
+
+### Clean all template artifacts
+
+Templates must remain source-only and must never ship with:
+
+- `node_modules`
+- `dist`
+- `package-lock.json`
+- `build caches`
+
+Run: 
+
+```bash
+npm run templates:clean
+```
+
+### Important
+
+Template directories are **not npm workspaces**.
+
+They are:
+
+- development sources for the CLI
+- copied into generated projects
+- installed only after project generation
+
+Templates must always remain:
+
+- clean
+- dependency-free
+- free of build artifacts
+
+The CLI is responsible for running `npm install` in generated projects — not inside template source directories.
+
+---
+
 ## Release process
 
 Publishing is performed manually via GitHub Actions.
