@@ -11,12 +11,15 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@razerspine/webpack-core": "^1.7.2",
     "@types/node": "^25.1.0",
     "autoprefixer": "^10.4.23",
     "babel-loader": "^10.0.0",
     "css-loader": "^6.10.0",
     "dotenv": "^16.4.5",
     "http-server": "^14.1.1",
+    "less": "^4.5.1",
+    "less-loader": "^12.3.0",
     "parse5": "^7.1.2",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",
@@ -25,14 +28,12 @@
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3",
-    "webpack-merge": "^5.10.0",
-    "@razerspine/webpack-core": "^1.7.2",
-    "less": "^4.5.1",
-    "less-loader": "^12.3.0"
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
     "@razerspine/pug-ui-kit": "^1.5.0",
-    "@razerspine/starter-core-scripts": "^0.2.0"
+    "@razerspine/starter-core-scripts": "^0.2.0",
+    "core-js": "^3.48.0"
   },
   "overrides": {
     "glob": "13.0.6",
