@@ -1,5 +1,12 @@
 # MPA: Pug + Less + TypeScript
 
+![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
+![TypeScript](https://img.shields.io/badge/TypeScript-Enabled-3178C6?logo=typescript)
+![Less](https://img.shields.io/badge/Less-Styling-1D365D?logo=less)
+![Pug](https://img.shields.io/badge/Pug-Template-A86454?logo=pug)
+![Architecture](https://img.shields.io/badge/Architecture-MPA-111827)
+![License](https://img.shields.io/badge/license-ISC-green)
+
 Production-ready webpack starter template using:
 
 - Pug

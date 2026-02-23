@@ -1,5 +1,12 @@
 # SPA: Pug + Less + JavaScript
 
+![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript)
+![Less](https://img.shields.io/badge/Less-Styling-1D365D?logo=less)
+![Pug](https://img.shields.io/badge/Pug-Template-A86454?logo=pug)
+![Architecture](https://img.shields.io/badge/Architecture-SPA-111827)
+![License](https://img.shields.io/badge/license-ISC-green)
+
 A production-ready Webpack starter template for building modern SPAs using:
 
 - **Pug**

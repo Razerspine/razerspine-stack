@@ -1,5 +1,12 @@
 # SPA: Pug + SCSS + TypeScript
 
+![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
+![TypeScript](https://img.shields.io/badge/TypeScript-Enabled-3178C6?logo=typescript)
+![SCSS](https://img.shields.io/badge/SCSS-Sass-CC6699?logo=sass)
+![Pug](https://img.shields.io/badge/Pug-Template-A86454?logo=pug)
+![Architecture](https://img.shields.io/badge/Architecture-SPA-111827)
+![License](https://img.shields.io/badge/license-ISC-green)
+
 A production-ready Webpack starter template for building scalable Single Page Applications using:
 
 - **Pug** - HTML templating
