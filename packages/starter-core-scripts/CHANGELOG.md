@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.3.1] - 2026-02-24
+
+### Fixed
+
+- **ApiService**: Fixed `TypeError: body stream already read` in `_request` method. Added response cloning during error
+  handling to allow fallback from JSON to text parsing.
+- **ApiService**: Improved query parameters handling to filter out `null` or `undefined` values.
+
+---
+
 ## [0.3.0] - 2026-02-19
 
 ### Changed
@@ -18,12 +28,14 @@ All notable changes to this project will be documented in this file.
 ## [0.2.0] - 2026-02-13
 
 ### Added
+
 - Added `ApiService` for handling HTTP requests
 - Added `ApiError` class for structured error handling
 - Added `RequestConfig` type
 - Exported new services from root index
 
 ### Improved
+
 - Refactored folder structure from `modules/` to `services/`
 - Updated documentation
 
@@ -32,6 +44,7 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0] - Initial Release
 
 ### Added
+
 - ThemeService
 - TranslationService
 - ConsoleLogger
