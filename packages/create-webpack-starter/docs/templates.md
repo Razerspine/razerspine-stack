@@ -14,16 +14,16 @@ Users do **not** select template names directly.
 
 ## Template Matrix
 
-| App Type | Style | Script | Internal Key |
-|----------|--------|--------|--------------|
-| SPA      | SCSS   | TS     | `spa-pug-scss-ts` |
-| SPA      | SCSS   | JS     | `spa-pug-scss-js` |
-| SPA      | Less   | TS     | `spa-pug-less-ts` |
-| SPA      | Less   | JS     | `spa-pug-less-js` |
-| MPA      | SCSS   | TS     | `mpa-pug-scss-ts` |
-| MPA      | SCSS   | JS     | `mpa-pug-scss-js` |
-| MPA      | Less   | TS     | `mpa-pug-less-ts` |
-| MPA      | Less   | JS     | `mpa-pug-less-js` |
+| App Type | Style | Script  | Internal Key      |
+|----------|-------|---------|-------------------|
+| SPA      | SCSS  | TS      | `spa-pug-scss-ts` |
+| SPA      | SCSS  | JS      | `spa-pug-scss-js` |
+| SPA      | Less  | TS      | `spa-pug-less-ts` |
+| SPA      | Less  | JS      | `spa-pug-less-js` |
+| MPA      | SCSS  | TS      | `mpa-pug-scss-ts` |
+| MPA      | SCSS  | JS      | `mpa-pug-scss-js` |
+| MPA      | Less  | TS      | `mpa-pug-less-ts` |
+| MPA      | Less  | JS      | `mpa-pug-less-js` |
 
 Template keys are considered **internal implementation details**.
 
