@@ -3,6 +3,8 @@ import inquirer from 'inquirer';
 import {templates, TemplateKey} from './templates';
 import {resolveTemplateKey} from './template-resolver';
 
+const pkg = require('../package.json');
+
 type CliOptions = {
     style?: 'scss' | 'less';
     script?: 'js' | 'ts';
@@ -21,12 +23,14 @@ export async function getCliContext(): Promise<{
     const program = new Command();
 
     program
-        .argument('[project-name]', 'Project name')
-        .option('--style <style>', 'Style preprocessor (scss | less)')
-        .option('--script <script>', 'Script language (js | ts)')
-        .option('--app-type <type>', 'Application type (mpa | spa)')
-        .option('--no-install', 'Skip npm install')
-        .option('--dry-run', 'Do not write files');
+      .name('create-webpack-starter')
+      .version(`create-webpack-starter v${pkg.version}`, '-v, --version', 'Show CLI version')
+      .argument('[project-name]', 'Project name')
+      .option('--style <style>', 'Style preprocessor (scss | less)')
+      .option('--script <script>', 'Script language (js | ts)')
+      .option('--app-type <type>', 'Application type (mpa | spa)')
+      .option('--no-install', 'Skip npm install')
+      .option('--dry-run', 'Do not write files');
 
     program.parse(process.argv);
 
