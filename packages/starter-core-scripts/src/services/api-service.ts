@@ -55,7 +55,7 @@ export default class ApiService {
    * @param baseUrl - root URL for the API (e.g., 'https://api.example.com')
    */
   constructor(baseUrl: string) {
-    this.baseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
   }
 
   /**
@@ -76,7 +76,7 @@ export default class ApiService {
    * GET request
    */
   public get<T>(endpoint: string, config?: RequestConfig): Promise<T> {
-    return this._request<T>(endpoint, { ...config, method: "GET" });
+    return this._request<T>(endpoint, { ...config, method: 'GET' });
   }
 
   /**
@@ -89,7 +89,7 @@ export default class ApiService {
   ): Promise<T> {
     return this._request<T>(endpoint, {
       ...config,
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(body)
     });
   }
@@ -104,7 +104,7 @@ export default class ApiService {
   ): Promise<T> {
     return this._request<T>(endpoint, {
       ...config,
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(body)
     });
   }
@@ -119,7 +119,7 @@ export default class ApiService {
   ): Promise<T> {
     return this._request<T>(endpoint, {
       ...config,
-      method: "PATCH",
+      method: 'PATCH',
       body: JSON.stringify(body)
     });
   }
@@ -128,7 +128,7 @@ export default class ApiService {
    * DELETE request
    */
   public delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
-    return this._request<T>(endpoint, { ...config, method: "DELETE" });
+    return this._request<T>(endpoint, { ...config, method: 'DELETE' });
   }
 
   /**
@@ -147,7 +147,7 @@ export default class ApiService {
     } = config;
 
     // 1. Build URL
-    let url = `${this.baseUrl}${endpoint.startsWith("/") ? endpoint : "/" + endpoint}`;
+    let url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
     if (params) {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
@@ -161,13 +161,13 @@ export default class ApiService {
 
     // 2. Setup Headers
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
       ...customHeaders
     };
 
     if (this.accessToken && !skipAuth) {
-      (headers as Record<string, string>)["Authorization"] =
+      (headers as Record<string, string>)['Authorization'] =
         `Bearer ${this.accessToken}`;
     }
 
@@ -184,18 +184,23 @@ export default class ApiService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        let errorData;
-        const errorResponse = response.clone();
-        try {
-          errorData = await errorResponse.json();
-        } catch {
-          errorData = await response.text();
+        let errorData = null;
+        const contentLength = response.headers.get('Content-Length');
+        const hasContent = contentLength && contentLength !== '0';
+
+        if (hasContent) {
+          const errorResponse = response.clone();
+          try {
+            errorData = await errorResponse.json();
+          } catch {
+            errorData = await response.text();
+          }
         }
 
         throw new ApiError(
           response.status,
-          response.statusText || "Unknown API Error",
-          errorData
+          response.statusText || `Request failed with status ${response.status}`,
+          errorData,
         );
       }
 
@@ -205,7 +210,7 @@ export default class ApiService {
 
       return await response.json();
     } catch (error: any) {
-      if (error.name === "AbortError") {
+      if (error.name === 'AbortError') {
         throw new Error(`Request timeout: exceeding ${timeout}ms`);
       }
       throw error;

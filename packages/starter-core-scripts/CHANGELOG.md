@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [0.3.1] - 2026-02-24
+## [0.3.2] - 2026-02-24
 
 ### Fixed
-
-- **ApiService**: Fixed `TypeError: body stream already read` in `_request` method. Added response cloning during error
-  handling to allow fallback from JSON to text parsing.
-- **ApiService**: Improved query parameters handling to filter out `null` or `undefined` values.
+- **ApiService**: Resolved `TypeError: body stream already read` by cloning the response stream during error handling.
+- **ApiService**: Fixed a bug where 404 responses with empty bodies caused uninformative "Unknown API Error" messages.
+- **ApiService**: Improved `ApiError` to provide a fallback message including the HTTP status code when `statusText` is missing.
+- **ApiService**: Enhanced query parameter serialization to skip `null` and `undefined` values.
 
 ---
 
