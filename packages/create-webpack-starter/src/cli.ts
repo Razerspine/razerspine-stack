@@ -23,14 +23,14 @@ export async function getCliContext(): Promise<{
     const program = new Command();
 
     program
-      .name('create-webpack-starter')
-      .version(`create-webpack-starter v${pkg.version}`, '-v, --version', 'Show CLI version')
-      .argument('[project-name]', 'Project name')
-      .option('--style <style>', 'Style preprocessor (scss | less)')
-      .option('--script <script>', 'Script language (js | ts)')
-      .option('--app-type <type>', 'Application type (mpa | spa)')
-      .option('--no-install', 'Skip npm install')
-      .option('--dry-run', 'Do not write files');
+        .name('create-webpack-starter')
+        .version(`create-webpack-starter v${pkg.version}`, '-v, --version', 'Show CLI version')
+        .argument('[project-name]', 'Project name')
+        .option('--style <style>', 'Style preprocessor (scss | less)')
+        .option('--script <script>', 'Script language (js | ts)')
+        .option('--app-type <type>', 'Application type (mpa | spa)')
+        .option('--no-install', 'Skip npm install')
+        .option('--dry-run', 'Do not write files');
 
     program.parse(process.argv);
 
@@ -58,6 +58,22 @@ export async function getCliContext(): Promise<{
 
     if (options.script && !['js', 'ts'].includes(options.script)) {
         throw new Error('Invalid --script. Expected "js" or "ts"');
+    }
+
+    // -- PREVENT PROJECT CREATION FROM UNHYPHENATED COMMANDS
+
+    const rawArgs = program.args;
+
+    if (rawArgs.length === 1) {
+        const arg = rawArgs[0].toLowerCase();
+
+        if (['version', 'v'].includes(arg)) {
+            console.error(`⚠️ Error: '${rawArgs[0]}' is not a valid project name.`);
+            console.error('Did you mean to check the version? Use one of these:');
+            console.error('create-webpack-starter --version');
+            console.error('create-webpack-starter -v');
+            process.exit(1);
+        }
     }
 
     // -- INTERACTIVE MODE
