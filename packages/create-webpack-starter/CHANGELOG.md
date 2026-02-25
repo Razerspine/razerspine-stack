@@ -17,11 +17,10 @@
 ### Fixed
 
 - **ApiService** improvements (via `starter-core-scripts@0.3.2`):
-
-- Resolved `TypeError: body stream already read` by cloning response stream during error handling
-- Fixed empty 404 responses causing generic "Unknown API Error"
-- Improved `ApiError` fallback message when `statusText` is missing
-- Enhanced query parameter serialization (skips `null` / `undefined`)
+  - Resolved `TypeError: body stream already read` by cloning response stream during error handling
+  - Fixed empty 404 responses causing generic "Unknown API Error"
+  - Improved `ApiError` fallback message when `statusText` is missing
+  - Enhanced query parameter serialization (skips `null` / `undefined`)
 
 ### Improved
 
