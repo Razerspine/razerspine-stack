@@ -22,6 +22,8 @@ e2e/
 ├── invalid-values.test.js
 ├── dry-run.test.js
 ├── unknown-option.test.js
+├── version.test.js
+├── help.test.js
 ├── constans/
 │ └── temp-prefix.js
 ├── helpers/
