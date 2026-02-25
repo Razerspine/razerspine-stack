@@ -1,5 +1,36 @@
 # Changelog
 
+[1.1.2] - 2026-02-25
+
+### Updated
+
+- All templates upgraded to use `@razerspine/starter-core-scripts@0.3.2`
+
+### Added
+
+- Official `--version` and `-v` CLI flags
+- UX guard to prevent accidental project creation from unhyphenated commands:
+  - `version / v`
+  - `help / h`
+- Clear suggestion messages for common CLI mistakes
+
+### Fixed
+
+- **ApiService** improvements (via `starter-core-scripts@0.3.2`):
+
+- Resolved `TypeError: body stream already read` by cloning response stream during error handling
+- Fixed empty 404 responses causing generic "Unknown API Error"
+- Improved `ApiError` fallback message when `statusText` is missing
+- Enhanced query parameter serialization (skips `null` / `undefined`)
+
+### Improved
+
+- Safer CLI behavior in non-interactive mode
+- More predictable exit codes for invalid positional arguments
+- Stronger E2E coverage for version/help flows
+
+---
+
 ## [1.1.1] - 2026-02-23
 
 ### Updated
