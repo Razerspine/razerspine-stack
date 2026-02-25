@@ -17,5 +17,16 @@ import {createTempDir} from './helpers/temp-dir.js';
     }
   );
 
+  await runCLI(
+    [
+      projectName,
+      '--unknown'
+    ],
+    {
+      cwd,
+      expectedExitCode: 1
+    }
+  );
+
   console.log('✅ unknown-option.test.js passed');
 })();
