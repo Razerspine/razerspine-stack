@@ -40,14 +40,14 @@ All feature flags must be provided together in non-interactive mode.
 
 ## 🧩 Options
 
-| Option                    | Description                         |
-|---------------------------|-------------------------------------|
-| `--app-type <spa \| mpa>` | Project architecture type           |
-| `--style <scss \| less>`  | CSS preprocessor                    |
-| `--script <js \| ts>`     | Script language                     |
-| `--no-install`            | Skip dependency installation        |
-| `--dry-run`               | Show actions without writing files  |
-
+| Option                    | Description                        |
+|---------------------------|------------------------------------|
+| `--app-type <spa \| mpa>` | Project architecture type          |
+| `--style <scss \| less>`  | CSS preprocessor                   |
+| `--script <js \| ts>`     | Script language                    |
+| `--no-install`            | Skip dependency installation       |
+| `--dry-run`               | Show actions without writing files |
+| `-v`, `--version`         | Show CLI version                   |
 ---
 
 ## 🏗 Project Types
