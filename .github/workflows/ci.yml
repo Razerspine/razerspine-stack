@@ -25,6 +25,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
+      - name: Use stable npm version
+        run: npm install -g npm@10.9.3
+
       - name: Install dependencies (workspace root)
         run: npm install
 
