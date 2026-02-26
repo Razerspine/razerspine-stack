@@ -186,4 +186,24 @@ Use in markup:
 
 ---
 
+## 🔒 Dependency Overrides
+
+This template includes explicit `overrides` for:
+
+- `glob`
+- `minimatch`
+
+These overrides mitigate a known transitive ReDoS advisory caused by older `minimatch` versions pulled via:
+
+- `pug-plugin` → `js-beautify` → `glob`
+
+The override:
+
+- Applies to build-time tooling only
+- Does not affect runtime bundles
+- Is safe and tested within this toolchain
+- It will be removed once upstream dependencies are updated.
+
+---
+
 Generated with `create-webpack-starter`.
