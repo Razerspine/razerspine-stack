@@ -10,12 +10,17 @@
  *
  * @param initialState - The initial state object.
  * @param onChange - Callback function to execute on state changes (e.g., to trigger a DOM update).
- * @returns A proxied version of the state object.
+ * @returns { {state: T, disconnect: () => void} } An object containing the proxied state and a disconnect function.
  */
 export function createStore<T extends object>(
     initialState: T,
-    onChange: () => void
-): T {
+    onChange: (() => void) | null
+): { state: T; disconnect: () => void } {
+
+    /**
+     * Local reference to the callback that can be cleared.
+     */
+    let listener = onChange;
 
     /**
      * Cache for nested proxies.
@@ -46,8 +51,10 @@ export function createStore<T extends object>(
         set(target: any, prop: string | symbol, value: any): boolean {
             target[prop] = value;
 
-            // Notify the system that the state has changed
-            onChange();
+            // Notify the system that the state has changed if the listener still exists
+            if (listener) {
+                listener();
+            }
 
             return true;
         }
@@ -56,5 +63,14 @@ export function createStore<T extends object>(
     const rootProxy = new Proxy(initialState, handler);
     proxyCache.set(initialState, rootProxy);
 
-    return rootProxy;
+    return {
+        state: rootProxy as T,
+        disconnect: () => {
+            /**
+             * Nullify the listener to break the closure and allow
+             * garbage collection of the component.
+             */
+            listener = null;
+        }
+    };
 }
