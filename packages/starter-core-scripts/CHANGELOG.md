@@ -7,10 +7,14 @@ All notable changes to this project will be documented in this file.
 ## [0.4.0] - 2026-02-28
 
 ### Added
+
 - **View Engine**: Introduced a lightweight reactive system for DOM manipulation.
+- **Component Lifecycle**: Added `onInit()` and `onDestroy()` hooks to `BaseComponent` for managed setup and teardown.
+- **Memory Management**: Implemented a `cleanupCallbacks` registry in `BaseComponent` to automatically prune event listeners
+  and observers.
 - **BaseComponent**: Added an abstract class for creating stateful UI components.
 - **setState**: Added a protected method to `BaseComponent` for safe, partial state updates.
-- **createStore**: Added a Proxy-based reactive store with deep observation support.
+- **createStore**: Added a Proxy-based reactive store with deep observation support and a manual `disconnect()` utility.
 - **applyBindings**: Added a synchronization engine supporting:
   - `data-bind`: Text content synchronization.
   - `data-model`: Two-way input binding (state ↔ DOM).
@@ -21,7 +25,13 @@ All notable changes to this project will be documented in this file.
 - **bindClickEvents**: Added high-performance click event delegation via `data-click`.
 
 ### Improved
+
+- **SPA Router**: Enhanced with lifecycle awareness; now calls `destroy()` on the current page instance before
+  navigating to a
+  new route.
 - **Proxy Optimization**: Added WeakMap-based proxy caching to prevent redundant Proxy creation and improve performance.
+- **Leak Prevention**: Refactored `bindForms` and `bindClickEvents` to return cleanup closures, ensuring no "dangling"
+  listeners remain after component destruction.
 - **Two-Way Binding**: Implemented reverse synchronization (state → input value) for `data-model`.
 - **Update Cycle**: Removed redundant manual `update()` calls in form binding (store-driven reactivity only).
 - **Internal Stability**: Improved deep reactivity consistency for nested state objects.
@@ -29,17 +39,21 @@ All notable changes to this project will be documented in this file.
 - **Type Safety**: Improved generic types for state management in components using `Partial<T>`.
 
 ### Notes
+
 - `data-for` currently performs full re-rendering (no diffing algorithm).
 - Designed for lightweight starter templates and small-to-medium UI layers.
+- **Breaking Change (Internal)**: `createStore` now returns an object `{state, disconnect}` instead of the raw Proxy.
 
 ---
 
 ## [0.3.2] - 2026-02-24
 
 ### Fixed
+
 - **ApiService**: Resolved `TypeError: body stream already read` by cloning the response stream during error handling.
 - **ApiService**: Fixed a bug where 404 responses with empty bodies caused uninformative "Unknown API Error" messages.
-- **ApiService**: Improved `ApiError` to provide a fallback message including the HTTP status code when `statusText` is missing.
+- **ApiService**: Improved `ApiError` to provide a fallback message including the HTTP status code when `statusText` is
+  missing.
 - **ApiService**: Enhanced query parameter serialization to skip `null` and `undefined` values.
 
 ---
