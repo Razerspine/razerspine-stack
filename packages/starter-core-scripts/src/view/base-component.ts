@@ -15,6 +15,12 @@ export abstract class BaseComponent<T extends object> {
     private _state: T;
 
     /**
+     * Internal list of cleanup functions to be executed on destruction.
+     * This prevents memory leaks by removing event listeners and disconnecting proxies.
+     */
+    private cleanupCallbacks: Array<() => void> = [];
+
+    /**
      * Accessor for the component's current state.
      * Returns a read-only version of the state to prevent direct mutations.
      * Use {@link setState} to modify the state.
@@ -31,9 +37,14 @@ export abstract class BaseComponent<T extends object> {
     protected constructor(protected container: HTMLElement, initialState: T) {
         /**
          * Initialize the store using a Proxy.
-         * The second argument is a callback that runs whenever a property is changed.
+         * The store returns the proxied state and a disconnect function.
          */
-        this._state = createStore(initialState, () => this.update());
+        const {state, disconnect} = createStore(initialState, () => this.update());
+
+        this._state = state;
+
+        // Register the store disconnect to the cleanup list
+        this.cleanupCallbacks.push(disconnect);
     }
 
     /**
@@ -42,8 +53,12 @@ export abstract class BaseComponent<T extends object> {
      * Usually called within onInit() or after the initial render.
      */
     protected initEventListeners(): void {
-        bindClickEvents(this.container, this);
-        bindForms(this.container, this, this._state);
+        /**
+         * We store the returned cleanup functions to remove listeners
+         * when the component is destroyed.
+         */
+        this.cleanupCallbacks.push(bindClickEvents(this.container, this));
+        this.cleanupCallbacks.push(bindForms(this.container, this, this._state));
     }
 
     /**
@@ -61,6 +76,37 @@ export abstract class BaseComponent<T extends object> {
      */
     protected setState(partialState: Partial<T>): void {
         Object.assign(this._state as object, partialState);
+    }
+
+    /**
+     * Lifecycle hook: Called after the component has been initialized and rendered.
+     * Can be overridden in subclasses for API calls or additional setup.
+     */
+    protected onInit(): void {
+    }
+
+    /**
+     * Lifecycle hook: Called immediately before the component is destroyed.
+     * Useful for clearing intervals, manual subscriptions, or third-party libs.
+     */
+    protected onDestroy(): void {
+    }
+
+    /**
+     * Destroys the component instance.
+     * - Triggers the onDestroy hook.
+     * - Executes all registered cleanup callbacks (event listeners, store disconnect).
+     * - Clears the container's inner HTML.
+     */
+    public destroy(): void {
+        this.onDestroy();
+
+        // Execute and clear all cleanup tasks
+        this.cleanupCallbacks.forEach((cleanup) => cleanup());
+        this.cleanupCallbacks = [];
+
+        // Clear DOM to free up memory
+        this.container.innerHTML = '';
     }
 
     /**
