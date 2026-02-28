@@ -1,7 +1,7 @@
 import {getValue} from './utils';
 
 /** Cache to store original templates for elements with [data-for] */
-const templateCache = new Map<HTMLElement, string>();
+const templateCache = new WeakMap<HTMLElement, string>();
 
 /**
  * Checks if an element should be processed in the current binding scope.
