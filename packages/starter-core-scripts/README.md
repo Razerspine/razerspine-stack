@@ -78,7 +78,7 @@ export class HomePage extends BaseComponent<HomeState> {
   }
 
   updateTitle() {
-    this.state.title = 'Title Reset!'; // UI updates automatically
+    this.setState({title: 'Title reset'}); // UI updates automatically
   }
 }
 ```
