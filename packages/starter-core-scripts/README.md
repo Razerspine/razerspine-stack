@@ -93,11 +93,19 @@ export class HomePage extends BaseComponent<HomeState> {
 | Attribute    | Description                                   | Example                             |
 |--------------|-----------------------------------------------|-------------------------------------|
 | `data-bind`  | Updates `textContent`                         | `span(data-bind="user.name")`       |
-| `data-model` | Two-way binding for inputs                    | `input(data-model="email")`         |
+| `data-model` | Two-way binding (state ↔ input.value)         | `input(data-model="email")`         |
 | `data-click` | Event delegation for clicks                   | `button(data-click="submit")`       |
 | `data-show`  | Toggles visibility (supports !)               | `div(data-show="!isError")`         |
 | `data-class` | Toggles CSS classes                           | `div(data-class="active:isActive")` |
 | `data-for`   | Renders lists (supports nesting and `_index)` | `ul(data-for="item:items")`         |
+
+### ⚙️ Technical Notes
+
+- Deep reactivity is powered by JavaScript Proxies with internal WeakMap caching.
+- Nested objects are fully reactive.
+- `data-for` performs full re-rendering (no virtual DOM diffing).
+- Event listeners use delegation for optimal performance.
+
 ---
 
 ## Exports (example)

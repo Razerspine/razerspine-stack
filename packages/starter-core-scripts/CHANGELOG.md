@@ -13,17 +13,24 @@ All notable changes to this project will be documented in this file.
 - **createStore**: Added a Proxy-based reactive store with deep observation support.
 - **applyBindings**: Added a synchronization engine supporting:
   - `data-bind`: Text content synchronization.
+  - `data-model`: Two-way input binding (state ↔ DOM).
   - `data-show`: Visibility toggling (with negation `!` support).
   - `data-class`: Conditional CSS class management.
-  - `data-for`: Array iteration with support for nested scopes and `$index` helpers.
+  - `data-for`: Array iteration with support for nested scopes and `_index` helpers.
 - **Scope Guarding**: Implemented `isDirectBinding` to ensure nested loops don't conflict with parent state.
-- **bindForms**: Added two-way data binding for input elements via `data-model`.
 - **bindClickEvents**: Added high-performance click event delegation via `data-click`.
-- **Documentation**: Added comprehensive JSDoc comments to all view-related utilities for better developer experience.
 
 ### Improved
+- **Proxy Optimization**: Added WeakMap-based proxy caching to prevent redundant Proxy creation and improve performance.
+- **Two-Way Binding**: Implemented reverse synchronization (state → input value) for `data-model`.
+- **Update Cycle**: Removed redundant manual `update()` calls in form binding (store-driven reactivity only).
+- **Internal Stability**: Improved deep reactivity consistency for nested state objects.
 - **Project Structure**: Organized core scripts into `services/`, `view/`, and `utils/` directories.
 - **Type Safety**: Improved generic types for state management in components using `Partial<T>`.
+
+### Notes
+- `data-for` currently performs full re-rendering (no diffing algorithm).
+- Designed for lightweight starter templates and small-to-medium UI layers.
 
 ---
 
