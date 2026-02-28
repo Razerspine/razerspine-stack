@@ -9,15 +9,21 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **View Engine**: Introduced a lightweight reactive system for DOM manipulation.
 - **BaseComponent**: Added an abstract class for creating stateful UI components.
+- **setState**: Added a protected method to `BaseComponent` for safe, partial state updates.
 - **createStore**: Added a Proxy-based reactive store with deep observation support.
-- **applyBindings**: Added a synchronization engine supporting `data-bind`, `data-show` (with negation `!`), and `data-class`.
+- **applyBindings**: Added a synchronization engine supporting:
+  - `data-bind`: Text content synchronization.
+  - `data-show`: Visibility toggling (with negation `!` support).
+  - `data-class`: Conditional CSS class management.
+  - `data-for`: Array iteration with support for nested scopes and `$index` helpers.
+- **Scope Guarding**: Implemented `isDirectBinding` to ensure nested loops don't conflict with parent state.
 - **bindForms**: Added two-way data binding for input elements via `data-model`.
 - **bindClickEvents**: Added high-performance click event delegation via `data-click`.
 - **Documentation**: Added comprehensive JSDoc comments to all view-related utilities for better developer experience.
 
 ### Improved
 - **Project Structure**: Organized core scripts into `services/`, `view/`, and `utils/` directories.
-- **Type Safety**: Improved generic types for state management in components.
+- **Type Safety**: Improved generic types for state management in components using `Partial<T>`.
 
 ---
 
