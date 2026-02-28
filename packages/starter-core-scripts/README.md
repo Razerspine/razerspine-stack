@@ -31,7 +31,7 @@ A lightweight, dependency-free mechanism to sync your JavaScript state with the 
 ### BaseComponent & Store
 
 Extend `BaseComponent` to create reactive pages or components. The state is managed via JavaScript Proxies, meaning the
-DOM updates automatically when you modify `this.state`.
+DOM updates automatically when you modify this.state via `this.setState()`.
 
 - Define your Template (`home.pug`)
 
@@ -41,60 +41,63 @@ section.section
   
   .controls
     input(type="text" data-model="title" placeholder="Type to sync...")
-    button(data-click="updateTitle") Reset Title
+    button(data-click="resetTitle") Reset
+  
+  //- List rendering
+  ul.list(data-for="item:items")
+    li.item
+      span(data-bind="item.name")
+      span(data-bind="item_index")
   
   p.loader(data-show="isLoading") Processing...
-  div(data-class="status--success:isDone") Task Complete
 ```
 
 - Create your Logic (`home.ts`)
 
 ```ts
-import {BaseComponent} from '@razerspine/starter-core-scripts';
+import { BaseComponent } from '@razerspine/starter-core-scripts';
 import template from './home.pug';
+
+interface Item { name: string; }
 
 interface HomeState {
   title: string;
+  items: Item[];
   isLoading: boolean;
-  isDone: boolean;
 }
 
 export class HomePage extends BaseComponent<HomeState> {
   constructor(container: HTMLElement) {
-    super(container, { 
-      title: 'Hello Webpack!', 
-      isLoading: false,
-      isDone: false 
+    super(container, {
+      title: 'Hello Webpack!',
+      items: [{ name: 'First' }, { name: 'Second' }],
+      isLoading: false
     });
   }
 
   render() {
-    // 1. Inject Pug template
     this.container.innerHTML = template();
-    
-    // 2. Initialize reactive bindings and event listeners
     this.initEventListeners();
-    this.update(); 
+    this.update();
   }
 
-  updateTitle() {
-    this.setState({title: 'Title reset'}); // UI updates automatically
+  resetTitle() {
+    // Safe state update that triggers DOM re-render
+    this.setState({ title: 'Title reset' });
   }
 }
 ```
 
 ### Supported Data Attributes
 
-
-| Attribute    | Description                     | Example                             |
-|--------------|---------------------------------|-------------------------------------|
-| `data-bind`  | Updates `textContent`           | `span(data-bind="user.name")`       |
-| `data-model` | Two-way binding for inputs      | `input(data-model="email")`         |
-| `data-click` | Event delegation for clicks     | `button(data-click="submit")`       |
-| `data-show`  | Toggles visibility (supports !) | `div(data-show="!isError")`         |
-| `data-class` | Toggles CSS classes             | `div(data-class="active:isActive")` |
-
-
+| Attribute    | Description                                   | Example                             |
+|--------------|-----------------------------------------------|-------------------------------------|
+| `data-bind`  | Updates `textContent`                         | `span(data-bind="user.name")`       |
+| `data-model` | Two-way binding for inputs                    | `input(data-model="email")`         |
+| `data-click` | Event delegation for clicks                   | `button(data-click="submit")`       |
+| `data-show`  | Toggles visibility (supports !)               | `div(data-show="!isError")`         |
+| `data-class` | Toggles CSS classes                           | `div(data-class="active:isActive")` |
+| `data-for`   | Renders lists (supports nesting and `_index)` | `ul(data-for="item:items")`         |
 ---
 
 ## Exports (example)
