@@ -45,6 +45,15 @@ export abstract class BaseComponent<T extends object> {
     }
 
     /**
+     * Updates the component state cleanly and safely merges new partial data.
+     * This method preserves the Proxy store and triggers an update automatically.
+     * * @param partialState - An object containing only the state properties to update.
+     */
+    protected setState(partialState: Partial<T>): void {
+        Object.assign(this.state, partialState);
+    }
+
+    /**
      * Abstract method responsible for the initial HTML injection and setup.
      * Must be implemented by every subclass (e.g., HomePage, AboutPage).
      */
