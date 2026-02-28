@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.4.0] - 2026-02-28
+
+### Added
+- **View Engine**: Introduced a lightweight reactive system for DOM manipulation.
+- **BaseComponent**: Added an abstract class for creating stateful UI components.
+- **createStore**: Added a Proxy-based reactive store with deep observation support.
+- **applyBindings**: Added a synchronization engine supporting `data-bind`, `data-show` (with negation `!`), and `data-class`.
+- **bindForms**: Added two-way data binding for input elements via `data-model`.
+- **bindClickEvents**: Added high-performance click event delegation via `data-click`.
+- **Documentation**: Added comprehensive JSDoc comments to all view-related utilities for better developer experience.
+
+### Improved
+- **Project Structure**: Organized core scripts into `services/`, `view/`, and `utils/` directories.
+- **Type Safety**: Improved generic types for state management in components.
+
+---
+
 ## [0.3.2] - 2026-02-24
 
 ### Fixed
