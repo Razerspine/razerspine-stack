@@ -14,14 +14,11 @@ import {setValue} from './utils';
  * @param root - The container element to attach the delegated listener to.
  * @param context - The component instance (not used directly, but kept for API symmetry).
  * @param state - The reactive state object where data should be stored.
+ * @returns {() => void} A function to remove the event listener and cleanup.
  */
-export function bindForms(
-    root: HTMLElement,
-    context: any,
-    state: Record<string, any>
-): void {
+export function bindForms(root: HTMLElement, context: any, state: Record<string, any>): () => void {
 
-    root.addEventListener('input', (event) => {
+    const inputHandler = (event: Event) => {
         const target =
             event.target as HTMLInputElement |
                 HTMLTextAreaElement |
@@ -35,5 +32,14 @@ export function bindForms(
          * Proxy will automatically trigger onChange → update().
          */
         setValue(state, path, target.value);
-    });
+    };
+
+    root.addEventListener('input', inputHandler);
+
+    /**
+     * Returns a cleanup function to prevent memory leaks.
+     */
+    return () => {
+        root.removeEventListener('input', inputHandler);
+    };
 }
