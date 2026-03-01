@@ -1,17 +1,23 @@
 import '@views/pages/404/style.less';
 import template from '@views/pages/404/404.pug';
+import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
 
-export class NotFoundPage {
+export class NotFoundPage extends BaseComponent {
+  logger = new ConsoleLogger();
+
   constructor(container) {
-    this.container = container;
+    super(container, {});
   }
 
   render() {
     this.container.innerHTML = template();
-    this.onInit();
   }
 
   onInit() {
-    console.log('404 Page loaded!');
+    this.logger.success('404 Page initialized!');
+  }
+
+  onDestroy() {
+    this.logger.info('404 Page destroyed!');
   }
 }
