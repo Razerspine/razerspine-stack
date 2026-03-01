@@ -4,45 +4,42 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [0.4.0] - 2026-02-28
+## [0.4.0] - 2026-03-01
 
 ### Added
 
+- **Core Router**: Migrated the SPA Router to the `@razerspine/starter-core-scripts` package for centralized navigation
+  logic.
+- **Automated Lifecycle**: Introduced the `mount()` method in `BaseComponent` to orchestrate
+  `render -> initEventListeners -> update -> onInit` in a single call.
+- **Smart Rendering**: The Router now automatically detects and executes `mount()`, `render()`, or `destroy()` based on
+  component capabilities.
 - **View Engine**: Introduced a lightweight reactive system for DOM manipulation.
 - **Component Lifecycle**: Added `onInit()` and `onDestroy()` hooks to `BaseComponent` for managed setup and teardown.
-- **Memory Management**: Implemented a `cleanupCallbacks` registry in `BaseComponent` to automatically prune event listeners
-  and observers.
+- **Memory Management**: Implemented a `cleanupCallbacks` registry in `BaseComponent` to automatically prune event
+  listeners and observers.
 - **BaseComponent**: Added an abstract class for creating stateful UI components.
 - **setState**: Added a protected method to `BaseComponent` for safe, partial state updates.
 - **createStore**: Added a Proxy-based reactive store with deep observation support and a manual `disconnect()` utility.
-- **applyBindings**: Added a synchronization engine supporting:
-  - `data-bind`: Text content synchronization.
-  - `data-model`: Two-way input binding (state ↔ DOM).
-  - `data-show`: Visibility toggling (with negation `!` support).
-  - `data-class`: Conditional CSS class management.
-  - `data-for`: Array iteration with support for nested scopes and `_index` helpers.
+- **applyBindings**: Added a synchronization engine supporting `data-bind`, `data-model`, `data-show`, `data-class`, and
+  `data-for`.
 - **Scope Guarding**: Implemented `isDirectBinding` to ensure nested loops don't conflict with parent state.
 - **bindClickEvents**: Added high-performance click event delegation via `data-click`.
 
 ### Improved
 
-- **SPA Router**: Enhanced with lifecycle awareness; now calls `destroy()` on the current page instance before
-  navigating to a
-  new route.
-- **Proxy Optimization**: Added WeakMap-based proxy caching to prevent redundant Proxy creation and improve performance.
-- **Leak Prevention**: Refactored `bindForms` and `bindClickEvents` to return cleanup closures, ensuring no "dangling"
-  listeners remain after component destruction.
+- **Router Stability**: Added safety checks for root element existence and component method availability.
+- **Proxy Optimization**: Added WeakMap-based proxy caching to prevent redundant Proxy creation.
+- **Leak Prevention**: Refactored `bindForms` and `bindClickEvents` to return cleanup closures.
 - **Two-Way Binding**: Implemented reverse synchronization (state → input value) for `data-model`.
-- **Update Cycle**: Removed redundant manual `update()` calls in form binding (store-driven reactivity only).
-- **Internal Stability**: Improved deep reactivity consistency for nested state objects.
-- **Project Structure**: Organized core scripts into `services/`, `view/`, and `utils/` directories.
-- **Type Safety**: Improved generic types for state management in components using `Partial<T>`.
+- **Project Structure**: Consolidated core logic into the monorepo package for better maintainability.
+- **Type Safety**: Improved generic types for state management using `Partial<T>` and added `Route` interfaces.
 
 ### Notes
 
 - `data-for` currently performs full re-rendering (no diffing algorithm).
-- Designed for lightweight starter templates and small-to-medium UI layers.
-- **Breaking Change (Internal)**: `createStore` now returns an object `{state, disconnect}` instead of the raw Proxy.
+- **Architecture Evolution**: `createStore` now returns an object `{state, disconnect}` for explicit memory control.
+- Designed as a robust foundation for SPA/MPA hybrid templates.
 
 ---
 
