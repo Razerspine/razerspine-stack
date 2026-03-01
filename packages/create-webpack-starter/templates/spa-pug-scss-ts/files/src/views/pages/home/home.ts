@@ -1,42 +1,21 @@
 import '@views/pages/home/style.scss';
 import template from '@views/pages/home/home.pug';
 import pkg from '../../../../package.json';
-
-type TemplateMeta = {
-  appType: string;
-  script: string;
-  style: string;
-  version: string;
-  description: string;
-};
+import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
 
 type PackageType = {
   name: string;
   version: string;
   description?: string;
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
   [key: string]: any;
 };
 
-export class HomePage {
-  constructor(
-    private container: HTMLElement
-  ) {
-  }
-
-  public render() {
-    this.container.innerHTML = template();
-    this.onInit();
-  }
-
-  private onInit() {
-    console.log('Home Page loaded!');
-    const meta = getPackageMeta(pkg);
-    renderMeta(this.container, meta);
-  }
+interface HomeState {
+  appType: string;
+  script: string;
+  style: string;
+  version: string;
+  description: string;
 }
 
 function getPackageMeta(data: PackageType) {
@@ -46,16 +25,26 @@ function getPackageMeta(data: PackageType) {
     script: parts?.includes('ts') ? 'TypeScript' : 'JavaScript',
     style: parts?.includes('scss') ? 'SCSS' : 'Less',
     version: data?.version || '',
-    description: data?.description || ''
+    description: data?.description || '',
   };
 }
 
-function renderMeta(container: HTMLElement, meta: TemplateMeta) {
-  const elements = container.querySelectorAll<HTMLElement>('[data-bind]');
-  elements.forEach((el) => {
-    const key = el.dataset.bind;
-    if (key && key in meta) {
-      el.textContent = meta[key as keyof typeof meta];
-    }
-  });
+export class HomePage extends BaseComponent<HomeState> {
+  private logger = new ConsoleLogger();
+
+  constructor(container: HTMLElement) {
+    super(container, getPackageMeta(pkg));
+  }
+
+  public render() {
+    this.container.innerHTML = template();
+  }
+
+  protected onInit() {
+    this.logger.success('Home Page initialized!');
+  }
+
+  protected onDestroy() {
+    this.logger.info('Home Page Destroyed!');
+  }
 }

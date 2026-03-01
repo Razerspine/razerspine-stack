@@ -1,7 +1,8 @@
 import {HomePage} from '@views/pages/home/home';
 import {NotFoundPage} from '@views/pages/404/404';
+import {Route} from '@razerspine/starter-core-scripts';
 
-export const routes = [
+export const routes: Route[] = [
   {
     path: '/',
     component: HomePage,
