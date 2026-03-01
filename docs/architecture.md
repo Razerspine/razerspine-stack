@@ -1,5 +1,6 @@
 ## Architecture
 
+---
 
 ### System Architecture Diagram (Mermaid)
 
@@ -24,7 +25,7 @@ end
 subgraph L4 ["Shared Runtime Packages"]
     CORE["@razerspine/webpack-core"]
     UI["@razerspine/pug-ui-kit"]
-    SCRIPTS["@razerspine/starter-core-scripts"]
+    SCRIPTS["@razerspine/starter-core-scripts<br/>(Router + View Engine + BaseComponent)"]
 end
 
 subgraph L5 ["Build Layer"]
@@ -47,61 +48,147 @@ CLI -.->|"no runtime dependency"| PROJECT
 
 ---
 
-### Architectural Boundaries
+## Architectural Boundaries
 
 - The CLI is a generator tool and is never used at runtime.
 - Templates are copied into the generated project.
 - Shared runtime packages are published to npm and versioned independently.
 - The generated project is fully standalone.
+- Runtime architecture lives inside published packages — not inside the CLI.
 
 ---
 
-### Purpose
+## Purpose
 
 This repository is a **monorepo** that hosts:
 
 - a public CLI (`create-webpack-starter`)
 - official project templates
-- shared internal packages (e.g. `webpack-core`, `pug-ui-kit`)
+- shared runtime packages
+- shared build configuration packages
 
 The monorepo exists to ensure:
 
 - consistent development experience
 - shared tooling and conventions
 - atomic changes across related packages
+- synchronized architectural evolution
 
 ---
 
-### Core Principles
+## Core Principles
 
-**Strict separation of responsibilities**
+### Strict separation of responsibilities
 
-- CLI handles:
-  - user interaction (prompts, flags)
-  - template selection
-  - file copying
-  - dependency installation
-- Templates handle:
-  - full project structure
-  - dependencies
-  - webpack configuration
-  - assets and source code
+**CLI handles:**
+
+- user interaction (prompts, flags)
+- template selection
+- file copying
+- dependency installation
+
+**Templates handle:**
+
+- full project structure
+- declared dependencies
+- webpack configuration
+- application source code
+
+**Shared runtime packages handle:**
+
+- Router
+- Component lifecycle
+- Reactive state
+- View binding engine
 
 Generated projects have **no runtime dependency** on the CLI.
 
 ---
 
-### Application Types (SPA vs MPA)
+## Runtime Architecture (SPA & MPA)
 
-Templates may represent different application architectures:
+As of `starter-core-scripts@0.4.0`, runtime logic is centralized.
 
-- **MPA (Multi Page Application)**  
-  Multiple entry points and HTML pages.  
-  Optimized for static sites and content-heavy projects.
+### SPA Runtime
 
-- **SPA (Single Page Application)**  
-  Single entry point with client-side routing.  
-  Optimized for app-like behavior.
+SPA templates use:
+
+- Router (Singleton pattern)
+- BaseComponent abstraction
+- mount() lifecycle orchestration
+- Proxy-based reactive state
+- Declarative DOM bindings
+
+SPA lifecycle:
+
+```
+Route change
+  ↓
+destroy() previous component
+  ↓
+new Page(root)
+  ↓
+mount()
+  ↓
+render()
+  ↓
+initEventListeners()
+  ↓
+update()
+  ↓
+onInit()
+```
+
+The Router automatically detects and executes:
+
+- `mount()`
+- `render()`
+- `destroy()`
+
+Memory safety is handled via:
+
+- cleanup registry
+- Proxy disconnect
+- delegated event binding
+
+---
+
+### MPA Runtime
+
+MPA templates reuse the same reactive View Engine but without Router.
+
+Includes:
+
+- createStore()
+- applyBindings()
+- data-model
+- data-bind
+- data-show
+- data-class
+- data-for
+- delegated events via data-click
+
+MPA pages remain independent entry points.
+
+---
+
+## Application Types (SPA vs MPA)
+
+Templates represent different architectural modes:
+
+### MPA (Multi Page Application)
+
+- Multiple entry points
+- Multiple HTML pages
+- SEO-friendly output
+- Server-compatible structure
+
+### SPA (Single Page Application)
+
+- Single entry point
+- Client-side routing
+- Component lifecycle management
+- App-like behavior
 
 The CLI resolves:
 
@@ -110,6 +197,7 @@ The CLI resolves:
 - appType (spa / mpa)
 
 The selected template defines the project structure.
+
 The CLI does not modify architectural logic.
 
 If necessary, `patchWebpackConfig.ts` may apply minimal,
@@ -119,41 +207,40 @@ Templates remain the source of truth.
 
 ---
 
-### Package Types
+## Package Types
 
 - `create-webpack-starter` – published CLI
 - `webpack-core` – shared webpack configuration (npm package)
 - `pug-ui-kit` – UI assets & mixins (npm package)
-- `starter-core-scripts` – shared frontend services (npm package)
+- `starter-core-scripts` – Router + View Engine + BaseComponent (npm package)
 - `templates/*` – source templates (not npm packages)
 
---- 
+---
 
-### Workspace dependency model
+## Workspace Dependency Model
 
 This repository uses **npm workspaces**, which affects how and where
 `node_modules` directories are created.
 
-#### Important behavior
+### Important behavior
 
 When running `npm install` from the repository root:
 
-- npm builds a **single dependency graph** for all workspace packages
-- dependencies are **hoisted to the root `node_modules/` whenever possible**
-- individual workspace packages may **not have their own `node_modules/` directory**
+- npm builds a single dependency graph for all workspace packages
+- dependencies are hoisted to the root `node_modules/` whenever possible
+- individual workspace packages may not have their own `node_modules/` directory
 
 This is expected and correct behavior.
 
-#### Practical consequences
+### Practical consequences
 
-- A workspace package **can work correctly without a local `node_modules/` directory**
-- Node.js resolves dependencies by walking up the directory tree to the root
-- The presence or absence of `node_modules/` inside a workspace package
-  is an implementation detail, not a guarantee
+- A workspace package can work correctly without a local `node_modules/`
+- Node.js resolves dependencies by walking up the directory tree
+- Local `node_modules/` presence is not guaranteed
 
 Example:
 
-```text
+```
 root/
 ├─ node_modules/
 │  └─ inquirer
@@ -162,23 +249,11 @@ root/
 │     └─ (no node_modules/)
 ```
 
-In this case, create-webpack-starter correctly resolves inquirer
-from the root node_modules.
-
-#### Package-specific notes
-
-- `webpack-core`
-  - may have its own `node_modules` if dependencies cannot be fully hoisted
-- `pug-ui-kit`
-  - does not have `node_modules` because it has no runtime dependencies
-- `create-webpack-starter`
-  - relies on hoisted dependencies in the root workspace
-
-This behavior is intentional and should not be “fixed”.
+Resolution still works correctly.
 
 ---
 
-### Shared runtime packages
+## Shared Runtime Packages
 
 The monorepo contains shared runtime packages used by templates:
 
@@ -189,9 +264,9 @@ The monorepo contains shared runtime packages used by templates:
 These are published npm packages.
 
 Templates declare them as normal semver dependencies
-(e.g. `"^0.2.0"`), not as workspace dependencies.
+(e.g. `"^0.4.0"`), not as workspace dependencies.
 
-This guarantees that:
+This guarantees:
 
 - Generated projects are fully standalone
 - No workspace references leak into published templates
@@ -199,21 +274,21 @@ This guarantees that:
 
 ---
 
-### Templates and dependency installation
+## Templates and Dependency Installation
 
 Directories under `templates/` are **not npm workspaces**.
 
 npm does not install dependencies for templates automatically.
 
-Template projects receive their dependencies only when:
+Template projects receive dependencies only when:
 
 - the CLI copies the template into a target directory
 - the CLI runs `npm install` inside the generated project
 
-#### Local template development
+### Local template development
 
-During local template development, `node_modules/` and `dist/` directories
-may exist inside template folders.
+During local development, `node_modules/` and `dist/` may exist
+inside template folders.
 
 These directories:
 
@@ -225,11 +300,11 @@ This guarantees:
 
 - clean generated projects
 - predictable installs
-- no leakage of local development artifacts
+- no leakage of development artifacts
 
 ---
 
-### Dependency strategy
+## Dependency Strategy
 
 Templates must never use:
 
@@ -238,7 +313,7 @@ Templates must never use:
 - local path references
 
 Templates must always depend on published npm versions
-of shared packages using semver ranges (e.g. `^0.2.0`).
+of shared packages using semver ranges (e.g. `^0.4.0`).
 
 The CLI is responsible only for copying templates
-and running `npm install` in the target directory.
+and running `npm install` in the target directory.іі
