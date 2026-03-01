@@ -4,7 +4,13 @@
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/create-webpack-starter.svg)](./LICENSE)
 
-Create a modern webpack project using production-ready SPA and MPA templates.
+Scaffold a modern webpack project using production-ready SPA or MPA templates powered by the **frontend ecosystem**
+
+**Built on top of**:
+
+- `@razerspine/webpack-core`
+- `@razerspine/pug-ui-kit`
+- `@razerspine/starter-core-scripts`
 
 > ⚠️ Versions prior to 1.1.0 do not include SPA support.
 
@@ -48,34 +54,70 @@ All feature flags must be provided together in non-interactive mode.
 | `--no-install`            | Skip dependency installation       |
 | `--dry-run`               | Show actions without writing files |
 | `-v`, `--version`         | Show CLI version                   |
+
 ---
 
-## 🏗 Project Types
+## 🏗 Project Architectures
 
 ### SPA (Single Page Application)
 
-- Pug-based layout system
-- Router setup included
-- Modular page structure
-- TypeScript-ready architecture
-- i18n-ready structure
-- Production-optimized webpack config
+**SPA templates include**:
 
-**Best for**:
+- Built-in `Router` (Singleton pattern)
+- `BaseComponent` lifecycle
+- Proxy-based reactive state
+- Automatic mount → render → bind → update orchestration
+- Declarative navigation (`data-link`)
+- Programmatic navigation (`Router.navigate()`)
+
+### SPA Lifecycle
+
+```text
+Route change
+  ↓
+destroy() previous component
+  ↓
+new Page(root)
+  ↓
+mount()
+  ↓
+render()
+  ↓
+bind events
+  ↓
+update()
+  ↓
+onInit()
+```
+
+**Memory safety is handled automatically via**:
+
+- cleanup registry
+- Proxy disconnect
+- delegated event binding
+
+### Best for:
 
 - dashboards
 - admin panels
 - applications
 - client-side routed projects
 
+---
+
 ### MPA (Multi Page Application)
 
-- Multiple independent pages
-- Server-ready HTML output
-- Classic multi-entry webpack setup
-- SEO-friendly structure
+MPA templates use the same reactive engine but without Router.
 
-**Best for**:
+**Includes**:
+
+- Multi-entry webpack setup
+- Independent page scripts
+- Proxy-based reactivity via `createStore`
+- Manual binding with `applyBindings`
+- Optional delegated events via `bindClickEvents` and `bindForms`
+
+### Best for:
 
 - landing pages
 - marketing sites
@@ -105,49 +147,42 @@ The CLI resolves the correct template internally.
 
 ---
 
-## 📁 Generated SPA Structure (Example)
+## 📁 Generated Project Structure
+
+### Example (SPA):
 
 ```text
 src/
   assets/
+    scripts/
+      app.ts
+      routes.ts
   views/
+    layout/
+    pages/
   types/
-  ...
 webpack.config.js
 tsconfig.json
 postcss.config.js
 ```
 
-Templates are fully standalone.
-No hidden dependencies on the CLI package.
+### Example (MPA):
 
----
+```text
+src/
+  assets/
+  views/
+    layout/
+    pages/
+webpack.config.js
+```
 
-## 📚 Documentation
+**Generated projects are**:
 
-Detailed documentation is available in the `/docs` directory:
-
-- [Getting Started](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/getting-started.md)
-- [Templates](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/templates.md)
-- [webpack-core](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/webpack-core.md)
-- [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/faq.md)
-- [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/testing.md)
-
----
-
-## 📋 Requirements
-
-- Node.js >= 18
-- npm / pnpm / yarn
-
----
-
-## 🛠 How It Works
-
-1. CLI resolves template based on selected flags
-2. Files are copied into target directory
-3. Dependencies are installed (unless disabled)
-4. Project is ready to run
+- Fully standalone
+- Not coupled to the CLI
+- Ready for production builds
+- Safe to deploy immediately
 
 ---
 
@@ -157,9 +192,25 @@ Detailed documentation is available in the `/docs` directory:
 - Pug template system
 - SCSS or Less support
 - JavaScript or TypeScript support
-- SPA router (in SPA mode)
+- SPA Router (SPA mode)
+- Reactive View Engine (SPA & MPA)
 - Clean scalable project structure
-- Fully standalone project
+- Memory-safe component lifecycle (SPA)
+- Fully standalone output
+
+---
+
+## 📚 Documentation
+
+Detailed documentation is available in the `/docs` directory:
+
+- [Getting Started](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/getting-started.md)
+- [Templates](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/templates.md)
+- [SPA Examples](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/spa-examples.md)
+- [MPA Examples](http://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/mpa-examples.md)
+- [webpack-core](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/webpack-core.md)
+- [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/faq.md)
+- [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/testing.md)
 
 ---
 
@@ -174,6 +225,23 @@ This project uses real end-to-end tests to verify:
 - filesystem correctness
 
 Tests simulate real `npx` usage.
+
+---
+
+## 📋 Requirements
+
+- Node.js >= 18
+- npm / pnpm / yarn
+
+---
+
+## 🛠 How It Works
+
+1. CLI validates selected flags
+2. Internal template is resolved
+3. Files are copied
+4. Dependencies are installed (unless disabled)
+5. Project is ready to run
 
 ---
 
