@@ -110,6 +110,17 @@ export abstract class BaseComponent<T extends object> {
     }
 
     /**
+     * Mounts the component to the DOM and initializes the lifecycle.
+     * This orchestrates rendering, event binding, DOM syncing, and the onInit hook.
+     */
+    public mount(): void {
+        this.render();               // Child class injects HTML
+        this.initEventListeners();   // Base class binds events (data-click, forms)
+        this.update();               // Base class syncs state to DOM (data-bind, etc.)
+        this.onInit();               // Base class calls the optional hook
+    }
+
+    /**
      * Abstract method responsible for the initial HTML injection and setup.
      * Must be implemented by every subclass (e.g., HomePage, AboutPage).
      */
