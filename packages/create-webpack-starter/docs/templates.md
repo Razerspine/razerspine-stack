@@ -1,6 +1,10 @@
 # Templates
 
-`create-webpack-starter` ships with production-ready SPA and MPA templates.
+`create-webpack-starter` ships with production-ready SPA and MPA templates built on top of:
+
+- `@razerspine/webpack-core`
+- `@razerspine/pug-ui-kit`
+- `@razerspine/starter-core-scripts`
 
 Templates are resolved automatically based on three dimensions:
 
@@ -14,16 +18,16 @@ Users do **not** select template names directly.
 
 ## Template Matrix
 
-| App Type | Style | Script  | Internal Key      |
-|----------|-------|---------|-------------------|
-| SPA      | SCSS  | TS      | `spa-pug-scss-ts` |
-| SPA      | SCSS  | JS      | `spa-pug-scss-js` |
-| SPA      | Less  | TS      | `spa-pug-less-ts` |
-| SPA      | Less  | JS      | `spa-pug-less-js` |
-| MPA      | SCSS  | TS      | `mpa-pug-scss-ts` |
-| MPA      | SCSS  | JS      | `mpa-pug-scss-js` |
-| MPA      | Less  | TS      | `mpa-pug-less-ts` |
-| MPA      | Less  | JS      | `mpa-pug-less-js` |
+| App Type | Style | Script | Internal Key      |
+|----------|-------|--------|-------------------|
+| SPA      | SCSS  | TS     | `spa-pug-scss-ts` |
+| SPA      | SCSS  | JS     | `spa-pug-scss-js` |
+| SPA      | Less  | TS     | `spa-pug-less-ts` |
+| SPA      | Less  | JS     | `spa-pug-less-js` |
+| MPA      | SCSS  | TS     | `mpa-pug-scss-ts` |
+| MPA      | SCSS  | JS     | `mpa-pug-scss-js` |
+| MPA      | Less  | TS     | `mpa-pug-less-ts` |
+| MPA      | Less  | JS     | `mpa-pug-less-js` |
 
 Template keys are considered **internal implementation details**.
 
@@ -31,40 +35,165 @@ Template keys are considered **internal implementation details**.
 
 ## How Resolution Works
 
-1. CLI validates flags
+1. CLI validates feature flags
 2. CLI derives internal template key
 3. Template files are copied
 4. Dependencies are installed
+5. Project becomes fully standalone
 
 In non-interactive mode, all feature flags must be provided.
 
 ---
 
-## SPA Template Structure
+## SPA Templates (v0.4.0 Architecture)
 
-SPA templates include:
+SPA templates are powered by:
 
-- Router setup
-- `app.ts` / `app.js` entry
-- Modular page folders
-- Layout system
-- i18n-ready structure
-- Production webpack configuration
+- `Router` (Singleton pattern)
+- `BaseComponent` lifecycle
+- Reactive Proxy store
+- Automatic mount → render → bind → update orchestration
 
-SPA is optimized for application-like behavior.
+### Enty Point
+
+```ts
+new Router(routes);
+```
+
+**The Router**:
+
+- Handles navigation
+- Updates browser history
+- Manages component lifecycle
+- Automatically calls:
+- `mount()` (if available)
+- `render()` (fallback)
+- `destroy()` (on route change)
+
+### SPA Lifecycle Flow
+
+```text
+Route change
+  ↓
+destroy() previous component
+  ↓
+new Component(root)
+  ↓
+mount()
+  ↓
+render()
+  ↓
+initEventListeners()
+  ↓
+update()
+  ↓
+onInit()
+```
+
+**Memory safety is guaranteed via**:
+
+- `cleanupCallbacks` registry
+- automatic `Proxy` disconnect
+- delegated event binding
+
+### SPA Project Structure
+
+**Typical structure**:
+
+```text
+src/
+  assets/
+    scripts/
+      app.ts
+      routes.ts
+  views/
+    pages/
+      home/
+        home.ts
+        home.pug
+        style.scss
+```
+
+**Each page**:
+
+- Extends `BaseComponent`
+- Implements render()
+- Optionally overrides `onInit()` and `onDestroy()`
+
+### SPA Capabilities
+
+- Client-side navigation
+- Declarative navigation via `[data-link]`
+- Programmatic navigation via `Router.navigate()`
+- Reactive DOM binding:
+  - `data-bind`
+  - `data-model`
+  - `data-show`
+  - `data-class`
+  - `data-for`
+- Automatic memory cleanup
+- Hybrid SPA/MPA-ready architecture
+
+SPA templates are optimized for application-like behavior.
 
 ---
 
-## MPA Template Structure
+## MPA Templates (Reactive, No Router)
 
-MPA templates include:
+**MPA templates use**:
 
-- Multi-entry configuration
-- Independent page outputs
-- Static HTML generation
-- SEO-friendly setup
+- `createStore`
+- `applyBindings`
+- `bindClickEvents`
+- `bindForms`
+- Class-based state management
+- No Router
 
-MPA is optimized for traditional websites.
+Each page is independently rendered by webpack multi-entry.
+
+### MPA Initialization Pattern
+
+```ts
+const { state } = createStore(initialState, () => update());
+applyBindings(document.body, state);
+```
+
+**Lifecycle**:
+
+```text
+DOMContentLoaded
+  ↓
+new PageClass()
+  ↓
+createStore()
+  ↓
+update()
+```
+
+### MPA Project Structure
+
+```text
+src/
+  views/
+    pages/
+      home/
+        home.ts
+        home.pug
+        style.scss
+```
+
+**Each page**:
+
+- Manually initializes reactivity
+- Calls `applyBindings`
+- Uses Proxy-based store
+- Has no navigation system
+
+**MPA is optimized for**:
+
+- Traditional multi-page websites
+- SEO-heavy projects
+- Independent entry points
 
 ---
 
@@ -75,8 +204,9 @@ Templates are:
 - Copied (not referenced)
 - Fully standalone
 - Production-ready
+- Memory-safe
 - Extendable
-- Free from CLI runtime coupling
+- Not coupled to CLI runtime
 
 ---
 
@@ -94,7 +224,7 @@ These are installed as normal semver dependencies.
 
 ## Aliases
 
-Available out of the box:
+**Available out of the box**:
 
 ```text
 @views
@@ -105,4 +235,8 @@ Available out of the box:
 @icons
 ```
 
-Configured via webpack and ready for use in Pug, JS, and styles.
+**Configured via webpack and ready for**:
+
+- Pug
+- TypeScript / JavaScript
+- SCSS / Less
