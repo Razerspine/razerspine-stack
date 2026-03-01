@@ -73,22 +73,35 @@ export class HomePage extends BaseComponent<HomeState> {
 
 ### 🗺️ SPA Routing
 
-The built-in `Router` handles navigation and automatically manages the lifecycle of your components (calling `mount()`
-on
-enter and `destroy()` on leave).
+The built-in `Router` handles navigation and automatically manages component lifecycles. Thanks to the **Singleton
+pattern**, you can navigate from anywhere in your app without holding a reference to the router instance.
+
+#### Initialization (app.ts)
 
 ```ts
 import {Router, Route} from '@razerspine/starter-core-scripts';
 import {HomePage} from './views/pages/home';
-import {AboutPage} from './views/pages/about';
 
 const routes: Route[] = [
-  {path: '/', component: HomePage, title: 'Home'},
-  {path: '/about', component: AboutPage, title: 'About Us'}
+  {path: '/', component: HomePage, title: 'Home'}
 ];
 
-// Initializes listeners and renders the current path
+// Initialize once at the entry point
 new Router(routes, 'app-root');
+```
+
+### Programmatic Navigation (Inside any component)
+
+```ts
+import {Router} from '@razerspine/starter-core-scripts';
+
+export class LoginPage extends BaseComponent<any> {
+  // ...
+  onLoginSuccess() {
+    // Accessible globally via static method
+    Router.navigate('/dashboard');
+  }
+}
 ```
 
 ### Supported Data Attributes
@@ -104,14 +117,14 @@ new Router(routes, 'app-root');
 
 ### ⚙️ Technical Notes (v0.4.0 Updates)
 
-- **Smart Rendering**: The `Router` detects if a component has a `mount()` method (BaseComponent) or a simple `render()`.
-- **Memory Management**: `BaseComponent` includes a `cleanupCallbacks` registry. Use it to prevent memory leaks in custom
-  logic.
+- **Singleton Router**: The `Router` class stores its instance internally. Use `Router.navigate(path)` for programmatic
+  redirects.
+- **Smart Rendering**: The `Router` detects if a component has a `mount()` method (`BaseComponent`) or a simple
+  `render()`.
+- **Memory Management**: `BaseComponent` includes a `cleanupCallbacks` registry to prevent memory leaks.
 - **Reactivity**: Powered by Proxies with `WeakMap` caching for performance.
-- **Store Disconnect**: `createStore` now returns `{ state, disconnect }`. The `BaseComponent` handles the disconnect
-  automatically on `destroy()`.
-- **Direct Bindings**: `data-for` uses scope guarding to prevent nested loops from conflicting with parent state
-  properties.
+- **Store Disconnect**: `createStore` now returns `{state, disconnect}`. BaseComponent handles this automatically.
+- **Direct Bindings**: `data-for` uses scope guarding to prevent nested loops from conflicting with parent state.
 
 ---
 

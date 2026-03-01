@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 
 - **Core Router**: Migrated the SPA Router to the `@razerspine/starter-core-scripts` package for centralized navigation
   logic.
+- **Singleton Navigation**: Implemented Singleton pattern in `Router`, enabling global programmatic navigation via
+  `Router.navigate()`.
 - **Automated Lifecycle**: Introduced the `mount()` method in `BaseComponent` to orchestrate
   `render -> initEventListeners -> update -> onInit` in a single call.
 - **Smart Rendering**: The Router now automatically detects and executes `mount()`, `render()`, or `destroy()` based on
@@ -28,6 +30,8 @@ All notable changes to this project will be documented in this file.
 
 ### Improved
 
+- **Developer Experience**: Removed the need to pass Router instances to components; navigation is now accessible
+  globally.
 - **Router Stability**: Added safety checks for root element existence and component method availability.
 - **Proxy Optimization**: Added WeakMap-based proxy caching to prevent redundant Proxy creation.
 - **Leak Prevention**: Refactored `bindForms` and `bindClickEvents` to return cleanup closures.
