@@ -1,6 +1,93 @@
 # Changelog
 
-[1.1.2] - 2026-02-25
+## [1.1.3] - 2026-03-01
+
+### Major Template Architecture Upgrade
+
+This release upgrades all templates to the new reactive View Engine powered by  
+`@razerspine/starter-core-scripts@0.4.0`.
+
+---
+
+### Updated
+
+- All templates upgraded to **v0.0.4**
+- Upgraded to `@razerspine/starter-core-scripts@^0.4.0`
+- Added `overrides` for dependency stability:
+  - `minimatch@10.2.4`
+- Updated internal Router usage to the centralized npm package version
+- Fully updated `/docs` directory for SPA & MPA architecture
+
+---
+
+### Added
+
+- **Centralized Router (from starter-core-scripts)**
+  - Router migrated from template-local implementation to shared npm package
+  - Singleton navigation via `Router.navigate()`
+  - Automatic lifecycle orchestration support
+
+- **BaseComponent Architecture (SPA templates)**
+  - `mount()` lifecycle orchestration
+  - `onInit()` and `onDestroy()` hooks
+  - Built-in cleanup registry for memory safety
+  - Proxy-based reactive state via `setState()`
+
+- **Reactive View Engine (SPA & MPA)**
+  - `createStore()` with deep Proxy observation
+  - `applyBindings()` supporting:
+    - `data-bind`
+    - `data-model`
+    - `data-show`
+    - `data-class`
+    - `data-for`
+  - Delegated events via `data-click`
+  - Automatic cleanup closures for listeners
+
+- **Improved SPA lifecycle**
+
+  Router now automatically detects and executes:
+  - `mount()`
+  - `render()`
+  - `destroy()`
+
+  based on component capabilities.
+
+---
+
+### Improved
+
+- Stronger memory management via cleanup registry
+- WeakMap-based Proxy caching (via core package)
+- Better type safety using `Partial<T>` state generics
+- Cleaner SPA template structure
+- More production-ready default output
+- Stronger architectural separation between CLI and runtime engine
+- Unified Router + View Engine foundation across SPA & MPA
+
+---
+
+### Documentation
+
+- Updated:
+  - Getting Started
+  - Templates
+  - SPA Architecture
+  - MPA Architecture
+- Improved explanation of lifecycle and Router behavior
+
+---
+
+### Notes
+
+- This release represents a structural evolution of generated projects.
+- No CLI contract changes.
+- No breaking changes for CLI usage.
+- Existing generated projects are unaffected unless manually upgraded.
+
+---
+
+## [1.1.2] - 2026-02-25
 
 ### Updated
 
