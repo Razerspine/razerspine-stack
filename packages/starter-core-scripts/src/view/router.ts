@@ -13,8 +13,12 @@ export interface Route {
 /**
  * SPA Router service for client-side navigation.
  * Manages URL changes, updates the DOM, and handles component lifecycles.
+ * Implements Singleton pattern for global access to navigation.
  */
 export class Router {
+    /** Global instance for static access. */
+    private static instance: Router | null = null;
+
     /** The root element where components will be rendered. */
     private root: HTMLElement | null;
     /** Reference to the currently active page instance. */
@@ -31,7 +35,23 @@ export class Router {
             console.warn(`Router: Element with id "${rootId}" not found. Navigation will not render.`);
         }
 
+        // Store the instance for static navigate() calls
+        Router.instance = this;
+
         this.init();
+    }
+
+    /**
+     * Static helper to navigate from anywhere in the application.
+     * Use this in components: Router.navigate('/about');
+     * @param path - The destination URL path.
+     */
+    public static navigate(path: string): void {
+        if (Router.instance) {
+            Router.instance.navigate(path);
+        } else {
+            console.error('Router instance not found. Ensure "new Router()" is called in your entry point.');
+        }
     }
 
     /**
