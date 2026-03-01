@@ -9,6 +9,7 @@ Core frontend services and reactive View Engine used by official webpack starter
 This package provides production-ready utilities for:
 
 - **Reactive View Engine**: Lightweight data-binding and state management.
+- **SPA Router**: Client-side navigation with automated lifecycle management.
 - **Theme Management**: Light/dark mode with persistence.
 - **Internationalization**: DOM-based i18n support.
 - **API Requests**: Structured Fetch wrapper.
@@ -26,66 +27,68 @@ npm install @razerspine/starter-core-scripts
 
 ## 🚀 Reactive View Engine (New in v0.4.0)
 
-A lightweight, dependency-free mechanism to sync your JavaScript state with the DOM using `data-` attributes.
+A lightweight, dependency-free mechanism to sync your JavaScript state with the DOM and manage SPA navigation.
 
-### BaseComponent & Store
+### BaseComponent & Lifecycle
 
-Extend `BaseComponent` to create reactive pages or components. The state is managed via JavaScript Proxies, meaning the
-DOM updates automatically when you modify this.state via `this.setState()`.
+Extend `BaseComponent` to create reactive pages. In **v0.4.0**, we introduced an automated lifecycle. You no longer need
+to
+manually call update or event binders.
 
-- Define your Template (`home.pug`)
+- `mount()`: Orchestrates the entire startup (`render` -> `bind events` -> `sync state` -> `onInit`).
+- `onInit()`: Your hook for API calls or setup logic.
+- `onDestroy()`: Cleanup hook for timers or subscriptions.
 
-```pug
-section.section
-  h1(data-bind="title")
-  
-  .controls
-    input(type="text" data-model="title" placeholder="Type to sync...")
-    button(data-click="resetTitle") Reset
-  
-  //- List rendering
-  ul.list(data-for="item:items")
-    li.item
-      span(data-bind="item.name")
-      span(data-bind="item_index")
-  
-  p.loader(data-show="isLoading") Processing...
-```
-
-- Create your Logic (`home.ts`)
+### Example: Logic (home.ts)
 
 ```ts
-import { BaseComponent } from '@razerspine/starter-core-scripts';
+import {BaseComponent} from '@razerspine/starter-core-scripts';
 import template from './home.pug';
-
-interface Item { name: string; }
 
 interface HomeState {
   title: string;
-  items: Item[];
-  isLoading: boolean;
+  count: number;
 }
 
 export class HomePage extends BaseComponent<HomeState> {
   constructor(container: HTMLElement) {
-    super(container, {
-      title: 'Hello Webpack!',
-      items: [{ name: 'First' }, { name: 'Second' }],
-      isLoading: false
-    });
+    super(container, {title: 'SPA Template', count: 0});
   }
 
-  render() {
+  // Mandatory: Only responsible for injecting HTML
+  protected render() {
     this.container.innerHTML = template();
-    this.initEventListeners();
-    this.update();
   }
 
-  resetTitle() {
-    // Safe state update that triggers DOM re-render
-    this.setState({ title: 'Title reset' });
+  // Optional: Called automatically after mounting
+  protected onInit() {
+    console.log('Component is live!');
+  }
+
+  increment() {
+    this.setState({count: this.state.count + 1});
   }
 }
+```
+
+### 🗺️ SPA Routing
+
+The built-in `Router` handles navigation and automatically manages the lifecycle of your components (calling `mount()`
+on
+enter and `destroy()` on leave).
+
+```ts
+import {Router, Route} from '@razerspine/starter-core-scripts';
+import {HomePage} from './views/pages/home';
+import {AboutPage} from './views/pages/about';
+
+const routes: Route[] = [
+  {path: '/', component: HomePage, title: 'Home'},
+  {path: '/about', component: AboutPage, title: 'About Us'}
+];
+
+// Initializes listeners and renders the current path
+new Router(routes, 'app-root');
 ```
 
 ### Supported Data Attributes
@@ -99,12 +102,16 @@ export class HomePage extends BaseComponent<HomeState> {
 | `data-class` | Toggles CSS classes                           | `div(data-class="active:isActive")` |
 | `data-for`   | Renders lists (supports nesting and `_index)` | `ul(data-for="item:items")`         |
 
-### ⚙️ Technical Notes
+### ⚙️ Technical Notes (v0.4.0 Updates)
 
-- Deep reactivity is powered by JavaScript Proxies with internal WeakMap caching.
-- Nested objects are fully reactive.
-- `data-for` performs full re-rendering (no virtual DOM diffing).
-- Event listeners use delegation for optimal performance.
+- **Smart Rendering**: The `Router` detects if a component has a `mount()` method (BaseComponent) or a simple `render()`.
+- **Memory Management**: `BaseComponent` includes a `cleanupCallbacks` registry. Use it to prevent memory leaks in custom
+  logic.
+- **Reactivity**: Powered by Proxies with `WeakMap` caching for performance.
+- **Store Disconnect**: `createStore` now returns `{ state, disconnect }`. The `BaseComponent` handles the disconnect
+  automatically on `destroy()`.
+- **Direct Bindings**: `data-for` uses scope guarding to prevent nested loops from conflicting with parent state
+  properties.
 
 ---
 
@@ -201,9 +208,8 @@ logger.success('Application initialized');
 
 ## Requirements
 
-- Modern browser (Fetch API support)
-- TypeScript 5+
-- Bundler environment recommended
+- **Modern Browsers**: ES6+ (Proxy, WeakMap, Fetch support required).
+- TypeScript: 5.0+ recommended.
 
 ---
 
