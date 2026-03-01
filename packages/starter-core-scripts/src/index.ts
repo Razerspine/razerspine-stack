@@ -4,10 +4,12 @@ export {default as ApiService} from './services/api-service';
 export {ApiError} from './services/api-service';
 export {default as ConsoleLogger} from './utils/console-logger';
 export {BaseComponent} from './view/base-component';
+export {Router} from './view/router';
 
 export type {Theme, ThemeServiceOptions} from './services/theme-service';
 export type {Locales, Translations} from './services/translation-service';
 export type {RequestConfig} from './services/api-service';
+export type {Route} from './view/router';
 
 export {applyBindings} from './view/apply-bindings';
 export {bindClickEvents} from './view/bind-click-events';
