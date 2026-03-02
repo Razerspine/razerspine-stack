@@ -41,9 +41,14 @@ export class DIContainer {
     }
 
     /**
-     * Resolves a dependency. If it is not registered, it attempts to instantiate it.
+     * Resolves a dependency.
+     *
+     * In strict mode, a dependency MUST be explicitly registered
+     * before it can be resolved. Automatic instantiation is not allowed.
+     *
      * @param token - The class to resolve.
      * @returns The singleton instance of the requested class.
+     * @throws Error if the service is not registered.
      * @throws Error if a circular dependency is detected.
      */
     public resolve<T>(token: ProviderToken<T>): T {
@@ -55,15 +60,14 @@ export class DIContainer {
             throw new Error(`Circular dependency detected while resolving ${token.name}`);
         }
 
-        this.resolving.add(token);
-
-        try {
-            const instance = new (token as any)();
-            this.instances.set(token, instance);
-            return instance;
-        } finally {
-            this.resolving.delete(token);
-        }
+        // 🔒 STRICT MODE:
+        // Services must be explicitly registered during bootstrap.
+        // Automatic instantiation via `new token()` is intentionally disabled
+        // to prevent silent misconfiguration and missing constructor dependencies.
+        throw new Error(
+            `Service "${token.name}" is not registered in the DI container.\n` +
+            `Ensure it is provided in bootstrapApplication({ providers: [...] }).`
+        );
     }
 
     /**
