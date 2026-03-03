@@ -21,8 +21,12 @@ export class Router {
 
     /** The root element where components will be rendered. */
     private root: HTMLElement | null;
+
     /** Reference to the currently active page instance. */
     private currentPage: any = null;
+
+    /** Prevents multiple lifecycle initializations. */
+    private initialized = false;
 
     /**
      * @param routes - Array of route definitions.
@@ -37,8 +41,6 @@ export class Router {
 
         // Store the instance for static navigate() calls
         Router.instance = this;
-
-        this.init();
     }
 
     /**
@@ -55,10 +57,18 @@ export class Router {
     }
 
     /**
-     * Initializes event listeners for navigation and performs the initial render.
-     * @private
+     * Starts router lifecycle:
+     * - attaches navigation listeners
+     * - performs initial render
+     *
+     * Safe to call only once.
+     * Subsequent calls are ignored.
      */
-    private init(): void {
+    public start(): void {
+        if (this.initialized) return;
+
+        this.initialized = true;
+
         // Listen for browser Back/Forward navigation
         window.addEventListener('popstate', () => this.render(window.location.pathname));
 
