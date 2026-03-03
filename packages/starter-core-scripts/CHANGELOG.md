@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.5.0] - 2026-03-03
+
+### Added
+
+- **DI & Bootstrap**: Introduced `provideRouter(routes)` helper, enabling route configuration via the providers array in
+  an Angular-like declarative style.
+- **Router**: Added public `start()` method to manually trigger the router lifecycle (attaching event listeners and
+  performing the initial render).
+- **Router**: Added an `initialized` flag to prevent redundant router re-initialization.
+
+### Changed
+
+- **Bootstrap**: `bootstrapApplication` now returns `Promise<void>`, allowing developers to await full application
+  readiness (including async providers and DOM initialization).
+- **AppConfig**: The `routes` field is now optional (`routes?`), as configuration can be provided via `provideRouter`
+  within the `providers` array.
+- **Router**: The constructor no longer triggers routing automatically (`init()` removed from constructor). Startup is
+  now explicitly handled via `start()`.
+- **Router**: Renamed internal `init()` to `start()` and made it public for precise control over the initialization
+  sequence.
+
+### Refactored
+
+- **Initialization Flow**: Updated `bootstrapApplication` logic to register the `Router` instance in the `DIContainer` *
+  *before** calling `start()`. This ensures that `inject(Router)` works correctly within components created during the
+  initial render.
+- **Provider Registration**: Enhanced provider handling in `bootstrapApplication` with support for asynchronous
+  factories and automatic skipping of manual router registration when `provideRouter` is used.
+- **Error Handling**: Improved the bootstrap error propagation mechanism using Promise rejection for better integration
+  with parent call sites.
+
+### Breaking Changes
+
+- **Router Initialization**: The `Router` constructor no longer calls `init()` (now `start()`) automatically. If you are
+  manually instantiating the `Router` outside of `bootstrapApplication`, you **must** now explicitly call `.start()` to
+  enable navigation listeners and perform the initial render.
+- **Internal Method Rename**: The private `init()` method has been replaced by the public `start()` method.
+
+---
+
 ## [0.4.0] - 2026-03-01
 
 ### Added
