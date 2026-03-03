@@ -6,10 +6,15 @@ import {createStore} from './store';
 /**
  * Base abstract class for UI components and pages.
  * Provides reactive state management and automatic DOM synchronization.
- * * @template T - An object interface defining the component's state structure.
+ *
+ * Supports both synchronous and asynchronous lifecycle hooks.
+ *
+ * @template T - An object interface defining the component's state structure.
  */
 export abstract class BaseComponent<T extends object> {
-    /** * The reactive state object.
+
+    /**
+     * The reactive state object.
      * Any modifications to this object will automatically trigger the update() method.
      */
     private _state: T;
@@ -24,7 +29,8 @@ export abstract class BaseComponent<T extends object> {
      * Accessor for the component's current state.
      * Returns a read-only version of the state to prevent direct mutations.
      * Use {@link setState} to modify the state.
-     * * @returns {Readonly<T>} The current state object.
+     *
+     * @returns {Readonly<T>} The current state object.
      */
     protected get state(): Readonly<T> {
         return this._state;
@@ -50,7 +56,8 @@ export abstract class BaseComponent<T extends object> {
     /**
      * Binds DOM event listeners to the container.
      * Includes click delegation (data-click) and two-way form binding (data-model).
-     * Usually called within onInit() or after the initial render.
+     *
+     * Usually called during mount().
      */
     protected initEventListeners(): void {
         /**
@@ -72,7 +79,8 @@ export abstract class BaseComponent<T extends object> {
     /**
      * Updates the component state cleanly and safely merges new partial data.
      * This method preserves the Proxy store and triggers an update automatically.
-     * * @param partialState - An object containing only the state properties to update.
+     *
+     * @param partialState - An object containing only the state properties to update.
      */
     protected setState(partialState: Partial<T>): void {
         Object.assign(this._state as object, partialState);
@@ -80,9 +88,16 @@ export abstract class BaseComponent<T extends object> {
 
     /**
      * Lifecycle hook: Called after the component has been initialized and rendered.
-     * Can be overridden in subclasses for API calls or additional setup.
+     *
+     * Can be overridden in subclasses for:
+     * - API calls
+     * - async data loading
+     * - subscriptions
+     * - additional setup
+     *
+     * May return a Promise to support async initialization.
      */
-    protected onInit(): void {
+    protected onInit(): void | Promise<void> {
     }
 
     /**
@@ -94,6 +109,7 @@ export abstract class BaseComponent<T extends object> {
 
     /**
      * Destroys the component instance.
+     *
      * - Triggers the onDestroy hook.
      * - Executes all registered cleanup callbacks (event listeners, store disconnect).
      * - Clears the container's inner HTML.
@@ -111,18 +127,39 @@ export abstract class BaseComponent<T extends object> {
 
     /**
      * Mounts the component to the DOM and initializes the lifecycle.
-     * This orchestrates rendering, event binding, DOM syncing, and the onInit hook.
+     *
+     * Execution order:
+     * 1. render()
+     * 2. initEventListeners()
+     * 3. update()
+     * 4. onInit()
+     *
+     * Supports async render() and async onInit().
+     *
+     * Router may await this method to ensure full page readiness.
      */
-    public mount(): void {
-        this.render();               // Child class injects HTML
-        this.initEventListeners();   // Base class binds events (data-click, forms)
-        this.update();               // Base class syncs state to DOM (data-bind, etc.)
-        this.onInit();               // Base class calls the optional hook
+    public async mount(): Promise<void> {
+        // 1. Initial HTML injection (can be async)
+        await this.render();
+
+        // 2. Bind DOM events
+        this.initEventListeners();
+
+        // 3. Initial state → DOM sync
+        this.update();
+
+        // 4. Optional async initialization hook
+        await this.onInit();
     }
 
     /**
      * Abstract method responsible for the initial HTML injection and setup.
+     *
+     * Can optionally return a Promise to support:
+     * - async template loading
+     * - data prefetching before DOM injection
+     *
      * Must be implemented by every subclass (e.g., HomePage, AboutPage).
      */
-    abstract render(): void;
+    abstract render(): void | Promise<void>;
 }
