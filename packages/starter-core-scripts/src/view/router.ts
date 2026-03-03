@@ -41,6 +41,9 @@ export interface Route {
  *
  * The Router is a DI-managed service and must be accessed via `inject(Router)`.
  * It supports async route guards (canActivate).
+ *
+ * Runtime errors during navigation are handled internally
+ * and do NOT propagate to bootstrapApplication.
  */
 export class Router {
 
@@ -52,6 +55,12 @@ export class Router {
 
     /** Prevents multiple lifecycle initializations. */
     private initialized = false;
+
+    /**
+     * Optional global navigation error handler.
+     * Can be set externally if custom runtime error UI is needed.
+     */
+    public onNavigationError?: (error: Error) => void;
 
     /**
      * @param routes - Array of route definitions.
@@ -79,7 +88,7 @@ export class Router {
         this.initialized = true;
 
         window.addEventListener('popstate', () => {
-            this.render(window.location.pathname);
+            this.safeRender(window.location.pathname).then();
         });
 
         document.addEventListener('click', (e: MouseEvent) => {
@@ -89,11 +98,11 @@ export class Router {
             if (link) {
                 e.preventDefault();
                 const href = link.getAttribute('href') || '/';
-                this.navigate(href);
+                this.navigate(href).then();
             }
         });
 
-        this.render(window.location.pathname);
+        this.safeRender(window.location.pathname).then();
     }
 
     /**
@@ -105,30 +114,74 @@ export class Router {
      */
     public async navigate(path: string): Promise<void> {
         window.history.pushState(null, '', path);
-        await this.render(path);
+        await this.safeRender(path);
     }
 
     /**
      * Executes canActivate guards sequentially.
      * Stops on first failure or redirect.
      *
+     * Errors thrown inside guards are caught and handled internally.
+     *
      * @param guards - Array of guard functions.
      * @returns true if allowed, false if blocked, or redirect path string.
      */
     private async runGuards(guards: CanActivateFn[]): Promise<boolean | string> {
         for (const guard of guards) {
-            const result = await guard();
+            try {
+                const result = await guard();
 
-            if (result === false) {
+                if (result === false) {
+                    return false;
+                }
+
+                if (typeof result === 'string') {
+                    return result;
+                }
+
+            } catch (error) {
+                this.handleNavigationError(error);
                 return false;
-            }
-
-            if (typeof result === 'string') {
-                return result;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Safe wrapper around render().
+     * Ensures runtime navigation errors never escape the Router.
+     *
+     * @param path - The path to render.
+     */
+    private async safeRender(path: string): Promise<void> {
+        try {
+            await this.render(path);
+        } catch (error) {
+            this.handleNavigationError(error);
+        }
+    }
+
+    /**
+     * Centralized runtime navigation error handler.
+     *
+     * - Normalizes error
+     * - Logs to console
+     * - Triggers optional global handler
+     */
+    private handleNavigationError(rawError: any): void {
+        const error =
+            rawError instanceof Error
+                ? rawError
+                : new Error(typeof rawError === 'string'
+                    ? rawError
+                    : JSON.stringify(rawError) || 'Unknown navigation error');
+
+        console.error(`Router Navigation Error: ${error.message}`);
+
+        if (this.onNavigationError) {
+            this.onNavigationError(error);
+        }
     }
 
     /**
@@ -147,7 +200,9 @@ export class Router {
             this.routes.find(r => r.path === '/404') ||
             this.routes[0];
 
-        if (!route) return;
+        if (!route) {
+            throw new Error(`Route not found: ${path}`);
+        }
 
         // 🔐 1. Run canActivate guards if present
         if (route.canActivate && route.canActivate.length > 0) {
@@ -179,9 +234,9 @@ export class Router {
 
         // 5. Lifecycle execution
         if (typeof this.currentPage.mount === 'function') {
-            this.currentPage.mount();
+            await this.currentPage.mount();
         } else if (typeof this.currentPage.render === 'function') {
-            this.currentPage.render();
+            await this.currentPage.render();
         }
     }
 }
