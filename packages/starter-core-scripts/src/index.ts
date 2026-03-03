@@ -15,7 +15,7 @@ export type {ProviderToken} from './di/core';
 export type {AppConfig, Provider} from './view/bootstrap';
 
 export {inject} from './di/core';
-export {bootstrapApplication} from './view/bootstrap';
+export {bootstrapApplication, provideRouter} from './view/bootstrap';
 export {applyBindings} from './view/apply-bindings';
 export {bindClickEvents} from './view/bind-click-events';
 export {bindForms} from './view/bind-forms';

@@ -18,14 +18,29 @@ export interface Provider {
  * Configuration object for the application startup.
  */
 export interface AppConfig {
-    /** Array of route definitions for the Router. */
-    routes: Route[];
+    /**
+     * Array of route definitions for the Router.
+     * Optional if routes are provided via provideRouter() in the providers array.
+     */
+    routes?: Route[];
     /** The ID of the HTML element where the app will render. Defaults to 'app-root'. */
     rootId?: string;
     /** Global services to be registered in the DI container before the app starts. */
     providers?: Provider[];
     /** Optional: Custom function to handle and render errors during bootstrap. */
     onError?: (error: Error) => void;
+}
+
+/**
+ * Helper function to provide routing configuration in bootstrapApplication.
+ * This aligns with the DI pattern and keeps app.ts clean.
+ * @param routes - Array of route definitions.
+ */
+export function provideRouter(routes: Route[]): Provider {
+    return {
+        provide: Router,
+        useValue: routes
+    };
 }
 
 /**
@@ -79,10 +94,8 @@ function handleBootstrapError(rawError: any, config: AppConfig, rootId: string):
     let logger: ConsoleLogger;
 
     try {
-        // Try to get the logger from DI if developer registered it
         logger = container.resolve(ConsoleLogger as any);
     } catch {
-        // Fallback to a new instance if not registered yet
         logger = new ConsoleLogger();
     }
 
@@ -104,45 +117,57 @@ export async function bootstrapApplication(config: AppConfig): Promise<void> {
     const container = DIContainer.getInstance();
     const rootId = config.rootId || 'app-root';
 
-    try {
-        // 1. Register global dependencies provided in the config
-        if (config.providers) {
-            // Changed to for...of loop to properly support async factories (await p.useFactory())
-            for (const p of config.providers) {
-                const instance = p.useValue ?? (p.useFactory ? await p.useFactory() : new (p.provide as any)());
+    return new Promise<void>(async (resolve, reject) => {
+        try {
+            // 1. Register global dependencies provided in the config
+            if (config.providers) {
+                for (const p of config.providers) {
+                    // Skip manual Router registration if it's passed as routes in useValue
+                    if (p.provide === Router && Array.isArray(p.useValue)) continue;
 
-                if (instance === null || instance === undefined) {
-                    throw new Error(`Provider for ${p.provide.name || 'unknown token'} returned ${instance}. Registration failed.`);
+                    const instance = p.useValue ?? (p.useFactory ? await p.useFactory() : new (p.provide as any)());
+
+                    if (instance === null || instance === undefined) {
+                        throw new Error(`Provider for ${p.provide.name || 'unknown token'} returned ${instance}. Registration failed.`);
+                    }
+
+                    container.register(p.provide, instance);
                 }
-
-                container.register(p.provide, instance);
             }
-        }
 
-        // 2. Encapsulate router initialization
-        const startRouter = () => {
-            try {
-                // We pass the parameters exactly as your Router constructor expects
-                new Router(config.routes, rootId);
-            } catch (routerError) {
-                handleBootstrapError(routerError as Error, config, rootId);
-                // Note: Re-throwing here won't affect the bootstrapApplication promise
-                // as it's inside an event listener/callback.
+            // 2. Encapsulate router initialization
+            // Wait for DOM and then register Router in DI *before* calling .start()
+            const startRouter = () => {
+                try {
+                    // Check if routes were provided via config or specialized provider
+                    const routes = config.routes ||
+                        config.providers?.find(p => p.provide === Router && Array.isArray(p.useValue))?.useValue;
+
+                    if (!routes) {
+                        throw new Error("Router configuration missing: Provide 'routes' in AppConfig.");
+                    }
+
+                    const router = new Router(routes, rootId);
+                    // CRITICAL: Register in DI *before* starting.
+                    // This ensures inject(Router) works during the first route render.
+                    container.register(Router, router);
+                    router.start();
+                    resolve();
+                } catch (routerError) {
+                    handleBootstrapError(routerError, config, rootId);
+                    reject(routerError);
+                }
+            };
+
+            // 3. Ensure DOM is fully loaded to find the rootId element
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', startRouter);
+            } else {
+                startRouter();
             }
-        };
-
-        // 3. Ensure DOM is fully loaded to find the rootId element
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', startRouter);
-        } else {
-            startRouter();
+        } catch (bootstrapError) {
+            handleBootstrapError(bootstrapError, config, rootId);
+            reject(bootstrapError);
         }
-    } catch (bootstrapError) {
-        // Catches errors from provider instantiation or async factories
-        handleBootstrapError(bootstrapError as Error, config, rootId);
-
-        // Re-throw to ensure the bootstrapApplication promise is rejected.
-        // This prevents the .then() block in app.ts from executing.
-        throw bootstrapError;
-    }
+    });
 }
