@@ -1,13 +1,37 @@
 /**
+ * Result type returned by a route guard.
+ *
+ * - true → allow navigation
+ * - false → block navigation
+ * - string → redirect to provided path
+ */
+export type GuardResult = boolean | string | Promise<boolean | string>;
+
+/**
+ * Function signature for route guards.
+ */
+export type CanActivateFn = () => GuardResult;
+
+/**
  * Interface representing a single route definition.
  */
 export interface Route {
     /** URL path (e.g., '/', '/about'). */
     path: string;
+
     /** Component class to be instantiated when the route is matched. */
     component: any;
+
     /** Optional page title to be set in the browser tab. */
     title?: string;
+
+    /**
+     * Optional route guards executed before navigation.
+     * All guards must resolve to true to allow navigation.
+     * Returning false blocks navigation.
+     * Returning string triggers redirect.
+     */
+    canActivate?: CanActivateFn[];
 }
 
 /**
@@ -16,7 +40,7 @@ export interface Route {
  * Manages URL changes, updates the DOM, and handles component lifecycles.
  *
  * The Router is a DI-managed service and must be accessed via `inject(Router)`.
- * It no longer exposes static navigation helpers.
+ * It supports async route guards (canActivate).
  */
 export class Router {
 
@@ -54,10 +78,10 @@ export class Router {
 
         this.initialized = true;
 
-        // Listen for browser Back/Forward navigation
-        window.addEventListener('popstate', () => this.render(window.location.pathname));
+        window.addEventListener('popstate', () => {
+            this.render(window.location.pathname);
+        });
 
-        // Global click listener for declarative navigation via [data-link]
         document.addEventListener('click', (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             const link = target.closest('[data-link]');
@@ -69,57 +93,91 @@ export class Router {
             }
         });
 
-        // Initial render based on the current URL
         this.render(window.location.pathname);
     }
 
     /**
      * Navigates to a specific path and updates the browser history.
      *
-     * Intended to be used via dependency injection:
-     *
-     * ```ts
-     * const router = inject(Router);
-     * router.navigate('/about');
-     * ```
+     * Supports async guards.
      *
      * @param path - The destination URL path.
      */
-    public navigate(path: string): void {
+    public async navigate(path: string): Promise<void> {
         window.history.pushState(null, '', path);
-        this.render(path);
+        await this.render(path);
+    }
+
+    /**
+     * Executes canActivate guards sequentially.
+     * Stops on first failure or redirect.
+     *
+     * @param guards - Array of guard functions.
+     * @returns true if allowed, false if blocked, or redirect path string.
+     */
+    private async runGuards(guards: CanActivateFn[]): Promise<boolean | string> {
+        for (const guard of guards) {
+            const result = await guard();
+
+            if (result === false) {
+                return false;
+            }
+
+            if (typeof result === 'string') {
+                return result;
+            }
+        }
+
+        return true;
     }
 
     /**
      * Orchestrates the transition between pages.
-     * Handles cleanup of the old page and initialization of the new one.
+     * Handles guard evaluation, cleanup of the old page,
+     * and initialization of the new one.
+     *
      * @param path - The path to render.
      * @private
      */
-    private render(path: string): void {
+    private async render(path: string): Promise<void> {
         if (!this.root) return;
 
-        // 1. Trigger lifecycle cleanup on the current page to prevent memory leaks
+        const route =
+            this.routes.find(r => r.path === path) ||
+            this.routes.find(r => r.path === '/404') ||
+            this.routes[0];
+
+        if (!route) return;
+
+        // 🔐 1. Run canActivate guards if present
+        if (route.canActivate && route.canActivate.length > 0) {
+            const guardResult = await this.runGuards(route.canActivate);
+
+            if (guardResult === false) {
+                return; // Block navigation silently
+            }
+
+            if (typeof guardResult === 'string') {
+                await this.navigate(guardResult); // Redirect
+                return;
+            }
+        }
+
+        // 2. Cleanup previous page
         if (this.currentPage && typeof this.currentPage.destroy === 'function') {
             this.currentPage.destroy();
         }
-
-        // 2. Find matching route or fallback to 404/Home
-        const route = this.routes.find(r => r.path === path) ||
-            this.routes.find(r => r.path === '/404') ||
-            this.routes[0];
 
         // 3. Update browser metadata
         if (route.title) {
             document.title = route.title;
         }
 
-        // 4. Clear container and prepare the new component
+        // 4. Render new component
         this.root.innerHTML = '';
         this.currentPage = new route.component(this.root);
 
-        // 5. Intelligent Bootstrapping:
-        // Prioritize mount() (full lifecycle) over render() (simple injection)
+        // 5. Lifecycle execution
         if (typeof this.currentPage.mount === 'function') {
             this.currentPage.mount();
         } else if (typeof this.currentPage.render === 'function') {

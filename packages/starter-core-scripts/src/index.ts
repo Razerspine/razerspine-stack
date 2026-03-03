@@ -10,7 +10,7 @@ export {DIContainer} from './di/core';
 export type {Theme, ThemeServiceOptions} from './services/theme-service';
 export type {Locales, Translations} from './services/translation-service';
 export type {RequestConfig} from './services/api-service';
-export type {Route} from './view/router';
+export type {Route, GuardResult, CanActivateFn} from './view/router';
 export type {ProviderToken} from './di/core';
 export type {AppConfig, Provider} from './view/bootstrap';
 
