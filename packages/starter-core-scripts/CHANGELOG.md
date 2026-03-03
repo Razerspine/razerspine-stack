@@ -8,39 +8,44 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **DI & Bootstrap**: Introduced `provideRouter(routes)` helper, enabling route configuration via the providers array in
-  an Angular-like declarative style.
-- **Router**: Added public `start()` method to manually trigger the router lifecycle (attaching event listeners and
-  performing the initial render).
-- **Router**: Added an `initialized` flag to prevent redundant router re-initialization.
+- **Route Guards**: Introduced `canActivate` support for routes. Guards support asynchronous logic, blocking
+  navigation (returning `false`), or redirecting (returning a `string` path).
+- **Strict DI Mode**: The `DIContainer` now operates in strict mode. Services must be explicitly registered via
+  `bootstrapApplication`. Automatic instantiation is disabled to prevent silent failures and hidden dependencies.
+- **Async Lifecycle Hooks**: `BaseComponent` now supports asynchronous `onInit()` and `render()`. The `mount()` method
+  is now `async` and ensures sequential execution.
+- **DI & Bootstrap**: Added `provideRouter(routes)` helper for Angular-like declarative routing configuration.
+- **Router**: Added public `start()` method to manually trigger navigation listeners and initial rendering.
+- **Router**: Added an `initialized` flag to prevent redundant lifecycle attachments.
+- **Error Handling**: New `onNavigationError` hook in `Router` and a specialized `defaultErrorHandler` in bootstrap for
+  displaying critical startup errors in the UI.
 
 ### Changed
 
-- **Bootstrap**: `bootstrapApplication` now returns `Promise<void>`, allowing developers to await full application
-  readiness (including async providers and DOM initialization).
-- **AppConfig**: The `routes` field is now optional (`routes?`), as configuration can be provided via `provideRouter`
-  within the `providers` array.
-- **Router**: The constructor no longer triggers routing automatically (`init()` removed from constructor). Startup is
-  now explicitly handled via `start()`.
-- **Router**: Renamed internal `init()` to `start()` and made it public for precise control over the initialization
-  sequence.
+- **BaseComponent**: Refactored cleanup logic. All subscriptions, event listeners (click/forms), and store proxies are
+  now tracked via `cleanupCallbacks` and automatically disposed of in `destroy()`.
+- **Bootstrap**: `bootstrapApplication` now returns `Promise<void>`, allowing developers to await full app readiness.
+- **AppConfig**: The `routes` field is now optional, as they can be provided via `providers` array using
+  `provideRouter`.
+- **Router**: The constructor no longer triggers routing automatically. `start()` must be called (handled automatically
+  by `bootstrapApplication`).
 
 ### Refactored
 
-- **Initialization Flow**: Updated `bootstrapApplication` logic to register the `Router` instance in the `DIContainer` *
-  *before** calling `start()`. This ensures that `inject(Router)` works correctly within components created during the
-  initial render.
-- **Provider Registration**: Enhanced provider handling in `bootstrapApplication` with support for asynchronous
-  factories and automatic skipping of manual router registration when `provideRouter` is used.
-- **Error Handling**: Improved the bootstrap error propagation mechanism using Promise rejection for better integration
-  with parent call sites.
+- **Navigation Flow**: Introduced `safeRender` and `handleNavigationError` to centralize runtime error management.
+  Errors during navigation no longer crash the entire application.
+- **Initialization Order**: `bootstrapApplication` now registers the `Router` instance in the DI container before
+  calling `.start()`. This fixes issues where `inject(Router)` would fail during the first page render.
+- **Provider Registry**: Enhanced `bootstrapApplication` to support `useFactory` (with async support) and `useValue`.
 
 ### Breaking Changes
 
-- **Router Initialization**: The `Router` constructor no longer calls `init()` (now `start()`) automatically. If you are
-  manually instantiating the `Router` outside of `bootstrapApplication`, you **must** now explicitly call `.start()` to
-  enable navigation listeners and perform the initial render.
-- **Internal Method Rename**: The private `init()` method has been replaced by the public `start()` method.
+- **Strict DI**: Any service injected via `inject()` must now be registered in the `providers` array of
+  `bootstrapApplication`.
+- **Router Initialization**: If manually instantiating `Router` outside of `bootstrapApplication`, you must now call
+  `.start()` explicitly.
+- **Component Mount**: `BaseComponent.mount()` is now a `Promise`. Custom implementations of `render` or `onInit` should
+  be checked for compatibility with `async/await`.
 
 ---
 
