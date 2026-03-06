@@ -4,16 +4,24 @@
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/starter-core-scripts.svg)](./LICENSE)
 
-Core frontend services and reactive View Engine used by official webpack starter templates.
+Core frontend services and a lightweight **View Engine** used by the official webpack starter templates.
 
-This package provides production-ready utilities for:
+This package provides production-ready utilities for building modern **SPA / Hybrid applications** without heavy
+frameworks.
 
-- **Reactive View Engine**: Lightweight data-binding and state management.
-- **SPA Router**: Client-side navigation with automated lifecycle management.
-- **Theme Management**: Light/dark mode with persistence.
-- **Internationalization**: DOM-based i18n support.
-- **API Requests**: Structured Fetch wrapper.
-- **Logging**: Styled console utilities.
+---
+
+## Features
+
+- **Reactive View Engine** — Lightweight DOM binding and state management
+- **Dependency Injection** — Simple but strict DI container
+- **SPA Router** — Client-side navigation with lifecycle management
+- **Route Guards** — Protect routes or redirect dynamically
+- **Theme Management** — Light/dark mode with persistence
+- **Internationalization** — DOM-based i18n system
+- **API Requests** — Structured Fetch wrapper
+- **Logging** — Styled console utilities
+- **Zero Dependencies**
 
 ---
 
@@ -25,21 +33,127 @@ npm install @razerspine/starter-core-scripts
 
 ---
 
-## 🚀 Reactive View Engine (New in v0.4.0)
 
-A lightweight, dependency-free mechanism to sync your JavaScript state with the DOM and manage SPA navigation.
+## Application Bootstrap (v0.5.0)
 
-### BaseComponent & Lifecycle
+Applications are started using `bootstrapApplication()`.
 
-Extend `BaseComponent` to create reactive pages. In **v0.4.0**, we introduced an automated lifecycle. You no longer need
-to
-manually call update or event binders.
+This registers services in the DI container and starts the Router.
 
-- `mount()`: Orchestrates the entire startup (`render` -> `bind events` -> `sync state` -> `onInit`).
-- `onInit()`: Your hook for API calls or setup logic.
-- `onDestroy()`: Cleanup hook for timers or subscriptions.
+```ts
+import {
+  bootstrapApplication,
+  provideRouter
+} from '@razerspine/starter-core-scripts';
 
-### Example: Logic (home.ts)
+import {HomePage} from './views/home';
+
+bootstrapApplication({
+  providers: [
+    provideRouter([
+      {path: '/', component: HomePage, title: 'Home'}
+    ])
+  ]
+});
+```
+
+### Why this architecture?
+
+- Router instance becomes available via **DI**
+- Services are **explicitly registered**
+- Application startup becomes **deterministic and safe**
+
+---
+
+## Architecture
+
+```text
+App
+ │
+ bootstrapApplication()
+ │
+ DIContainer
+ │
+ Router
+ │
+ BaseComponent
+ │
+ Reactive View Engine
+```
+
+---
+
+## Dependency Injection
+
+The package includes a lightweight **strict-mode DI container**.
+
+Services must be registered during bootstrap.
+
+### Injecting a Service
+
+```ts
+import {inject, Router} from '@razerspine/starter-core-scripts';
+
+export class HomePage {
+
+  private router = inject(Router);
+
+  goDashboard() {
+    this.router.navigate('/dashboard');
+  }
+
+}
+```
+
+### Providing Services
+
+```ts
+bootstrapApplication({
+  providers: [
+    {provide: ApiService},
+    {provide: ConsoleLogger}
+  ]
+});
+```
+
+### Factory Providers
+
+```ts
+bootstrapApplication({
+  providers: [
+    {
+      provide: ApiService,
+      useFactory: () => new ApiService('/api')
+    }
+  ]
+});
+```
+
+### Strict DI Mode
+
+The container **does NOT auto-instantiate services**.
+
+If a service is injected but not registered:
+
+```text
+Service "MyService" is not registered in the DI container.
+```
+
+This prevents hidden dependencies and runtime surprises.
+
+---
+
+## Reactive View Engine
+
+The View Engine allows building reactive UI components using **BaseComponent**.
+
+State changes automatically update the DOM.
+
+### BaseComponent
+
+Extend `BaseComponent` to create reactive pages or components.
+
+### Example
 
 ```ts
 import {BaseComponent} from '@razerspine/starter-core-scripts';
@@ -51,60 +165,167 @@ interface HomeState {
 }
 
 export class HomePage extends BaseComponent<HomeState> {
+
   constructor(container: HTMLElement) {
-    super(container, {title: 'SPA Template', count: 0});
+    super(container, {
+      title: 'SPA Template',
+      count: 0
+    });
   }
 
-  // Mandatory: Only responsible for injecting HTML
   protected render() {
     this.container.innerHTML = template();
   }
 
-  // Optional: Called automatically after mounting
   protected onInit() {
-    console.log('Component is live!');
+    console.log('Component mounted');
   }
 
   increment() {
-    this.setState({count: this.state.count + 1});
+    this.setState({
+      count: this.state.count + 1
+    });
   }
+
 }
 ```
 
-### 🗺️ SPA Routing
+---
 
-The built-in `Router` handles navigation and automatically manages component lifecycles. Thanks to the **Singleton
-pattern**, you can navigate from anywhere in your app without holding a reference to the router instance.
+## Component Lifecycle
 
-#### Initialization (app.ts)
+Execution order:  
+
+```text
+render()
+↓
+initEventListeners()
+↓
+update()
+↓
+onInit()
+```
+
+Lifecycle orchestration is handled by:
+
+```text
+mount()
+```
+
+Router automatically calls `mount()` for pages.
+
+---
+
+## Async Lifecycle (v0.5.0)
+
+Components may now use **async lifecycle hooks**.
+
+```text
+protected async onInit() {
+  const users = await api.get('/users');
+  this.setState({users});
+}
+```
+
+Both lifecycle methods may return a Promise:
+
+```text
+render(): void | Promise<void>
+onInit(): void | Promise<void>
+```
+
+Router waits for full initialization before finishing navigation.
+
+---
+
+
+## SPA Router
+
+Router handles:
+
+- client-side navigation
+- browser history
+- component lifecycle
+- route guards
+
+### Route Configuration
 
 ```ts
-import {Router, Route} from '@razerspine/starter-core-scripts';
-import {HomePage} from './views/pages/home';
+import {Route} from '@razerspine/starter-core-scripts';
 
 const routes: Route[] = [
-  {path: '/', component: HomePage, title: 'Home'}
+  {
+    path: '/',
+    component: HomePage,
+    title: 'Home'
+  }
 ];
-
-// Initialize once at the entry point
-new Router(routes, 'app-root');
 ```
 
-### Programmatic Navigation (Inside any component)
+### Route Guards (v0.5.0)
+
+Routes can define `canActivate` **guards**.
+
+Guards run before navigation.
+
+#### Guard Result Types
+
+```text
+true     → allow navigation
+false    → block navigation
+string   → redirect
+Promise  → async guard
+```
+
+#### Example Guard
 
 ```ts
-import {Router} from '@razerspine/starter-core-scripts';
+const authGuard = () => {
+  const token = localStorage.getItem('token');
 
-export class LoginPage extends BaseComponent<any> {
-  // ...
-  onLoginSuccess() {
-    // Accessible globally via static method
-    Router.navigate('/dashboard');
+  if (!token) {
+    return '/login';
   }
+
+  return true;
+};
+```
+
+#### Using Guards
+
+```ts
+const routes: Route[] = [
+  {
+    path: '/dashboard',
+    component: DashboardPage,
+    canActivate: [authGuard]
+  }
+];
+```
+
+---
+
+## Programmatic Navigation
+
+Use `inject(Router)`.
+
+```ts
+import {inject, Router} from '@razerspine/starter-core-scripts';
+
+export class LoginPage {
+
+  private router = inject(Router);
+
+  onLoginSuccess() {
+    this.router.navigate('/dashboard');
+  }
+
 }
 ```
 
-### Supported Data Attributes
+---
+
+## Supported Data Attributes
 
 | Attribute    | Description                                   | Example                             |
 |--------------|-----------------------------------------------|-------------------------------------|
@@ -114,32 +335,6 @@ export class LoginPage extends BaseComponent<any> {
 | `data-show`  | Toggles visibility (supports !)               | `div(data-show="!isError")`         |
 | `data-class` | Toggles CSS classes                           | `div(data-class="active:isActive")` |
 | `data-for`   | Renders lists (supports nesting and `_index)` | `ul(data-for="item:items")`         |
-
-### ⚙️ Technical Notes (v0.4.0 Updates)
-
-- **Singleton Router**: The `Router` class stores its instance internally. Use `Router.navigate(path)` for programmatic
-  redirects.
-- **Smart Rendering**: The `Router` detects if a component has a `mount()` method (`BaseComponent`) or a simple
-  `render()`.
-- **Memory Management**: `BaseComponent` includes a `cleanupCallbacks` registry to prevent memory leaks.
-- **Reactivity**: Powered by Proxies with `WeakMap` caching for performance.
-- **Store Disconnect**: `createStore` now returns `{state, disconnect}`. BaseComponent handles this automatically.
-- **Direct Bindings**: `data-for` uses scope guarding to prevent nested loops from conflicting with parent state.
-
----
-
-## Exports (example)
-
-```ts
-import {
-  BaseComponent,
-  ThemeService,
-  TranslationService,
-  ApiService,
-  ApiError,
-  ConsoleLogger
-} from '@razerspine/starter-core-scripts';
-```
 
 ---
 
@@ -210,19 +405,38 @@ logger.success('Application initialized');
 
 ---
 
-## Features
+## Exports
 
-- **Zero Dependencies**: Pure Vanilla JS/TS logic.
-- **Reactive**: Powered by JavaScript Proxies.
-- **Hybrid Ready**: Works perfectly for both SPA and MPA.
-- **Full TypeScript**: Strong typing for your state and components.
+```ts
+import {
+  BaseComponent,
+  Router,
+  bootstrapApplication,
+  provideRouter,
+  inject,
+  ApiService,
+  ApiError,
+  ThemeService,
+  TranslationService,
+  ConsoleLogger
+} from '@razerspine/starter-core-scripts';
+```
 
 ---
 
 ## Requirements
 
-- **Modern Browsers**: ES6+ (Proxy, WeakMap, Fetch support required).
-- TypeScript: 5.0+ recommended.
+- Modern browsers
+- ES6+
+- Proxy support
+- WeakMap support
+- Fetch API
+
+Recommended:
+
+```text
+TypeScript >= 5
+```
 
 ---
 
