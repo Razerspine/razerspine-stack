@@ -4,48 +4,91 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [0.5.0] - 2026-03-03
+## [0.5.0] - 2026-03-06
 
 ### Added
 
 - **Route Guards**: Introduced `canActivate` support for routes. Guards support asynchronous logic, blocking
-  navigation (returning `false`), or redirecting (returning a `string` path).
+  navigation (`false`) or redirecting to another route (`string` path).
 - **Strict DI Mode**: The `DIContainer` now operates in strict mode. Services must be explicitly registered via
-  `bootstrapApplication`. Automatic instantiation is disabled to prevent silent failures and hidden dependencies.
-- **Async Lifecycle Hooks**: `BaseComponent` now supports asynchronous `onInit()` and `render()`. The `mount()` method
-  is now `async` and ensures sequential execution.
-- **DI & Bootstrap**: Added `provideRouter(routes)` helper for Angular-like declarative routing configuration.
-- **Router**: Added public `start()` method to manually trigger navigation listeners and initial rendering.
-- **Router**: Added an `initialized` flag to prevent redundant lifecycle attachments.
-- **Error Handling**: New `onNavigationError` hook in `Router` and a specialized `defaultErrorHandler` in bootstrap for
-  displaying critical startup errors in the UI.
+  `bootstrapApplication({ providers: [...] })`. Automatic instantiation of services is disabled to prevent hidden
+  dependencies and silent runtime failures.
+- **Global `inject()` helper**: Added a lightweight injection helper that retrieves services from the global
+  `DIContainer`, allowing dependencies to be resolved inside components and services.
+- **Async Component Lifecycle**: `BaseComponent` now supports asynchronous lifecycle hooks.
+  - `render()` may return a `Promise`
+  - `onInit()` may return a `Promise`
+  - `mount()` is now `async` and ensures sequential execution
+- **Router Guards Execution**: Guards are executed sequentially before navigation. Navigation proceeds only if all
+  guards return `true`.
+- **Router Navigation Error Hook**: Added optional `router.onNavigationError` callback for handling runtime navigation
+  errors.
+- **Bootstrap Error UI**: Added a built-in visual error overlay for fatal bootstrap failures when no custom
+  `onError` handler is provided.
+- **provideRouter() Helper**: Introduced a helper for declarative router configuration through the
+  `providers` array, inspired by Angular's DI patterns.
 
 ### Changed
 
-- **BaseComponent**: Refactored cleanup logic. All subscriptions, event listeners (click/forms), and store proxies are
-  now tracked via `cleanupCallbacks` and automatically disposed of in `destroy()`.
-- **Bootstrap**: `bootstrapApplication` now returns `Promise<void>`, allowing developers to await full app readiness.
-- **AppConfig**: The `routes` field is now optional, as they can be provided via `providers` array using
-  `provideRouter`.
-- **Router**: The constructor no longer triggers routing automatically. `start()` must be called (handled automatically
-  by `bootstrapApplication`).
+- **Router Initialization Flow**
+  - Router no longer starts automatically from the constructor.
+  - `router.start()` must be called to initialize listeners and perform the first render.
+  - This call is handled automatically by `bootstrapApplication`.
+- **BaseComponent Lifecycle**
+  - `mount()` is now asynchronous and awaits both `render()` and `onInit()`.
+  - Router now waits for full component initialization before completing navigation.
+- **Component Cleanup**
+  - All reactive stores, event listeners, and bindings are tracked via `cleanupCallbacks`.
+  - `destroy()` now guarantees deterministic cleanup to prevent memory leaks.
+- **Bootstrap API**
+  - `bootstrapApplication()` now returns `Promise<void>`, allowing developers to wait for full application readiness.
+- **AppConfig**
+  - `routes` is now optional when routing is provided via `provideRouter()` in the `providers` array.
 
 ### Refactored
 
-- **Navigation Flow**: Introduced `safeRender` and `handleNavigationError` to centralize runtime error management.
-  Errors during navigation no longer crash the entire application.
-- **Initialization Order**: `bootstrapApplication` now registers the `Router` instance in the DI container before
-  calling `.start()`. This fixes issues where `inject(Router)` would fail during the first page render.
-- **Provider Registry**: Enhanced `bootstrapApplication` to support `useFactory` (with async support) and `useValue`.
+- **Router Navigation Safety**
+  - Introduced `safeRender()` wrapper to prevent runtime navigation errors from breaking the application.
+  - All runtime router errors are normalized and handled internally.
+- **Guard Execution**
+  - Guard errors are caught internally and treated as blocked navigation.
+- **Error Normalization**
+  - Router now normalizes unknown error types (`string`, `object`, etc.) into proper `Error` instances.
+- **Bootstrap Provider Resolution**
+  - `bootstrapApplication` now supports both:
+    - `useValue`
+    - `useFactory` (including async factories)
+- **Initialization Order Fix**
+  - The Router instance is now registered in the DI container **before calling `router.start()`**.
+  - This ensures `inject(Router)` works during the first page render.
 
 ### Breaking Changes
 
-- **Strict DI**: Any service injected via `inject()` must now be registered in the `providers` array of
-  `bootstrapApplication`.
-- **Router Initialization**: If manually instantiating `Router` outside of `bootstrapApplication`, you must now call
-  `.start()` explicitly.
-- **Component Mount**: `BaseComponent.mount()` is now a `Promise`. Custom implementations of `render` or `onInit` should
-  be checked for compatibility with `async/await`.
+- **Strict Dependency Injection**
+
+  Services can no longer be auto-instantiated by the DI container.
+
+  Any service used with:
+
+  ```ts
+    inject(MyService)
+  ```
+  
+  **must be registered** in:
+  
+  ```ts
+  bootstrapApplication({
+    providers: [{provide: MyService}]
+  })
+  ```
+
+- **Component Lifecycle**
+  `BaseComponent.mount()` now returns `Promise<void>`.
+  Custom code interacting with component lifecycle may need to support `async/await`.
+
+- **Router Lifecycle**
+  The Router constructor no longer triggers navigation automatically.
+  `start()` must be called to initialize routing (handled automatically by `bootstrapApplication`).
 
 ---
 
