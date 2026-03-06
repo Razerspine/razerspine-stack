@@ -6,12 +6,34 @@
 
 Core frontend services and a lightweight **View Engine** used by the official webpack starter templates.
 
-This package provides production-ready utilities for building modern **SPA / Hybrid applications** without heavy
-frameworks.
+This package provides production-ready utilities for building modern **SPA / Hybrid applications** without heavy frameworks.
 
 ---
 
-## Features
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Application Bootstrap](#application-bootstrap-v050)
+- [Architecture](#architecture)
+- [Dependency Injection](#dependency-injection)
+- [Reactive View Engine](#reactive-view-engine)
+- [Component Lifecycle](#component-lifecycle)
+- [SPA Router](#spa-router)
+- [Programmatic Navigation](#programmatic-navigation)
+- [Supported Data Attributes](#supported-data-attributes)
+- [ThemeService](#themeservice)
+- [TranslationService](#translationservice)
+- [ApiService](#apiservice)
+- [ConsoleLogger](#consolelogger)
+- [Exports](#exports)
+- [Requirements](#requirements)
+- [License](#license)
+
+---
+
+# Features
 
 - **Reactive View Engine** — Lightweight DOM binding and state management
 - **Dependency Injection** — Simple but strict DI container
@@ -25,7 +47,7 @@ frameworks.
 
 ---
 
-## Installation
+# Installation
 
 ```bash
 npm install @razerspine/starter-core-scripts
@@ -33,8 +55,36 @@ npm install @razerspine/starter-core-scripts
 
 ---
 
+# Quick Start
 
-## Application Bootstrap (v0.5.0)
+Create a minimal SPA with Router and a single page.
+
+```ts
+import {
+  bootstrapApplication,
+  provideRouter
+} from '@razerspine/starter-core-scripts';
+
+import {HomePage} from './views/home';
+
+bootstrapApplication({
+  providers: [
+    provideRouter([
+      {path: '/', component: HomePage, title: 'Home'}
+    ])
+  ]
+});
+```
+
+This will:
+
+- initialize the **DI container**
+- register the **Router**
+- mount the **first page**
+
+---
+
+# Application Bootstrap (v0.5.0)
 
 Applications are started using `bootstrapApplication()`.
 
@@ -65,31 +115,33 @@ bootstrapApplication({
 
 ---
 
-## Architecture
+# Architecture
 
-```text
-App
- │
- bootstrapApplication()
- │
- DIContainer
- │
- Router
- │
- BaseComponent
- │
- Reactive View Engine
+```mermaid
+graph TD
+
+A[Application] --> B[bootstrapApplication]
+B --> C[DI Container]
+
+C --> D[Router]
+C --> E[ApiService]
+C --> F[ThemeService]
+C --> G[ConsoleLogger]
+
+D --> H[BaseComponent]
+H --> I[Reactive View Engine]
+I --> J[DOM]
 ```
 
 ---
 
-## Dependency Injection
+# Dependency Injection
 
 The package includes a lightweight **strict-mode DI container**.
 
 Services must be registered during bootstrap.
 
-### Injecting a Service
+## Injecting a Service
 
 ```ts
 import {inject, Router} from '@razerspine/starter-core-scripts';
@@ -105,7 +157,10 @@ export class HomePage {
 }
 ```
 
-### Providing Services
+---
+
+<details>
+<summary><strong>Providing Services</strong></summary>
 
 ```ts
 bootstrapApplication({
@@ -116,7 +171,12 @@ bootstrapApplication({
 });
 ```
 
-### Factory Providers
+</details>
+
+---
+
+<details>
+<summary><strong>Factory Providers</strong></summary>
 
 ```ts
 bootstrapApplication({
@@ -128,6 +188,10 @@ bootstrapApplication({
   ]
 });
 ```
+
+</details>
+
+---
 
 ### Strict DI Mode
 
@@ -143,17 +207,19 @@ This prevents hidden dependencies and runtime surprises.
 
 ---
 
-## Reactive View Engine
+# Reactive View Engine
 
 The View Engine allows building reactive UI components using **BaseComponent**.
 
 State changes automatically update the DOM.
 
-### BaseComponent
+## BaseComponent
 
 Extend `BaseComponent` to create reactive pages or components.
 
-### Example
+---
+
+## Example
 
 ```ts
 import {BaseComponent} from '@razerspine/starter-core-scripts';
@@ -192,9 +258,9 @@ export class HomePage extends BaseComponent<HomeState> {
 
 ---
 
-## Component Lifecycle
+# Component Lifecycle
 
-Execution order:  
+Execution order:
 
 ```text
 render()
@@ -220,7 +286,7 @@ Router automatically calls `mount()` for pages.
 
 Components may now use **async lifecycle hooks**.
 
-```text
+```ts
 protected async onInit() {
   const users = await api.get('/users');
   this.setState({users});
@@ -229,7 +295,7 @@ protected async onInit() {
 
 Both lifecycle methods may return a Promise:
 
-```text
+```ts
 render(): void | Promise<void>
 onInit(): void | Promise<void>
 ```
@@ -238,8 +304,7 @@ Router waits for full initialization before finishing navigation.
 
 ---
 
-
-## SPA Router
+# SPA Router
 
 Router handles:
 
@@ -248,7 +313,9 @@ Router handles:
 - component lifecycle
 - route guards
 
-### Route Configuration
+---
+
+## Route Configuration
 
 ```ts
 import {Route} from '@razerspine/starter-core-scripts';
@@ -262,13 +329,15 @@ const routes: Route[] = [
 ];
 ```
 
-### Route Guards (v0.5.0)
+---
+
+## Route Guards (v0.5.0)
 
 Routes can define `canActivate` **guards**.
 
 Guards run before navigation.
 
-#### Guard Result Types
+### Guard Result Types
 
 ```text
 true     → allow navigation
@@ -277,7 +346,9 @@ string   → redirect
 Promise  → async guard
 ```
 
-#### Example Guard
+---
+
+### Example Guard
 
 ```ts
 const authGuard = () => {
@@ -291,7 +362,9 @@ const authGuard = () => {
 };
 ```
 
-#### Using Guards
+---
+
+### Using Guards
 
 ```ts
 const routes: Route[] = [
@@ -305,7 +378,7 @@ const routes: Route[] = [
 
 ---
 
-## Programmatic Navigation
+# Programmatic Navigation
 
 Use `inject(Router)`.
 
@@ -325,7 +398,7 @@ export class LoginPage {
 
 ---
 
-## Supported Data Attributes
+# Supported Data Attributes
 
 | Attribute    | Description                                   | Example                             |
 |--------------|-----------------------------------------------|-------------------------------------|
@@ -334,11 +407,11 @@ export class LoginPage {
 | `data-click` | Event delegation for clicks                   | `button(data-click="submit")`       |
 | `data-show`  | Toggles visibility (supports !)               | `div(data-show="!isError")`         |
 | `data-class` | Toggles CSS classes                           | `div(data-class="active:isActive")` |
-| `data-for`   | Renders lists (supports nesting and `_index)` | `ul(data-for="item:items")`         |
+| `data-for`   | Renders lists (supports nesting and `_index`) | `ul(data-for="item:items")`         |
 
 ---
 
-## ThemeService
+# ThemeService
 
 Manages light/dark theme state with optional localStorage persistence.
 
@@ -350,7 +423,7 @@ theme.setTheme('dark');
 
 ---
 
-## TranslationService
+# TranslationService
 
 Provides DOM-based i18n support using `data-i18n` attributes.
 
@@ -366,9 +439,9 @@ i18n.init();
 
 ---
 
-## ApiService
+# ApiService
 
-**Lightweight Fetch wrapper with**:
+Lightweight Fetch wrapper with:
 
 - Query params support
 - Timeout via AbortController
@@ -394,7 +467,7 @@ try {
 
 ---
 
-## ConsoleLogger
+# ConsoleLogger
 
 Styled console logging utility.
 
@@ -405,7 +478,7 @@ logger.success('Application initialized');
 
 ---
 
-## Exports
+# Exports
 
 ```ts
 import {
@@ -424,7 +497,7 @@ import {
 
 ---
 
-## Requirements
+# Requirements
 
 - Modern browsers
 - ES6+
@@ -440,6 +513,6 @@ TypeScript >= 5
 
 ---
 
-## License
+# License
 
 This project is licensed under the ISC License.
