@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/starter-core-scripts",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Core script services for webpack starter templates",
   "license": "ISC",
   "author": "Razerspine",
@@ -13,13 +13,31 @@
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
+  "keywords": [
+    "create-webpack-starter",
+    "spa",
+    "typescript",
+    "dependency-injection",
+    "router",
+    "di-container",
+    "frontend-core",
+    "starter-kit",
+    "web-services",
+    "theme-manager",
+    "i18n-service",
+    "api-client",
+    "webpack-template",
+    "zero-config",
+    "vanilla-js"
+  ],
   "type": "module",
   "private": false,
-  "main": "./dist/cjs/index.cjs",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }

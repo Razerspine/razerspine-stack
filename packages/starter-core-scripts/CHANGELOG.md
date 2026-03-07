@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.5.1] - 2026-03-07
+
+### Fixed
+
+- **IDE Support (DX)**: Fixed an issue where WebStorm and VS Code could not resolve JSDoc and types for the JavaScript
+  version of the package.
+- **Package Exports**: Corrected the `exports` and `types` paths in `package.json` to match the actual `tsup` output
+  directory.
+- **Type Resolution**: Reordered the `exports` field to prioritize `types` mapping, ensuring that IDEs correctly pull
+  documentation from `.d.ts` files even when consuming the compiled `.js` bundle.
+
+### Changed
+
+- **Package Metadata**: Cleaned up the `main`, `module`, and `types` fields to point directly to the `dist/` root,
+  aligning with the current `tsup` build configuration.
+- **SEO & Discoverability**: Expanded the `keywords` list in `package.json` to cover core functionality (DI, Router,
+  Theme Management, I18n) and improve npm search visibility.
+
+---
+
 ## [0.5.0] - 2026-03-06
 
 ### Added
@@ -73,9 +93,9 @@ All notable changes to this project will be documented in this file.
   ```ts
     inject(MyService)
   ```
-  
+
   **must be registered** in:
-  
+
   ```ts
   bootstrapApplication({
     providers: [{provide: MyService}]
