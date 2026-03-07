@@ -1,9 +1,14 @@
 import '@pages/not-found/style.scss';
 import template from '@pages/not-found/not-found.pug';
-import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
+import {
+  BaseComponent,
+  ConsoleLogger,
+  inject,
+} from '@razerspine/starter-core-scripts';
 
 export class NotFoundPage extends BaseComponent<any> {
-  private logger = new ConsoleLogger();
+  private logger = inject(ConsoleLogger);
+
   constructor(container: HTMLElement) {
     super(container, {});
   }

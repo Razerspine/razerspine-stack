@@ -1,8 +1,11 @@
 import '@pages/home/style.scss';
 import template from '@pages/home/home.pug';
 import pkg from '../../../package.json';
-import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
-import {inject} from '@razerspine/starter-core-scripts';
+import {
+  BaseComponent,
+  ConsoleLogger,
+  inject,
+} from '@razerspine/starter-core-scripts';
 
 type PackageType = {
   name: string;

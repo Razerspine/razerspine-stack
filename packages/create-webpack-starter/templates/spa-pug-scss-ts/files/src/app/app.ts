@@ -1,6 +1,7 @@
 import {routes} from './routes';
-import {ConsoleLogger, ThemeService} from '@razerspine/starter-core-scripts';
 import {
+  ConsoleLogger,
+  ThemeService,
   bootstrapApplication,
   provideRouter,
 } from '@razerspine/starter-core-scripts';
