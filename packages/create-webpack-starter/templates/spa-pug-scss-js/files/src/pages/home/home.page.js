@@ -1,7 +1,11 @@
-import '@views/pages/home/style.scss';
-import template from '@views/pages/home/home.pug';
-import pkg from '../../../../package.json';
-import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
+import '@pages/home/style.scss';
+import template from '@pages/home/home.pug';
+import pkg from '../../../package.json';
+import {
+  BaseComponent,
+  ConsoleLogger,
+  inject,
+} from '@razerspine/starter-core-scripts';
 
 function getPackageMeta(data) {
   const parts = data?.name.split('-');
@@ -15,7 +19,7 @@ function getPackageMeta(data) {
 }
 
 export class HomePage extends BaseComponent {
-  logger = new ConsoleLogger();
+  logger = inject(ConsoleLogger);
 
   constructor(container) {
     super(container, getPackageMeta(pkg));

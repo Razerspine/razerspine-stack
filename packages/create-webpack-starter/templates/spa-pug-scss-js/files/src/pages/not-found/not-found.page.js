@@ -1,9 +1,13 @@
-import '@views/pages/404/style.scss';
-import template from '@views/pages/404/404.pug';
-import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
+import '@pages/not-found/style.scss';
+import template from '@pages/not-found/not-found.pug';
+import {
+  BaseComponent,
+  ConsoleLogger,
+  inject,
+} from '@razerspine/starter-core-scripts';
 
 export class NotFoundPage extends BaseComponent {
-  logger = new ConsoleLogger();
+  logger = inject(ConsoleLogger);
 
   constructor(container) {
     super(container, {});
