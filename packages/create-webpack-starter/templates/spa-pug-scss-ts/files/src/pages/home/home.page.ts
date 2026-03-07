@@ -1,7 +1,8 @@
-import '@views/pages/home/style.scss';
-import template from '@views/pages/home/home.pug';
-import pkg from '../../../../package.json';
+import '@pages/home/style.scss';
+import template from '@pages/home/home.pug';
+import pkg from '../../../package.json';
 import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
+import {inject} from '@razerspine/starter-core-scripts';
 
 type PackageType = {
   name: string;
@@ -30,7 +31,7 @@ function getPackageMeta(data: PackageType) {
 }
 
 export class HomePage extends BaseComponent<HomeState> {
-  private logger = new ConsoleLogger();
+  private logger = inject(ConsoleLogger);
 
   constructor(container: HTMLElement) {
     super(container, getPackageMeta(pkg));

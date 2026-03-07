@@ -1,5 +1,5 @@
-import {HomePage} from '@views/pages/home/home';
-import {NotFoundPage} from '@views/pages/404/404';
+import {HomePage} from '@pages/home/home.page';
+import {NotFoundPage} from '@pages/not-found/not-found.page';
 import {Route} from '@razerspine/starter-core-scripts';
 
 export const routes: Route[] = [
