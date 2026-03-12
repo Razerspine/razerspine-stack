@@ -1,106 +1,315 @@
-# MPA: Pug + Less + JavaScript
+# Webpack MPA Starter
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript)
-![Less](https://img.shields.io/badge/Less-Styling-1D365D?logo=less)
-![Pug](https://img.shields.io/badge/Pug-Template-A86454?logo=pug)
+![Script](https://img.shields.io/badge/Script-JavaScript%20%7C%20TypeScript-3178C6)
+![Styles](https://img.shields.io/badge/Styles-SCSS%20%7C%20LESS-CC6699)
+![Pug](https://img.shields.io/badge/Template-Pug-A86454?logo=pug)
 ![Architecture](https://img.shields.io/badge/Architecture-MPA-111827)
 ![License](https://img.shields.io/badge/license-ISC-green)
 
-Production-ready webpack starter template using:
+Production-ready **Multi Page Application starter** powered by **Webpack 5**.
 
-- Pug
-- Less
-- Modern JavaScript
-- Webpack 5
-- @razerspine/pug-ui-kit
+This template provides a clean **page-driven architecture** using:
 
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+* **Pug** for templating
+* **SCSS or LESS** for styling
+* **JavaScript or TypeScript** for scripting
+* **Webpack 5** build pipeline
+* **@razerspine/pug-ui-kit** UI system
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Start development server:
+
+```bash
 npm run dev
+```
+
+Build production bundle:
+
+```bash
 npm run build
+```
+
+Preview production build:
+
+```bash
 npm run preview
 ```
 
 ---
 
-## Security Notice
+# 📦 Project Structure
 
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
+```
+src/
+  assets/
+    i18n/
+    icons/
+    images/
 
-These do not affect runtime or production bundles.
+  scripts/
+    app.ts | app.js
 
-Production dependencies are continuously monitored and must remain vulnerability-free.
+  styles/
+    main.scss | main.less
+
+  views/
+    layout/
+    mixins/
+    pages/
+```
 
 ---
 
-## 🎨 UI System — pug-ui-kit
+# 🧭 Page Architecture
 
-Integrated modular UI system.
-
-Main style file:
+Pages are located in:
 
 ```
-assets/styles/main.less
+src/views/pages/
 ```
 
-```less
-@import "@razerspine/pug-ui-kit/less/ui-kit";
+Each page is a self-contained module.
+
+Example:
+
+```
+views/pages/
+  home/
+    home.pug
+    home.ts | home.js
+    style.scss | style.less
 ```
 
-Supports:
+Webpack automatically generates:
 
-- Themes
-- Modular components
-- Layout utilities
-- Pug mixins
+```
+home.html
+home.js
+home.css
+```
+
+Each page can include:
+
+* template
+* page script
+* page styles
 
 ---
 
-## 🔄 Runtime Services
+# 🧱 Layout System
 
-- ThemeService
-- TranslationService
-- ApiService
+Layouts are located in:
+
+```
+src/views/layout/
+```
+
+Example structure:
+
+```
+layout/
+  _base.pug
+  _header.pug
+  _footer.pug
+  simple.pug
+  index.pug
+```
+
+Pages extend layouts using Pug inheritance:
+
+```pug
+extends @views/layout/simple.pug
+```
+
+Architecture flow:
+
+```
+_base layout
+   ↓
+layout variant
+   ↓
+page template
+```
 
 ---
 
-## 🔒 Dependency Overrides
+# 🎨 UI System — pug-ui-kit
+
+This template integrates:
+
+```
+@razerspine/pug-ui-kit
+```
+
+Features:
+
+* design tokens
+* light / dark themes
+* layout utilities
+* UI components
+* utility classes
+* Pug mixins
+
+Main style entry:
+
+```
+src/styles/main.scss
+```
+
+Example import:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+Optional bundled fonts:
+
+```scss
+@use "@razerspine/pug-ui-kit/scss/fonts";
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
+
+---
+
+# 🧩 Using Pug Components
+
+Webpack alias is configured automatically.
+
+Example usage:
+
+```pug
+include ~pug-ui-kit/btn.pug
+
++btn('Save', 'primary')
+```
+
+---
+
+# ⚙ Runtime Services
+
+This template includes lightweight runtime utilities from:
+
+```
+@razerspine/starter-core-scripts
+```
+
+Available services:
+
+* ConsoleLogger
+* ThemeService
+* TranslationService
+* ApiService
+
+Example:
+
+```ts
+import {ConsoleLogger} from '@razerspine/starter-core-scripts';
+
+const logger = new ConsoleLogger();
+logger.success('Application started');
+```
+
+---
+
+# 🌍 Internationalization
+
+Translation files are located in:
+
+```
+src/assets/i18n/
+```
+
+Example usage in markup:
+
+```html
+<h1 data-i18n="hero.title"></h1>
+```
+
+---
+
+# 🔗 Path Aliases
+
+Preconfigured aliases:
+
+```
+@views
+@styles
+@scripts
+@images
+@icons
+```
+
+Example:
+
+```ts
+import {HomePage} from '@views/pages/home/home';
+```
+
+---
+
+# 🏗 Architecture Principles
+
+This starter follows several key principles.
+
+### Framework-agnostic
+
+No framework lock-in.
+
+### Page-driven MPA structure
+
+Each page is an isolated entry.
+
+### Minimal runtime
+
+The CLI only generates projects.
+Generated apps have **no runtime dependency on the CLI**.
+
+### Modular UI system
+
+Powered by:
+
+```
+@razerspine/pug-ui-kit
+```
+
+---
+
+# 🔒 Dependency Overrides
 
 This template includes explicit `overrides` for:
 
-- `glob`
-- `minimatch`
+* `glob`
+* `minimatch`
 
-These overrides mitigate a known transitive ReDoS advisory caused by older `minimatch` versions pulled via:
+These overrides mitigate a known **ReDoS advisory** caused by older `minimatch` versions pulled via:
 
-- `pug-plugin` → `js-beautify` → `glob`
+```
+pug-plugin → js-beautify → glob
+```
 
 The override:
 
-- Applies to build-time tooling only
-- Does not affect runtime bundles
-- Is safe and tested within this toolchain
-- It will be removed once upstream dependencies are updated.
+* affects **build-time tooling only**
+* does **not affect runtime bundles**
+* is **safe and tested**
+* will be removed once upstream dependencies update.
 
 ---
 
-Generated with `create-webpack-starter`.
+# 📄 License
+
+ISC
+
+---
+
+Generated with **create-webpack-starter**

@@ -20,8 +20,8 @@ module.exports = (env = {}, argv = {}) => {
     resolve: {
       alias: {
         '@views': path.resolve(process.cwd(), 'src/views'),
-        '@styles': path.resolve(process.cwd(), 'src/assets/styles'),
-        '@scripts': path.resolve(process.cwd(), 'src/assets/scripts'),
+        '@styles': path.resolve(process.cwd(), 'src/styles'),
+        '@scripts': path.resolve(process.cwd(), 'src/scripts'),
         '@images': path.resolve(process.cwd(), 'src/assets/images'),
         '@icons': path.resolve(process.cwd(), 'src/assets/icons'),
         'pug-ui-kit': uiKit.paths.mixins,

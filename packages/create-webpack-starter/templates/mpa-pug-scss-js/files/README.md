@@ -1,121 +1,315 @@
-# MPA: Pug + SCSS + JavaScript
+# Webpack MPA Starter
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript)
-![SCSS](https://img.shields.io/badge/SCSS-Sass-CC6699?logo=sass)
-![Pug](https://img.shields.io/badge/Pug-Template-A86454?logo=pug)
+![Script](https://img.shields.io/badge/Script-JavaScript%20%7C%20TypeScript-3178C6)
+![Styles](https://img.shields.io/badge/Styles-SCSS%20%7C%20LESS-CC6699)
+![Pug](https://img.shields.io/badge/Template-Pug-A86454?logo=pug)
 ![Architecture](https://img.shields.io/badge/Architecture-MPA-111827)
 ![License](https://img.shields.io/badge/license-ISC-green)
 
-Production-ready webpack starter template using:
+Production-ready **Multi Page Application starter** powered by **Webpack 5**.
 
-- Pug
-- SCSS
-- Modern JavaScript (ES Modules)
-- Webpack 5
-- @razerspine/pug-ui-kit
+This template provides a clean **page-driven architecture** using:
 
----
-
-## Dependency Alignment Notice
-
-This template includes a temporary dependency override for `glob` and `minimatch`.
-
-The override aligns `js-beautify` with the modern `glob@13` stack in order to avoid
-a known `minimatch` ReDoS advisory affecting older transitive versions.
-
-This change does **not** affect runtime behavior and only applies to build-time tooling.
-
-The override will be removed once upstream packages update their dependency ranges.
+* **Pug** for templating
+* **SCSS or LESS** for styling
+* **JavaScript or TypeScript** for scripting
+* **Webpack 5** build pipeline
+* **@razerspine/pug-ui-kit** UI system
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Start development server:
+
+```bash
 npm run dev
+```
+
+Build production bundle:
+
+```bash
 npm run build
+```
+
+Preview production build:
+
+```bash
 npm run preview
 ```
 
 ---
 
-## Security Notice
+# 📦 Project Structure
 
-Dev-only audit warnings may appear due to transitive dependencies
-of build tools (e.g. glob / minimatch).
+```
+src/
+  assets/
+    i18n/
+    icons/
+    images/
 
-These do not affect runtime or production bundles.
+  scripts/
+    app.ts | app.js
 
-Production dependencies are continuously monitored and must remain vulnerability-free.
+  styles/
+    main.scss | main.less
+
+  views/
+    layout/
+    mixins/
+    pages/
+```
 
 ---
 
-## 🎨 UI System — pug-ui-kit
+# 🧭 Page Architecture
 
-This template includes a complete UI system powered by:
+Pages are located in:
 
+```
+src/views/pages/
+```
+
+Each page is a self-contained module.
+
+Example:
+
+```
+views/pages/
+  home/
+    home.pug
+    home.ts | home.js
+    style.scss | style.less
+```
+
+Webpack automatically generates:
+
+```
+home.html
+home.js
+home.css
+```
+
+Each page can include:
+
+* template
+* page script
+* page styles
+
+---
+
+# 🧱 Layout System
+
+Layouts are located in:
+
+```
+src/views/layout/
+```
+
+Example structure:
+
+```
+layout/
+  _base.pug
+  _header.pug
+  _footer.pug
+  simple.pug
+  index.pug
+```
+
+Pages extend layouts using Pug inheritance:
+
+```pug
+extends @views/layout/simple.pug
+```
+
+Architecture flow:
+
+```
+_base layout
+   ↓
+layout variant
+   ↓
+page template
+```
+
+---
+
+# 🎨 UI System — pug-ui-kit
+
+This template integrates:
+
+```
 @razerspine/pug-ui-kit
+```
 
-Main entry:
+Features:
+
+* design tokens
+* light / dark themes
+* layout utilities
+* UI components
+* utility classes
+* Pug mixins
+
+Main style entry:
 
 ```
-assets/styles/main.scss
+src/styles/main.scss
 ```
+
+Example import:
 
 ```scss
 @use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
 ```
 
-Supports:
+Optional bundled fonts:
 
-- Themes (light/dark)
-- Modular components
-- Utilities
-- Design tokens
-- Pug mixins
-
----
-
-## 🔄 Runtime Services
-
-- ThemeService
-- TranslationService
-- ApiService
+```scss
+@use "@razerspine/pug-ui-kit/scss/fonts";
+@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```
 
 ---
 
-## 🔗 Aliases
+# 🧩 Using Pug Components
+
+Webpack alias is configured automatically.
+
+Example usage:
+
+```pug
+include ~pug-ui-kit/btn.pug
+
++btn('Save', 'primary')
+```
+
+---
+
+# ⚙ Runtime Services
+
+This template includes lightweight runtime utilities from:
 
 ```
+@razerspine/starter-core-scripts
+```
+
+Available services:
+
+* ConsoleLogger
+* ThemeService
+* TranslationService
+* ApiService
+
+Example:
+
+```ts
+import {ConsoleLogger} from '@razerspine/starter-core-scripts';
+
+const logger = new ConsoleLogger();
+logger.success('Application started');
+```
+
+---
+
+# 🌍 Internationalization
+
+Translation files are located in:
+
+```
+src/assets/i18n/
+```
+
+Example usage in markup:
+
+```html
+<h1 data-i18n="hero.title"></h1>
+```
+
+---
+
+# 🔗 Path Aliases
+
+Preconfigured aliases:
+
+```
+@views
 @styles
 @scripts
 @images
 @icons
-@views
+```
+
+Example:
+
+```ts
+import {HomePage} from '@views/pages/home/home';
 ```
 
 ---
 
-## 🔒 Dependency Overrides
+# 🏗 Architecture Principles
 
-This template includes explicit `overrides` for:
+This starter follows several key principles.
 
-- `glob`
-- `minimatch`
+### Framework-agnostic
 
-These overrides mitigate a known transitive ReDoS advisory caused by older `minimatch` versions pulled via:
+No framework lock-in.
 
-- `pug-plugin` → `js-beautify` → `glob`
+### Page-driven MPA structure
 
-The override:
+Each page is an isolated entry.
 
-- Applies to build-time tooling only
-- Does not affect runtime bundles
-- Is safe and tested within this toolchain
-- It will be removed once upstream dependencies are updated.
+### Minimal runtime
+
+The CLI only generates projects.
+Generated apps have **no runtime dependency on the CLI**.
+
+### Modular UI system
+
+Powered by:
+
+```
+@razerspine/pug-ui-kit
+```
 
 ---
 
-Generated with `create-webpack-starter`.
+# 🔒 Dependency Overrides
+
+This template includes explicit `overrides` for:
+
+* `glob`
+* `minimatch`
+
+These overrides mitigate a known **ReDoS advisory** caused by older `minimatch` versions pulled via:
+
+```
+pug-plugin → js-beautify → glob
+```
+
+The override:
+
+* affects **build-time tooling only**
+* does **not affect runtime bundles**
+* is **safe and tested**
+* will be removed once upstream dependencies update.
+
+---
+
+# 📄 License
+
+ISC
+
+---
+
+Generated with **create-webpack-starter**
