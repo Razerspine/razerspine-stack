@@ -1,6 +1,6 @@
-import '@views/pages/home/style.less';
-import template from '@views/pages/home/home.pug';
-import pkg from '../../../../package.json';
+import '@pages/home/style.less';
+import template from '@pages/home/home.pug';
+import pkg from '../../../package.json';
 import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
 
 type PackageType = {

@@ -1,5 +1,5 @@
-import '@views/pages/404/style.less';
-import template from '@views/pages/404/404.pug';
+import '@pages/not-found/style.less';
+import template from '@pages/not-found/not-found.pug';
 import {BaseComponent, ConsoleLogger} from '@razerspine/starter-core-scripts';
 
 export class NotFoundPage extends BaseComponent<any> {

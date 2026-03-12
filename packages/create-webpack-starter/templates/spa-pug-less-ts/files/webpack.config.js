@@ -15,13 +15,14 @@ module.exports = (env = {}, argv = {}) => {
     styles: 'less',
     appType: 'spa',
     templates: {
-      entry: 'src/views/app.pug',
+      entry: 'src/app/app.pug',
     },
     resolve: {
       alias: {
-        '@views': path.resolve(process.cwd(), 'src/views'),
-        '@styles': path.resolve(process.cwd(), 'src/assets/styles'),
-        '@scripts': path.resolve(process.cwd(), 'src/assets/scripts'),
+        '@app': path.resolve(process.cwd(), 'src/app'),
+        '@pages': path.resolve(process.cwd(), 'src/pages'),
+        '@shared': path.resolve(process.cwd(), 'src/shared'),
+        '@styles': path.resolve(process.cwd(), 'src/styles'),
         '@images': path.resolve(process.cwd(), 'src/assets/images'),
         '@icons': path.resolve(process.cwd(), 'src/assets/icons'),
         'pug-ui-kit': uiKit.paths.mixins,

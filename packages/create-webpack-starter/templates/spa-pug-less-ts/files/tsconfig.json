@@ -6,11 +6,12 @@
     "lib": ["dom", "es2019"],
     "baseUrl": "src",
     "paths": {
-      "@views/*": ["views/*"],
-      "@styles/*": ["assets/styles/*"],
-      "@scripts/*": ["assets/scripts/*"],
+      "@app/*": ["app/*"],
+      "@pages/*": ["pages/*"],
+      "@shared/*": ["shared/*"],
+      "@styles/*": ["styles/*"],
       "@images/*": ["assets/images/*"],
-      "@icons/*": ["assets/icons/*"]
+      "@icons/*": ["assets/icons*"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true,
