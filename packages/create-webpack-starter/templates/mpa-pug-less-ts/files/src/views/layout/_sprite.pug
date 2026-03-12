@@ -1,3 +1,39 @@
+//- ============================================================
+//- SVG Sprite
+//- ------------------------------------------------------------
+//- This file builds a global SVG sprite used across the project.
+//
+//- How it works:
+//- Each SVG icon is included below and injected into a single
+//- hidden <svg> container. Icons can then be referenced anywhere
+//- in the markup using the <use> element.
+//
+//- Example usage:
+//-   svg.icon
+//-     use(xlink:href="#icon-dark-mode")
+//
+//- Requirements for each SVG icon:
+//- 1. The root <svg> element MUST have a unique id.
+//- 2. The id should follow the pattern: icon-name
+//- 3. The SVG should NOT contain width/height attributes.
+//- 4. Use fill="currentColor" so icons inherit text color.
+//
+//- Example icon structure:
+//
+//- <svg
+//-   xmlns="http://www.w3.org/2000/svg"
+//-   viewBox="0 -960 960 960"
+//-   fill="currentColor"
+//-   id="icon-dark-mode">
+//-   <path d="..." />
+//- </svg>
+//
+//- After inclusion the icon can be used like this:
+//
+//- svg.icon
+//-   use(xlink:href="#icon-dark-mode")
+//- ============================================================
+
 svg(
   xmlns="http://www.w3.org/2000/svg"
   style="display:none"
