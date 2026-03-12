@@ -1,7 +1,7 @@
 {
   "name": "webpack-template-mpa-pug-scss-ts",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Webpack starter template MPA: Pug + SCSS + TypeScript",
   "scripts": {
     "dev": "webpack serve --mode=development",
