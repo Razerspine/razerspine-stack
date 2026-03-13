@@ -26,6 +26,8 @@ export function createProdConfig(
 
     const routingPlugin = {
         apply(compiler: Compiler) {
+            const logger = compiler.getInfrastructureLogger('@razerspine/webpack-core');
+
             compiler.hooks.thisCompilation.tap(
                 'RoutingPlugin',
                 (compilation: Compilation) => {
@@ -39,6 +41,8 @@ export function createProdConfig(
                              * Netlify / Cloudflare
                              */
                             if (hosting === 'netlify' || hosting === 'cloudflare') {
+                                logger.info(`📦 ${hosting.charAt(0).toUpperCase() + hosting.slice(1)} detected. Generating _redirects for ${appType.toUpperCase()}...`);
+
                                 compilation.emitAsset(
                                     '_redirects',
                                     new sources.RawSource(getRedirects(appType))
@@ -49,6 +53,8 @@ export function createProdConfig(
                              * Vercel
                              */
                             if (hosting === 'vercel') {
+                                logger.info(`📦 Vercel detected. Generating vercel.json for ${appType.toUpperCase()}...`);
+
                                 compilation.emitAsset(
                                     'vercel.json',
                                     new sources.RawSource(getVercelConfig(appType))
@@ -69,7 +75,9 @@ export function createProdConfig(
                                     const source = indexAsset.source.source().toString();
 
                                     if (hosting === 'github' || hosting === 'static') {
-
+                                        const hostName = hosting === 'github' ? 'GitHub Pages' : 'Static hosting';
+                                        logger.info(`📦 ${hostName} detected. Creating 404.html fallback for SPA...`);
+                                        
                                         compilation.emitAsset(
                                             '404.html',
                                             new sources.RawSource(source)
