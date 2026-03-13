@@ -1,11 +1,14 @@
-# SPA Examples (starter-core-scripts v0.4.0)
+# SPA Examples
 
 This document demonstrates real usage patterns for SPA templates powered by:
 
+- `bootstrapApplication`
 - `Router`
 - `BaseComponent`
+- Dependency Injection
 - Proxy-based reactivity
-- Automated lifecycle (`mount()`)
+
+All runtime features are provided by `@razerspine/starter-core-scripts`.
 
 ---
 
@@ -15,61 +18,46 @@ This document demonstrates real usage patterns for SPA templates powered by:
 
 ```ts
 import {Route} from '@razerspine/starter-core-scripts';
-import {HomePage} from '@views/pages/home/home';
+import {HomePage} from '@pages/home/home';
 
 export const routes: Route[] = [
-  { path: '/', component: HomePage, title: 'Home' }
+  { path: '/', component: HomePage }
 ];
 ```
 
 ### app.ts
 
 ```ts
-import {Router} from '@razerspine/starter-core-scripts';
+import {bootstrapApplication, provideRouter} from '@razerspine/starter-core-scripts';
 import {routes} from './routes';
 
-document.addEventListener('DOMContentLoaded', () => {
-  new Router(routes);
+bootstrapApplication({
+  providers: [
+    provideRouter(routes)
+  ]
 });
 ```
 
-**Router will**:
+The runtime will:
 
-- Handle navigation
-- Destroy previous components
-- Automatically call `mount()` on new pages
+- initialize dependency injection
+- configure the Router
+- mount the application
 
 ---
 
-## Basic Reactive Page
-
-### home.pug
-
-```pug
-section
-  h1(data-bind="title")
-
-  input(type="text" data-model="title")
-
-  button(data-click="increment") +
-  p Count: 
-    span(data-bind="count")
-
-  button(data-link href="/about") Go to About
-```
-
-### home.ts
+## Basic Component
 
 ```ts
 import {BaseComponent} from '@razerspine/starter-core-scripts';
 import template from './home.pug';
 
-interface HomeState {
+interface State {
   title: string;
   count: number;
 }
 
-export class HomePage extends BaseComponent<HomeState> {
+export class HomePage extends BaseComponent<State> {
 
   constructor(container: HTMLElement) {
     super(container, {
@@ -78,112 +66,88 @@ export class HomePage extends BaseComponent<HomeState> {
     });
   }
 
-  protected render(): void {
+  protected render() {
     this.container.innerHTML = template();
   }
 
-  increment(): void {
+  increment() {
     this.setState({ count: this.state.count + 1 });
   }
 
-  protected onInit(): void {
+  protected onInit() {
     console.log('Home mounted');
   }
-
-  protected onDestroy(): void {
-    console.log('Home destroyed');
-  }
 }
 ```
 
-**No need to call**:
-
-- `update()`
-- `initEventListeners()`
-- `mount()` handles everything automatically.
-
 ---
 
-## Programmatic Navigation
-
-**Because Router is a Singleton**:
+## Dependency Injection Example
 
 ```ts
-import {Router} from '@razerspine/starter-core-scripts';
+import {inject} from '@razerspine/starter-core-scripts';
+import {ConsoleLogger} from '@/services/logger';
 
-Router.navigate('/dashboard');
-```
+export class HomePage extends BaseComponent<State> {
 
-No need to pass router instances.
+  private logger = inject(ConsoleLogger);
 
----
+  protected onInit() {
+    this.logger.success('Home Page initialized!');
+  }
 
-## List Rendering (`data-for`)
-
-### template
-
-```pug
-ul(data-for="item:items")
-  li
-    span(data-bind="item.name")
-    span(data-bind="item_index")
-```
-
-### component
-
-```text
-interface State {
-  items: { name: string }[];
 }
-
-super(container, {
-  items: [
-    { name: 'First' },
-    { name: 'Second' }
-  ]
-});
 ```
-> ⚠ Note: data-for performs full re-rendering (no diffing).
 
 ---
 
-## Conditional Rendering
+## Router Guards
+
+Route guards allow conditional navigation.
+
+```ts
+const routes: Route[] = [
+  { path: '/', component: HomePage },
+  { path: '/dashboard', component: DashboardPage, canActivate: [authGuard] }
+];
+```
+
+Guard implementation:
+
+```ts
+const authGuard: CanActivateFn = () => {
+  const isLoggedIn = checkAuth();
+  return isLoggedIn ? true : '/login';
+};
+```
+
+Guard return values:
+
+| Return    | Behavior         |
+|-----------|------------------|
+| `true`    | allow navigation |
+| `false`   | block navigation |
+| `string`  | redirect         |
+| `Promise` | async guard      |
+
+---
+
+## Declarative Navigation
 
 ```pug
-div(data-show="isVisible") Visible block
-div(data-class="active:isActive") Toggle class
+a(data-link href="/dashboard") Dashboard
 ```
-
-State change automatically reflect in DOM.
 
 ---
 
-## Memory Safety
-
-**On route change**:
-
-```text
-destroy()
-  → onDestroy()
-  → cleanupCallbacks()
-  → Proxy disconnect()
-  → container cleared
-```
-
-Event listeners and store are automatically cleaned.
-
----
-
-## SPA Lifecycle Overview
+## Lifecycle
 
 ```text
 Route change
   ↓
-destroy previous page
+destroy previous component
   ↓
-new Page(root)
-  ↓
-mount()
+mount new component
   ↓
 render()
   ↓
@@ -193,3 +157,5 @@ applyBindings()
   ↓
 onInit()
 ```
+
+All cleanup is handled automatically.

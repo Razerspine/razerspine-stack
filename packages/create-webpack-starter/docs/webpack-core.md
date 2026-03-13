@@ -81,6 +81,33 @@ The new `pugRule()` with `oneOf` logic ensures both modes coexist safely.
 
 ---
 
+## Automated Hosting Support (v1.10.0+)
+
+Production builds automatically generate routing configuration files
+for common static hosting environments.
+
+Supported platforms:
+
+- Netlify
+- Cloudflare Pages
+- Vercel
+- GitHub Pages
+
+Generated files:
+
+| Platform             | File                |
+|----------------------|---------------------|
+| Netlify / Cloudflare | `_redirects`        |
+| Vercel               | `vercel.json`       |
+| GitHub Pages         | `404.html` fallback |
+
+Hosting is detected automatically using environment variables provided by
+the hosting platform.
+
+This allows **zero-config deployment for SPA routing**.
+
+---
+
 ## Responsibilities
 
 ### webpack-core

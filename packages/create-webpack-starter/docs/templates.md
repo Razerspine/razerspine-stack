@@ -102,16 +102,23 @@ onInit()
 
 ```text
 src/
+  app/
+    app.ts
+    routes.ts
+    app.pug
+  pages/
+    home/
+    not-found/
+  shared/
+    layout/
+    mixins/
   assets/
-    scripts/
-      app.ts
-      routes.ts
-  views/
-    pages/
-      home/
-        home.ts
-        home.pug
-        style.scss
+    i18n/
+    icons/
+    images/
+  styles/
+    main.scss
+  types/
 ```
 
 **Each page**:
@@ -119,6 +126,13 @@ src/
 - Extends `BaseComponent`
 - Implements render()
 - Optionally overrides `onInit()` and `onDestroy()`
+
+Architecture improvements:
+
+- feature-based pages
+- shared UI layer
+- centralized bootstrap
+- clear separation of application logic and UI
 
 ### SPA Capabilities
 
