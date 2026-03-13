@@ -230,7 +230,7 @@ Tests simulate real `npx` usage.
 
 ## 📋 Requirements
 
-- Node.js >= 18
+- Node.js >= 20
 - npm / pnpm / yarn
 
 ---

@@ -14,7 +14,7 @@ Generated projects are fully standalone and production-ready.
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 20
 - npm (or pnpm / yarn)
 
 ---

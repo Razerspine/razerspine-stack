@@ -34,9 +34,5 @@
     "test:e2e": "npm run test:e2e -w create-webpack-starter",
     "templates:install": "bash scripts/install-templates.sh",
     "templates:clean": "bash scripts/clean-templates.sh"
-  },
-  "overrides": {
-    "glob": "13.0.6",
-    "minimatch": "10.2.4"
   }
 }
