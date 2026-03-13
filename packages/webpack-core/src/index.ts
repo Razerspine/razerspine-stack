@@ -8,3 +8,4 @@ export * from './types/style-type';
 export * from './types/app-type';
 export * from './types/config-option-type';
 export * from './types/base-webpack-config-type';
+export * from './types/hosting-type';
