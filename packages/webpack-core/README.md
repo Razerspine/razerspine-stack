@@ -31,6 +31,8 @@ Can be used independently in any Pug-based project.
 - Config validation layer
 - Centralized options normalization (v1.7.1+)
 - Fully customizable dev & prod configs
+- **New (v1.8.0) Automatic Deployment Configs**: Generates `_redirects` and `vercel.json` automatically.
+- **New (v1.8.0) GitHub Pages SPA Support**: Automatic `404.html` fallback for single-page apps.
 
 ---
 
