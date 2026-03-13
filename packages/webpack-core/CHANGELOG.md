@@ -8,6 +8,33 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.8.0] - 2026-03-13
+
+### Added
+
+- **Automated Deployment Assets Generation**
+  - Integrated `RoutingPlugin` into `createProdConfig` to handle host-specific routing files.
+  - **Vercel Support**: Automatically generates `vercel.json` with correct rewrite rules based on `appType`.
+  - **Netlify/Cloudflare Support**: Automatically generates `_redirects` file.
+  - **Zero-Config Deployment**: Routing files are generated in-memory during the build and emitted directly to the
+    `dist` folder.
+- **Enhanced SPA Fallback**
+  - Added automatic generation of `404.html` (as a copy of `index.html`) for SPA mode.
+  - Ensures seamless routing on platforms like **GitHub Pages** without manual configuration.
+
+### Fixed
+
+- **Type Safety**: Improved Webpack 5 internal typing for asset emission using `sources.RawSource`.
+- **Build Reliability**: Replaced `copy-webpack-plugin` for generated assets with a native Webpack emission strategy to
+  prevent "file not found" errors during build.
+
+### Changed
+
+- **Production Alignment**: `createProdConfig` now actively reads `_meta.appType` from `LoaderOptionsPlugin` to
+  synchronize routing logic with the development server.
+
+---
+
 ## [1.7.2] - 2026-02-22
 
 ### Added
@@ -29,7 +56,8 @@ required to ensure correct behavior in both development and production modes.
   - Removed global `loaderOptions` from `PugPlugin` to delegate responsibility to the new specialized `pugRule()`.
   - Improved compatibility between dynamic imports and static page generation.
 - **Clean Architecture Alignment**
-  - Updated `base.ts` to include `pugRule()` in `module.rules`, establishing a standard for how assets are resolved across all 8
+  - Updated `base.ts` to include `pugRule()` in `module.rules`, establishing a standard for how assets are resolved
+    across all 8
   - template variations (JS/TS, SCSS/Less, MPA/SPA).
 
 ---

@@ -203,7 +203,11 @@ All options are validated before initialization.
 
 - `baseConfig`: The configuration returned by createBaseConfig.
 - `options`: (Optional) Webpack configuration object for production overrides.
-- **Default behavior**: Enables source maps, minification, and disables `splitChunks` for template compatibility.
+- **Default behavior**:
+  - Enables source maps and minification.
+  - Disables `splitChunks` for template compatibility.
+  - **New**: Generates routing assets (`_redirects`, `vercel.json`) based on `appType`.
+  - **New**: Creates `404.html` fallback for SPA mode.
 
 ---
 
