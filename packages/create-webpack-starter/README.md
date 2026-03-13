@@ -4,15 +4,17 @@
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/create-webpack-starter.svg)](./LICENSE)
 
-Scaffold a modern webpack project using production-ready SPA or MPA templates powered by the **frontend ecosystem**
+Scaffold a modern webpack project using production-ready **SPA or MPA templates** powered by the Razerspine frontend ecosystem.
 
-**Built on top of**:
+Built on top of:
 
 - `@razerspine/webpack-core`
 - `@razerspine/pug-ui-kit`
 - `@razerspine/starter-core-scripts`
 
-> ⚠️ Versions prior to 1.1.0 do not include SPA support.
+Supports modern deployment platforms and includes a lightweight SPA runtime architecture.
+
+> ⚠️ Versions prior to **1.1.0** do not include SPA support.
 
 ---
 
@@ -22,19 +24,19 @@ Scaffold a modern webpack project using production-ready SPA or MPA templates po
 npx create-webpack-starter my-app
 ```
 
-**Starts an interactive setup where you choose**:
+Starts an interactive setup where you choose:
 
-- Project type (SPA or MPA)
-- Style preprocessor (SCSS or Less)
-- Script language (JavaScript or TypeScript)
+- Project type (**SPA** or **MPA**)
+- Style preprocessor (**SCSS** or **Less**)
+- Script language (**JavaScript** or **TypeScript**)
 
 ---
 
-## ⚙️ Non-interactive Usage (Recommended for CI)
+## ⚙️ Non-interactive Usage (CI Friendly)
 
 ```bash
 npx create-webpack-starter my-app \
-  --app-type mpa \
+  --app-type spa \
   --style scss \
   --script ts \
   --no-install
@@ -44,11 +46,11 @@ All feature flags must be provided together in non-interactive mode.
 
 ---
 
-## 🧩 Options
+## 🧩 CLI Options
 
 | Option                    | Description                        |
-|---------------------------|------------------------------------|
-| `--app-type <spa \| mpa>` | Project architecture type          |
+| ------------------------- | ---------------------------------- |
+| `--app-type <spa \| mpa>` | Project architecture               |
 | `--style <scss \| less>`  | CSS preprocessor                   |
 | `--script <js \| ts>`     | Script language                    |
 | `--no-install`            | Skip dependency installation       |
@@ -57,132 +59,208 @@ All feature flags must be provided together in non-interactive mode.
 
 ---
 
+## 🌍 Automated Hosting Support
+
+Production builds automatically generate deployment configuration files based on the detected hosting environment.
+
+Supported platforms:
+
+- **Netlify**
+- **Vercel**
+- **Cloudflare Pages**
+- **GitHub Pages**
+- **Generic static hosting**
+
+Generated files:
+
+| Platform             | Generated File          |
+| -------------------- | ----------------------- |
+| Netlify / Cloudflare | `_redirects`            |
+| Vercel               | `vercel.json`           |
+| GitHub Pages         | `404.html` SPA fallback |
+| Static hosting       | `404.html` SPA fallback |
+
+Hosting detection uses environment variables automatically provided by hosting providers.
+
+Example:
+
+```bash
+NETLIFY=true npm run build
+```
+
+---
+
 ## 🏗 Project Architectures
 
 ### SPA (Single Page Application)
 
-**SPA templates include**:
+SPA templates include a **lightweight runtime architecture** powered by
+`@razerspine/starter-core-scripts`.
 
-- Built-in `Router` (Singleton pattern)
-- `BaseComponent` lifecycle
+#### Core features
+
+- Dependency Injection container
+- SPA Router
+- Route Guards (`canActivate`)
+- Component lifecycle
+- Declarative navigation
 - Proxy-based reactive state
-- Automatic mount → render → bind → update orchestration
-- Declarative navigation (`data-link`)
-- Programmatic navigation (`Router.navigate()`)
 
-### SPA Lifecycle
+#### Application Bootstrap
+
+```ts
+bootstrapApplication({
+  providers: [
+    provideRouter(routes),
+    { provide: ThemeService, useValue: themeService },
+    { provide: ConsoleLogger, useValue: logger }
+  ]
+});
+```
+
+#### Component Example
+
+```ts
+export class HomePage extends BaseComponent<HomeState> {
+
+  private logger = inject(ConsoleLogger);
+
+  protected onInit() {
+    this.logger.success('Home Page initialized!');
+  }
+
+}
+```
+
+#### Router Guards
+
+Guards control navigation before routes activate.
+
+```ts
+const routes: Route[] = [
+  { path: '/', component: HomePage },
+  { path: '/dashboard', component: DashboardPage, canActivate: [authGuard] }
+];
+```
+
+Guard example:
+
+```ts
+const authGuard: CanActivateFn = () => {
+  const isLoggedIn = checkAuth();
+  return isLoggedIn ? true : '/login';
+};
+```
+
+Guard return values:
+
+| Return    | Result           |
+| --------- | ---------------- |
+| `true`    | allow navigation |
+| `false`   | block navigation |
+| `string`  | redirect         |
+| `Promise` | async guard      |
+
+---
+
+## SPA Lifecycle
 
 ```text
 Route change
   ↓
-destroy() previous component
+run route guards
   ↓
-new Page(root)
+destroy() previous page
   ↓
-mount()
+instantiate new page
   ↓
-render()
+mount() or render()
   ↓
 bind events
-  ↓
-update()
   ↓
 onInit()
 ```
 
-**Memory safety is handled automatically via**:
-
-- cleanup registry
-- Proxy disconnect
-- delegated event binding
-
-### Best for:
-
-- dashboards
-- admin panels
-- applications
-- client-side routed projects
+Lifecycle cleanup is handled automatically.
 
 ---
 
-### MPA (Multi Page Application)
+## MPA (Multi Page Application)
 
-MPA templates use the same reactive engine but without Router.
+MPA templates provide a classic multi-page architecture.
 
-**Includes**:
+Features:
 
 - Multi-entry webpack setup
 - Independent page scripts
-- Proxy-based reactivity via `createStore`
-- Manual binding with `applyBindings`
-- Optional delegated events via `bindClickEvents` and `bindForms`
+- Reactive state via `createStore`
+- Optional event helpers
 
-### Best for:
+Best suited for:
 
-- landing pages
 - marketing sites
-- traditional multipage websites
-
----
-
-## 📦 Template Resolution
-
-Templates are resolved automatically based on selected features.
-
-**Example combinations**:
-
-| Type | Style | Script | Internal Template Key |
-|------|-------|--------|-----------------------|
-| SPA  | SCSS  | TS     | `spa-pug-scss-ts`     |
-| SPA  | SCSS  | JS     | `spa-pug-scss-js`     |
-| SPA  | Less  | TS     | `spa-pug-less-ts`     |
-| SPA  | Less  | JS     | `spa-pug-less-js`     |
-| MPA  | SCSS  | TS     | `mpa-pug-scss-ts`     |
-| MPA  | SCSS  | JS     | `mpa-pug-scss-js`     |
-| MPA  | Less  | TS     | `mpa-pug-less-ts`     |
-| MPA  | Less  | JS     | `mpa-pug-less-js`     |
-
-Users never select template names directly.
-The CLI resolves the correct template internally.
+- landing pages
+- traditional websites
 
 ---
 
 ## 📁 Generated Project Structure
 
-### Example (SPA):
+Example SPA structure:
 
 ```text
 src/
-  assets/
-    scripts/
-      app.ts
-      routes.ts
-  views/
+  app/
+    app.ts
+    routes.ts
+    app.pug
+
+  pages/
+    home/
+    not-found/
+
+  shared/
     layout/
-    pages/
+    mixins/
+
+  assets/
+    images/
+    icons/
+    i18n/
+
+  styles/
+    main.scss
+
   types/
-webpack.config.js
-tsconfig.json
-postcss.config.js
 ```
 
-### Example (MPA):
+Generated projects are:
 
-```text
-src/
-  assets/
-  views/
-    layout/
-    pages/
-webpack.config.js
-```
+- fully standalone
+- independent of the CLI
+- production-ready
+- safe to deploy immediately
 
-**Generated projects are**:
+---
 
-- Fully standalone
-- Not coupled to the CLI
-- Ready for production builds
-- Safe to deploy immediately
+## 📦 Template Resolution
+
+Templates are resolved automatically from selected flags.
+
+| Type | Style | Script | Template          |
+| ---- | ----- | ------ | ----------------- |
+| SPA  | SCSS  | TS     | `spa-pug-scss-ts` |
+| SPA  | SCSS  | JS     | `spa-pug-scss-js` |
+| SPA  | Less  | TS     | `spa-pug-less-ts` |
+| SPA  | Less  | JS     | `spa-pug-less-js` |
+| MPA  | SCSS  | TS     | `mpa-pug-scss-ts` |
+| MPA  | SCSS  | JS     | `mpa-pug-scss-js` |
+| MPA  | Less  | TS     | `mpa-pug-less-ts` |
+| MPA  | Less  | JS     | `mpa-pug-less-js` |
+
+Users never choose templates directly.
+
+The CLI resolves the correct one automatically.
 
 ---
 
@@ -192,11 +270,12 @@ webpack.config.js
 - Pug template system
 - SCSS or Less support
 - JavaScript or TypeScript support
-- SPA Router (SPA mode)
-- Reactive View Engine (SPA & MPA)
-- Clean scalable project structure
-- Memory-safe component lifecycle (SPA)
-- Fully standalone output
+- SPA Router
+- Route Guards
+- Dependency Injection container
+- Reactive View Engine
+- Clean scalable architecture
+- Production deployment automation
 
 ---
 
@@ -216,13 +295,13 @@ Detailed documentation is available in the `/docs` directory:
 
 ## 🧪 Testing
 
-This project uses real end-to-end tests to verify:
+The project includes end-to-end tests verifying:
 
-- project scaffolding
-- flag-based resolution
+- scaffolding
+- CLI flags
 - dry-run behavior
-- invalid combinations handling
-- filesystem correctness
+- template resolution
+- filesystem output
 
 Tests simulate real `npx` usage.
 
@@ -230,21 +309,21 @@ Tests simulate real `npx` usage.
 
 ## 📋 Requirements
 
-- Node.js >= 20
+- **Node.js ≥ 20**
 - npm / pnpm / yarn
 
 ---
 
 ## 🛠 How It Works
 
-1. CLI validates selected flags
-2. Internal template is resolved
+1. CLI validates feature flags
+2. Template is resolved internally
 3. Files are copied
-4. Dependencies are installed (unless disabled)
+4. Dependencies are installed
 5. Project is ready to run
 
 ---
 
 ## 📄 License
 
-This project is licensed under the ISC License.
+ISC License
