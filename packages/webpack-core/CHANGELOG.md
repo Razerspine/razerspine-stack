@@ -8,6 +8,30 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.9.0] - 2026-03-13
+
+### Added
+- **Smart Auto-Hosting Adapter**
+  - Integrated `detectHosting()` utility to automatically identify deployment platforms (**Vercel, Netlify, Cloudflare, GitHub Pages**).
+  - **Zero-Config Routing**: Automatically generates platform-specific configuration files (`_redirects`, `vercel.json`) based on `appType`.
+  - **Interactive Build Logs**: Added `infrastructureLogger` integration. The build now informs the developer about detected platforms (e.g., `📦 Netlify detected. Generating _redirects for SPA...`).
+- **Enhanced SPA Fallback Strategy**
+  - Automated `404.html` generation for **GitHub Pages** and static hosts when in SPA mode.
+  - Ensures seamless client-side routing without manual file duplication.
+
+### Changed
+- **Architectural Refactoring**
+  - Decoupled hosting logic into specialized utilities: `getRedirects`, `getVercelConfig`, and `detectHosting`.
+  - Improved `createProdConfig` maintainability by moving business logic out of the main configuration factory.
+- **Production Alignment**
+  - `createProdConfig` now actively reads `_meta.appType` from `LoaderOptionsPlugin` to synchronize routing logic with the development server.
+
+### Fixed
+- **Type Safety**: Improved Webpack 5 internal typing for asset emission using `sources.RawSource`.
+- **Build Reliability**: Replaced `copy-webpack-plugin` for generated assets with a native Webpack emission strategy to prevent "file not found" errors during build.
+
+---
+
 ## [1.8.0] - 2026-03-13
 
 ### Added
