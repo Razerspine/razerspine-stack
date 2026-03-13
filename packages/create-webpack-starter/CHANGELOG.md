@@ -1,5 +1,186 @@
 # Changelog
 
+## [1.1.4] - 2026-03-13
+
+### Major Template Stabilization & Deployment Upgrade
+
+This release introduces a major stabilization update across all project templates.  
+It aligns the CLI with the latest versions of `@razerspine/webpack-core` and  
+`@razerspine/starter-core-scripts`, improves production deployment support, and  
+modernizes the internal template architecture.
+
+### Updated
+
+- All templates upgraded to **v0.0.5**
+- Updated `@razerspine/webpack-core` to **^1.10.0**
+- Updated `@razerspine/starter-core-scripts` to **^0.5.1**
+- Updated `pug-plugin` to **^6.1.0**
+- Removed all manual `overrides` from templates (dependency fixes now handled upstream)
+- Updated minimum **Node.js requirement to v20+**
+
+### Added
+
+#### Automated Hosting Support
+
+Production builds now automatically generate deployment configuration for modern static hosting platforms via
+`@razerspine/webpack-core`.
+
+Supported platforms:
+
+- **Netlify**
+- **Vercel**
+- **Cloudflare Pages**
+- **GitHub Pages**
+- **Generic static hosting**
+
+Generated files depend on the detected platform:
+
+| Platform             | Generated File          |
+|:---------------------|:------------------------|
+| Netlify / Cloudflare | `_redirects`            |
+| Vercel               | `vercel.json`           |
+| GitHub Pages         | `404.html` SPA fallback |
+| Static hosting       | `404.html` SPA fallback |
+
+*Hosting detection is based on environment variables automatically provided by hosting providers.*
+
+### SPA Runtime Architecture
+
+All SPA templates now include a **lightweight dependency injection container** and a structured application bootstrap
+system provided by `@razerspine/starter-core-scripts`.
+
+#### Key features:
+
+- Application bootstrap via `bootstrapApplication()`
+- Provider-based dependency injection
+- Router integration via `provideRouter()`
+- Service injection via `inject()`
+- Component lifecycle (`onInit`, `onDestroy`)
+- `BaseComponent` runtime abstraction
+
+#### Example application bootstrap:
+
+```ts
+bootstrapApplication({
+  providers: [
+    provideRouter(routes),
+    {provide: ThemeService, useValue: themeService},
+    {provide: ConsoleLogger, useValue: logger},
+  ],
+});
+```
+
+#### Example component using dependency injection:
+
+```ts
+export class HomePage extends BaseComponent<HomeState> {
+  private logger = inject(ConsoleLogger);
+
+  protected onInit() {
+    this.logger.success('Home Page initialized!');
+  }
+}
+```
+
+#### Router Guards (canActivate)
+
+The SPA Router now supports **route guards** through the `canActivate` API, allowing developers to control navigation
+before a route is activated.
+
+**Supported guard results:**
+
+| Return Value | Behavior                      |
+|:-------------|:------------------------------|
+| `true`       | Allow navigation              |
+| `false`      | Block navigation              |
+| `string`     | Redirect to the provided path |
+| `Promise`    | Async guard resolution        |
+
+**Example configuration & usage:**
+
+```ts
+// route configuration
+const routes: Route[] = [
+  {path: '/', component: HomePage},
+  {path: '/dashboard', component: DashboardPage, canActivate: [authGuard]},
+];
+
+// guard implementation
+const authGuard: CanActivateFn = () => {
+  const isLoggedIn = checkAuth();
+  return isLoggedIn ? true : '/login';
+};
+```
+
+Guards are executed sequentially and support asynchronous logic.
+
+Navigation behavior:
+
+- first failing guard stops navigation
+- redirect guards trigger automatic router navigation
+- guard errors are caught internally and handled by the router
+
+### Template Architecture Improvements
+
+All SPA templates now follow a unified project structure:
+
+```text
+src/
+  app/
+    app.ts
+    routes.ts
+    app.pug
+  pages/
+    home/
+    not-found/
+  shared/
+    layout/
+    mixins/
+  assets/
+    i18n/
+    icons/
+    images/
+  styles/
+    main.scss
+  types/
+```
+
+### Key improvements:
+
+- Feature-based page structure
+- Shared UI layer
+- Centralized application bootstrap
+- Clear separation between application core and UI pages
+
+### Test Build Scripts (Templates)
+
+All templates now include testing scripts for verifying production builds across different hosting environments:
+
+```json
+{
+  "test:build:netlify": "NETLIFY=true npm run build",
+  "test:build:vercel": "VERCEL=true npm run build",
+  "test:build:github": "GITHUB_ACTIONS=true npm run build",
+  "test:build:cloudflare": "CF_PAGES=true npm run build"
+}
+```
+
+### Security & Improvements
+
+- Security: All templates now pass npm audit with 0 vulnerabilities.
+- Cleanup: Removed temporary dependency overrides previously required for glob / minimatch.
+- Reliability: More reliable production builds and better compatibility with modern static hosting.
+- CI/CD: Improved CI compatibility with Node.js 20+.
+- Stability: More stable TypeScript configuration across templates.
+
+### Notes
+
+- This release focuses on stability, deployment automation, and runtime architecture improvements.
+- No breaking changes were introduced to the CLI interface.
+- Existing projects generated with older versions remain fully compatible.
+
+---
+
 ## [1.1.3] - 2026-03-01
 
 ### Major Template Architecture Upgrade
