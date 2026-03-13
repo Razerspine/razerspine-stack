@@ -22,7 +22,7 @@
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",
     "prettier": "^3.2.5",
-    "pug-plugin": "^6.0.0",
+    "pug-plugin": "^6.1.0",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3",
@@ -36,9 +36,5 @@
   "dependencies": {
     "@razerspine/pug-ui-kit": "^1.5.1",
     "@razerspine/starter-core-scripts": "^0.5.1"
-  },
-  "overrides": {
-    "glob": "13.0.6",
-    "minimatch": "10.2.4"
   }
 }
