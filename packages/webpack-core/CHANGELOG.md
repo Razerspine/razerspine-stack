@@ -8,6 +8,20 @@ required to ensure correct behavior in both development and production modes.
 
 ---
 
+## [1.10.0] - 2026-03-13
+
+### Changed
+- **Dependency Update**: Upgraded `pug-plugin` to `^6.1.0`.
+  - Fixes vulnerabilities in transitive dependencies by forcing `minimatch@10` and `glob@13`.
+  - Includes the latest `html-bundler-webpack-plugin` for improved asset handling.
+- **Environment Requirements**: Updated minimum required **Node.js version to 20**.
+- **Cleanup**: Prepared for the removal of manual `overrides` in consumer templates (resolves [issue #110](https://github.com/webdiscus/pug-plugin/issues/110)).
+
+### Fixed
+- **Security**: Eliminated deep-level dependency warnings related to older versions of `glob` and `minimatch`.
+
+---
+
 ## [1.9.0] - 2026-03-13
 
 ### Added

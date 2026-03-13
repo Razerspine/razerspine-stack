@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/webpack-core",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Core webpack config and loaders for starter templates",
   "keywords": [
     "webpack",
@@ -42,6 +42,6 @@
     "webpack": "^5.105.0",
     "webpack-dev-server": "^5.2.3",
     "webpack-merge": "^5.10.0",
-    "pug-plugin": "^6.0.0"
+    "pug-plugin": "^6.1.0"
   }
 }
