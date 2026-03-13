@@ -1,8 +1,8 @@
-## Architecture
+# Architecture
 
 ---
 
-### System Architecture Diagram (Mermaid)
+## System Architecture Diagram (Mermaid)
 
 ```mermaid
 %%{init: { 'flowchart': { 'rankSpacing': 100, 'nodeSpacing': 120 } } }%%
@@ -25,11 +25,12 @@ end
 subgraph L4 ["Shared Runtime Packages"]
     CORE["@razerspine/webpack-core"]
     UI["@razerspine/pug-ui-kit"]
-    SCRIPTS["@razerspine/starter-core-scripts<br/>(Router + View Engine + BaseComponent)"]
+    SCRIPTS["@razerspine/starter-core-scripts<br/>(DI + Router + View Engine)"]
 end
 
 subgraph L5 ["Build Layer"]
-    WEBPACK["Webpack & Loaders"]
+    WEBPACK["Webpack Build System"]
+    HOSTING["Hosting Adapters<br/>(_redirects / vercel.json / SPA fallback)"]
 end
 
 CLI --> RESOLVER
@@ -42,6 +43,7 @@ PROJECT --> UI
 PROJECT --> SCRIPTS
 
 CORE --> WEBPACK
+WEBPACK --> HOSTING
 
 CLI -.->|"no runtime dependency"| PROJECT
 ```
@@ -50,11 +52,11 @@ CLI -.->|"no runtime dependency"| PROJECT
 
 ## Architectural Boundaries
 
-- The CLI is a generator tool and is never used at runtime.
-- Templates are copied into the generated project.
-- Shared runtime packages are published to npm and versioned independently.
-- The generated project is fully standalone.
-- Runtime architecture lives inside published packages — not inside the CLI.
+- The CLI is a **generator tool** and is never used at runtime.
+- Templates are **copied into the generated project**.
+- Shared runtime packages are **published to npm and versioned independently**.
+- The generated project is **fully standalone**.
+- Runtime architecture lives inside **published packages**, not inside the CLI.
 
 ---
 
@@ -78,169 +80,301 @@ The monorepo exists to ensure:
 
 ## Core Principles
 
-### Strict separation of responsibilities
+### Strict Separation of Responsibilities
 
-**CLI handles:**
+#### CLI Responsibilities
+
+The CLI handles:
 
 - user interaction (prompts, flags)
 - template selection
 - file copying
 - dependency installation
 
-**Templates handle:**
+#### Template Responsibilities
 
-- full project structure
-- declared dependencies
+Templates define:
+
+- project structure
 - webpack configuration
+- dependencies
 - application source code
 
-**Shared runtime packages handle:**
+#### Shared Runtime Responsibilities
 
+Shared packages provide reusable runtime logic:
+
+- dependency injection container
 - Router
-- Component lifecycle
-- Reactive state
-- View binding engine
+- component lifecycle
+- reactive state engine
+- DOM binding system
 
-Generated projects have **no runtime dependency** on the CLI.
+Generated projects have **no runtime dependency on the CLI**.
 
 ---
 
 ## Runtime Architecture (SPA & MPA)
 
-As of `starter-core-scripts@0.4.0`, runtime logic is centralized.
+Runtime behavior is provided by `@razerspine/starter-core-scripts`.
 
-### SPA Runtime
+As of **v0.5.x**, the runtime introduces a structured application bootstrap system.
 
-SPA templates use:
+### SPA Runtime Architecture
 
-- Router (Singleton pattern)
-- BaseComponent abstraction
-- mount() lifecycle orchestration
+SPA templates include a lightweight application runtime with:
+
+- Dependency Injection container
+- Router with guard support
+- BaseComponent lifecycle abstraction
 - Proxy-based reactive state
-- Declarative DOM bindings
+- Automatic DOM bindings
 
-SPA lifecycle:
+Application bootstrap:
 
+```ts
+bootstrapApplication({
+  providers: [
+    provideRouter(routes)
+  ]
+});
 ```
+
+The bootstrap system initializes:
+
+- dependency injection container
+- router instance
+- runtime services
+
+### SPA Component Model
+
+Pages extend `BaseComponent`.
+
+Example:
+
+```ts
+export class HomePage extends BaseComponent<State> {
+
+  protected onInit() {
+    console.log('Home mounted');
+  }
+
+}
+```
+
+Components support lifecycle hooks:
+
+- `onInit()`
+- `onDestroy()`
+
+### Router Guards
+
+Routes may include navigation guards:
+
+```text
+{
+  path: '/dashboard',
+    component: DashboardPage,
+    canActivate: [authGuard]
+}
+```
+
+Guard return values:
+
+| Return    | Behavior         |
+|-----------|------------------|
+| `true`    | allow navigation |
+| `false`   | block navigation |
+| `string`  | redirect         |
+| `Promise` | async resolution |
+
+Guards execute sequentially and may redirect navigation.
+
+### SPA Lifecycle
+
+```text
 Route change
   ↓
-destroy() previous component
+destroy previous component
   ↓
-new Page(root)
+new Component(container)
   ↓
 mount()
   ↓
 render()
   ↓
-initEventListeners()
+bind events
   ↓
-update()
+applyBindings()
   ↓
 onInit()
 ```
 
-The Router automatically detects and executes:
+Memory safety is ensured via:
 
-- `mount()`
-- `render()`
-- `destroy()`
-
-Memory safety is handled via:
-
-- cleanup registry
+- automatic cleanup registry
 - Proxy disconnect
 - delegated event binding
 
----
+### MPA Runtime Architecture
 
-### MPA Runtime
+MPA templates reuse the same reactive engine but **without Router or DI container**.
 
-MPA templates reuse the same reactive View Engine but without Router.
+Available runtime features:
 
-Includes:
+- `createStore()`
+- `applyBindings()`
+- `bindClickEvents()`
+- `bindForms()`
 
-- createStore()
-- applyBindings()
-- data-model
-- data-bind
-- data-show
-- data-class
-- data-for
-- delegated events via data-click
+Example initialization:
 
-MPA pages remain independent entry points.
+```ts
+const { state } = createStore(initialState, () => update());
+applyBindings(document.body, state);
+```
+
+MPA pages are independent entry points and do not share navigation state.
 
 ---
 
 ## Application Types (SPA vs MPA)
 
-Templates represent different architectural modes:
+Templates represent different architectural modes.
 
 ### MPA (Multi Page Application)
 
-- Multiple entry points
-- Multiple HTML pages
+Characteristics:
+
+- multiple HTML entry points
+- independent page scripts
+- server-compatible structure
 - SEO-friendly output
-- Server-compatible structure
+
+Best suited for:
+
+- marketing websites
+- static content-heavy sites
+- traditional websites
 
 ### SPA (Single Page Application)
 
-- Single entry point
-- Client-side routing
-- Component lifecycle management
-- App-like behavior
+Characteristics:
 
-The CLI resolves:
+- single HTML entry
+- client-side routing
+- component lifecycle management
+- application-like behavior
 
-- style (scss / less)
-- script (js / ts)
-- appType (spa / mpa)
+Best suited for:
 
-The selected template defines the project structure.
-
-The CLI does not modify architectural logic.
-
-If necessary, `patchWebpackConfig.ts` may apply minimal,
-explicit configuration adjustments after template copying.
-
-Templates remain the source of truth.
+- dashboards
+- admin panels
+- web applications
 
 ---
 
-## Package Types
+## Template Resolution
 
-- `create-webpack-starter` – published CLI
-- `webpack-core` – shared webpack configuration (npm package)
-- `pug-ui-kit` – UI assets & mixins (npm package)
-- `starter-core-scripts` – Router + View Engine + BaseComponent (npm package)
-- `templates/*` – source templates (not npm packages)
+Templates are resolved using three dimensions:
+
+- `appType`
+- `style`
+- `script`
+
+The CLI determines the correct template automatically.
+
+Example combinations:
+
+| Type | Style | Script |
+|------|-------|--------|
+| SPA  | SCSS  | TS     |
+| SPA  | SCSS  | JS     |
+| SPA  | Less  | TS     |
+| SPA  | Less  | JS     |
+| MPA  | SCSS  | TS     |
+| MPA  | SCSS  | JS     |
+| MPA  | Less  | TS     |
+| MPA  | Less  | JS     |
+
+Users never select templates directly.
+
+---
+
+## Build Architecture
+
+All templates rely on `@razerspine/webpack-core`.
+
+Responsibilities of webpack-core:
+
+- webpack configuration
+- asset loaders
+- Pug compilation
+- development server
+- production builds
+- environment detection
+- hosting integration
+
+---
+
+## Automated Hosting Support
+
+Production builds automatically generate routing configuration for common static hosting platforms.
+
+Supported environments:
+
+- Netlify
+- Cloudflare Pages
+- Vercel
+- GitHub Pages
+- generic static hosting
+
+Generated files:
+
+| Platform             | Generated File      |
+|----------------------|---------------------|
+| Netlify / Cloudflare | `_redirects`        |
+| Vercel               | `vercel.json`       |
+| GitHub Pages         | `404.html` fallback |
+| Static hosting       | `404.html` fallback |
+
+Hosting detection is based on environment variables automatically provided by hosting platforms.
+
+This enables **zero-config deployment for SPA routing**.
+
+---
+
+## # Package Types
+
+This monorepo contains several types of packages and internal resources.
+
+| Package / Directory                           | Purpose                      |
+|-----------------------------------------------|------------------------------|
+| `packages/create-webpack-starter`             | CLI generator                |
+| `packages/webpack-core`                       | shared webpack configuration |
+| `packages/pug-ui-kit`                         | UI mixins and assets         |
+| `packages/starter-core-scripts`               | SPA / MPA runtime engine     |
+| `packages/create-webpack-starter/templates/*` | internal project templates   |
+
+Templates are **internal assets of the CLI** and are not published to npm.
+
+They are copied into the generated project by the CLI during project creation.
 
 ---
 
 ## Workspace Dependency Model
 
-This repository uses **npm workspaces**, which affects how and where
-`node_modules` directories are created.
-
-### Important behavior
+This repository uses npm workspaces.
 
 When running `npm install` from the repository root:
 
-- npm builds a single dependency graph for all workspace packages
-- dependencies are hoisted to the root `node_modules/` whenever possible
-- individual workspace packages may not have their own `node_modules/` directory
-
-This is expected and correct behavior.
-
-### Practical consequences
-
-- A workspace package can work correctly without a local `node_modules/`
-- Node.js resolves dependencies by walking up the directory tree
-- Local `node_modules/` presence is not guaranteed
+- npm builds a single dependency graph
+- dependencies are hoisted to the root `node_modules`
+- workspace packages may not have local `node_modules`
 
 Example:
 
-```
+```text
 root/
 ├─ node_modules/
 │  └─ inquirer
@@ -249,57 +383,56 @@ root/
 │     └─ (no node_modules/)
 ```
 
-Resolution still works correctly.
+Node.js resolves dependencies by walking up the directory tree.
+
+This behavior is expected.
 
 ---
 
 ## Shared Runtime Packages
 
-The monorepo contains shared runtime packages used by templates:
+Templates rely on published runtime packages:
 
 - `@razerspine/webpack-core`
 - `@razerspine/pug-ui-kit`
 - `@razerspine/starter-core-scripts`
 
-These are published npm packages.
+Templates depend on **published npm versions** using semver ranges.
 
-Templates declare them as normal semver dependencies
-(e.g. `"^0.4.0"`), not as workspace dependencies.
+Example:
+
+```text
+"@razerspine/starter-core-scripts": "^0.5.0"
+```
 
 This guarantees:
 
-- Generated projects are fully standalone
-- No workspace references leak into published templates
-- CLI users always receive stable, published versions
+- generated projects remain standalone
+- no workspace references leak into templates
+- CLI users always receive stable published packages
 
 ---
 
 ## Templates and Dependency Installation
 
-Directories under `templates/` are **not npm workspaces**.
+Directories under `packages/create-webpack-starter/templates/` are **not npm workspaces**.
 
-npm does not install dependencies for templates automatically.
+Dependencies are installed only when:
 
-Template projects receive dependencies only when:
+1. the CLI copies the template
+2. `npm install` runs inside the generated project
 
-- the CLI copies the template into a target directory
-- the CLI runs `npm install` inside the generated project
+During local development, template directories may contain:
 
-### Local template development
+- `node_modules`
+- `dist`
 
-During local development, `node_modules/` and `dist/` may exist
-inside template folders.
-
-These directories:
-
-- are ignored by git
-- are ignored during template copying
-- are never shipped to end users
+These directories are ignored by git and excluded from template copying.
 
 This guarantees:
 
 - clean generated projects
-- predictable installs
+- predictable dependency installation
 - no leakage of development artifacts
 
 ---
@@ -310,10 +443,11 @@ Templates must never use:
 
 - `workspace:*`
 - `file:`
-- local path references
+- local path dependencies
 
-Templates must always depend on published npm versions
-of shared packages using semver ranges (e.g. `^0.4.0`).
+Templates must always depend on **published npm versions** of shared packages.
 
-The CLI is responsible only for copying templates
-and running `npm install` in the target directory.іі
+The CLI is responsible only for:
+
+- copying templates
+- installing dependencies

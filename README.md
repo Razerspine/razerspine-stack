@@ -1,35 +1,15 @@
 # webpack-starter-monorepo
 
-Monorepo for the `create-webpack-starter` CLI and official webpack starter templates.
+Monorepo for the `create-webpack-starter` CLI and the official webpack starter templates.
 
-This repository contains everything needed to generate and maintain
-production-ready webpack projects with Pug, SCSS/Less, JavaScript or TypeScript.
+This repository contains everything required to generate **production-ready webpack projects** using:
 
----
+* **Pug**
+* **SCSS or Less**
+* **JavaScript or TypeScript**
+* **SPA or MPA architectures**
 
-## Dependency Overrides Policy
-
-The monorepo currently enforces explicit overrides for:
-
-- `glob`
-- `minimatch`
-
-These overrides align the toolchain with the latest secure dependency stack
-and mitigate a transitive `minimatch` ReDoS advisory present in older `glob` versions.
-
-Why this exists:
-
-- `js-beautify` depends on `glob@10`
-- `glob@10` pulls older `minimatch`
-- Upstream has not yet updated the dependency range
-
-This override is:
-
-- Build-time only
-- Tested for compatibility
-- Safe for the current toolchain
-
-The override will be removed once upstream packages adopt modern versions.
+It provides a structured ecosystem consisting of a project generator, shared runtime packages, and official starter templates.
 
 ---
 
@@ -40,15 +20,21 @@ packages/
 ├─ create-webpack-starter      # CLI — npx create-webpack-starter
 ├─ webpack-core                # Shared webpack configuration & loaders
 ├─ pug-ui-kit                  # Optional Pug UI helpers
-└─ starter-core-scripts        # Shared frontend services (theme, i18n, api)
+└─ starter-core-scripts        # Runtime utilities (router, DI, view bindings)
 ```
+
+Each package has a clearly defined responsibility and is versioned independently.
+
+Generated projects depend on **published npm packages**, not on this monorepo.
 
 ---
 
 ## Templates
 
+Starter templates live inside the CLI package.
+
 ```text
-create-webpack-starter/templates/
+packages/create-webpack-starter/templates/
 ├─ mpa-pug-less-js
 ├─ mpa-pug-less-ts
 ├─ mpa-pug-scss-js
@@ -59,112 +45,202 @@ create-webpack-starter/templates/
 └─ spa-pug-scss-ts
 ```
 
+Templates are **internal CLI assets** and are not published to npm.
+
+When a project is generated, the CLI:
+
+1. selects a template
+2. copies the template files
+3. installs dependencies
+4. prepares a fully standalone project
+
 ---
 
 ## Application Types
 
-Templates may implement different architectures:
+Templates support two architectural modes.
 
-- **MPA** — multi-page static structure
-- **SPA** — single entry application
+### MPA — Multi Page Application
 
-The CLI resolves:
+Characteristics:
 
-- style stack (scss / less)
-- script stack (js / ts)
-- application type (spa / mpa)
+- multiple HTML entry points
+- server-friendly structure
+- SEO-friendly output
+- independent page scripts
 
-Each combination maps to a concrete template.
+Best suited for:
+
+- marketing websites
+- documentation sites
+- static content projects
+
+---
+
+### SPA — Single Page Application
+
+Characteristics:
+
+- single HTML entry
+- client-side routing
+- component lifecycle
+- application-like behavior
+
+SPA templates include a lightweight runtime powered by:
+
+- dependency injection
+- Router
+- `BaseComponent` lifecycle
+- reactive state bindings
 
 ---
 
 ## Shared Runtime Packages
 
-Templates rely on published runtime packages:
+Templates rely on several shared runtime packages:
 
 - `@razerspine/webpack-core`
 - `@razerspine/pug-ui-kit`
 - `@razerspine/starter-core-scripts`
 
-These packages are versioned and published independently.
+These packages provide:
 
-Generated projects depend on stable npm versions,
-not on the monorepo workspace.
+- webpack configuration
+- build tooling
+- runtime services
+- UI utilities
+
+They are versioned and published independently.
+
+Generated projects always depend on **stable npm releases**, never on monorepo workspaces.
+
+---
+
+## Automated Hosting Support
+
+Production builds automatically generate configuration for common static hosting platforms.
+
+Supported environments:
+
+- Netlify
+- Cloudflare Pages
+- Vercel
+- GitHub Pages
+- generic static hosting
+
+Depending on the environment, the build may generate:
+
+| Platform             | Generated File          |
+|----------------------|-------------------------|
+| Netlify / Cloudflare | `_redirects`            |
+| Vercel               | `vercel.json`           |
+| GitHub Pages         | `404.html` SPA fallback |
+
+Hosting detection is based on environment variables automatically provided by hosting providers.
+
+This allows **zero-configuration deployment for SPA routing**.
+
+---
 
 ## Philosophy
 
-This repository follows a strict separation of responsibilities.
+This project follows a **strict separation of responsibilities**.
 
-### CLI responsibilities
+## CLI responsibilities
 
-- user interaction (prompts, flags)
+The CLI handles:
+
+- user interaction (prompts and flags)
 - template selection
 - file copying
 - dependency installation
 
-### Template responsibilities
+The CLI **never participates in runtime execution**.
 
-- fully standalone projects
-- production-ready setup
-- editable after generation
-- no runtime dependency on the CLI
+---
 
-No hidden magic.  
-No runtime coupling.  
-Generated projects are yours forever.
+## Template responsibilities
+
+Templates define:
+
+- project structure
+- dependencies
+- webpack configuration
+- application source code
+
+Templates are designed to produce **fully standalone projects**.
+
+After generation, the project belongs entirely to the user.
+
+No runtime dependency on the CLI exists.
 
 ---
 
 ## High-Level Architecture
 
-This monorepo separates concerns strictly:
+This monorepo separates responsibilities across layers:
 
-- CLI → project generator only
-- Templates → full project structure
-- Runtime packages → shared build/runtime logic
-- Generated projects → fully standalone
+```
+CLI
+  ↓
+Templates
+  ↓
+Generated Project
+  ↓
+Runtime Packages
+  ↓
+Webpack Build
+  ↓
+Static Hosting
+```
 
-The CLI:
+The CLI simply generates projects.
 
-- selects a template (style + script + app type)
-- copies files
-- optionally applies config patches
-- runs dependency installation
-
-It never participates in runtime.
-
-Generated projects contain no dependency on the CLI.
+All runtime behavior lives in **published packages**, not inside the generator.
 
 ---
 
 ## Development
 
-### This repository uses npm workspaces.
+This repository uses **npm workspaces**.
 
-#### Install all workspace dependencies:
+---
+
+## Install all dependencies
+
 ```bash
 npm install
 ```
 
-#### Build all packages:
+---
+
+## Build all packages
 
 ```bash
 npm run build
 ```
 
-#### Local CLI testing:
+---
+
+## Local CLI testing
 
 ```bash
 npm run dev:cli
 ```
 
-#### CLI e2e tests
+---
+
+## CLI end-to-end tests
 
 ```bash
 npm run test:e2e
 ```
 
-#### End users should use
+---
+
+## End-user usage
+
+End users should generate projects with:
 
 ```bash
 npx create-webpack-starter
@@ -172,44 +248,49 @@ npx create-webpack-starter
 
 ---
 
-## Dependency installation model
+# Dependency Installation Model
 
 This monorepo uses **npm workspaces**.
 
 When running `npm install` from the repository root:
 
-- dependencies for all workspace packages are installed together
-- most dependencies are hoisted into the root `node_modules/`
-- individual packages may not have their own `node_modules` directories
+- npm builds a unified dependency graph
+- most dependencies are hoisted to the root `node_modules`
+- individual packages may not contain their own `node_modules`
 
-This is expected npm behavior and does not indicate a broken setup.
+This behavior is expected.
 
-Template directories under `templates/` are **not workspaces**.
-Their dependencies are installed only when the CLI generates a project
-and runs `npm install` in the target directory.
+Example:
 
-> Note:
-> The presence or absence of `node_modules` inside a package directory
-> should not be relied upon. Always run commands from the repository root
-> unless explicitly stated otherwise.
+```
+root/
+├─ node_modules/
+├─ packages/
+│  └─ create-webpack-starter/
+│     └─ (no node_modules)
+```
+
+Node.js resolves dependencies by walking up the directory tree.
 
 ---
 
 ## Template Development Utilities
 
-When developing or testing templates locally, it is often useful to:
+During template development it may be useful to:
 
-- install dependencies inside all template projects
-- clean generated artifacts (`node_modules`, `dist`, `package-lock.json`)
-- reset templates to a pure source state
+- install dependencies inside templates
+- test template builds
+- clean development artifacts
 
-To simplify this workflow, the monorepo provides utility scripts.
+The monorepo provides helper scripts for this workflow.
 
-### Install dependencies in all templates
+---
 
-This installs dependencies inside every:
+## Install dependencies in all templates
 
-```text
+Installs dependencies in:
+
+```
 packages/create-webpack-starter/templates/*/files
 ```
 
@@ -219,22 +300,26 @@ Run:
 npm run templates:install
 ```
 
-### Clean all template artifacts
+---
 
-Templates must remain source-only and must never ship with:
+## Clean template artifacts
+
+Templates must never ship with:
 
 - `node_modules`
 - `dist`
 - `package-lock.json`
-- `build caches`
+- build caches
 
-Run: 
+Clean all templates:
 
 ```bash
 npm run templates:clean
 ```
 
-### Important
+---
+
+## Important
 
 Template directories are **not npm workspaces**.
 
@@ -250,26 +335,28 @@ Templates must always remain:
 - dependency-free
 - free of build artifacts
 
-The CLI is responsible for running `npm install` in generated projects — not inside template source directories.
+The CLI is responsible for running `npm install` in generated projects.
 
 ---
 
-## Release process
+## Release Process
 
-Publishing is performed manually via GitHub Actions.
+Publishing is performed via GitHub Actions.
 
 The release pipeline includes:
 
 - full build
 - end-to-end tests
 - version existence guard
-- npm publish via OIDC + 2FA
+- npm publishing via OIDC + 2FA
 
-For details, see:
+For details see:
+
 - `docs/release.md`
 - `docs/release-checklist.md`
+
 ---
 
 ## Status
-This monorepo is actively developed and used as the source of truth
-for all official webpack starter templates.
+
+This monorepo is actively maintained and serves as the **source of truth for all official webpack starter templates**.
