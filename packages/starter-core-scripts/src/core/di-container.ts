@@ -57,14 +57,22 @@ export class DIContainer {
             throw new Error(`Circular dependency detected while resolving ${token.name}`);
         }
 
-        // 🔒 STRICT MODE:
-        // Services must be explicitly registered during bootstrap.
-        // Automatic instantiation via `new token()` is intentionally disabled
-        // to prevent silent misconfiguration and missing constructor dependencies.
-        throw new Error(
-            `Service "${token.name}" is not registered in the DI container.\n` +
-            `Ensure it is provided in bootstrapApplication({ providers: [...] }).`
-        );
+        // mark token as currently resolving
+        this.resolving.add(token);
+
+        try {
+            // 🔒 STRICT MODE:
+            // Services must be explicitly registered during bootstrap.
+            // Automatic instantiation via `new token()` is intentionally disabled
+            // to prevent silent misconfiguration and missing constructor dependencies.
+            throw new Error(
+                `Service "${token.name}" is not registered in the DI container.\n` +
+                `Ensure it is provided in bootstrapApplication({ providers: [...] }).`
+            );
+        } finally {
+            // ensure cleanup even if error is thrown
+            this.resolving.delete(token);
+        }
     }
 
     /**
