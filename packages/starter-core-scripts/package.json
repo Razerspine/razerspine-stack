@@ -41,39 +41,44 @@
       "require": "./dist/index.cjs"
     },
     "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js",
-      "require": "./dist/core/index.cjs"
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
     },
     "./http": {
-      "types": "./dist/http/index.d.ts",
-      "import": "./dist/http/index.js",
-      "require": "./dist/http/index.cjs"
+      "types": "./dist/http.d.ts",
+      "import": "./dist/http.js",
+      "require": "./dist/http.cjs"
     },
     "./platform": {
-      "types": "./dist/platform/index.d.ts",
-      "import": "./dist/platform/index.js",
-      "require": "./dist/platform/index.cjs"
+      "types": "./dist/platform.d.ts",
+      "import": "./dist/platform.js",
+      "require": "./dist/platform.cjs"
     },
     "./reactivity": {
-      "types": "./dist/reactivity/index.d.ts",
-      "import": "./dist/reactivity/index.js",
-      "require": "./dist/reactivity/index.cjs"
+      "types": "./dist/reactivity.d.ts",
+      "import": "./dist/reactivity.js",
+      "require": "./dist/reactivity.cjs"
     },
     "./router": {
-      "types": "./dist/router/index.d.ts",
-      "import": "./dist/router/index.js",
-      "require": "./dist/router/index.cjs"
+      "types": "./dist/router.d.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
     },
     "./view": {
-      "types": "./dist/view/index.d.ts",
-      "import": "./dist/view/index.js",
-      "require": "./dist/view/index.cjs"
+      "types": "./dist/view.d.ts",
+      "import": "./dist/view.js",
+      "require": "./dist/view.cjs"
+    },
+    "./bindings": {
+      "types": "./dist/bindings.d.ts",
+      "import": "./dist/bindings.js",
+      "require": "./dist/bindings.cjs"
     }
   },
   "files": [

@@ -10,6 +10,7 @@ export default defineConfig({
         router: 'src/router/index.ts',
         utils: 'src/utils/index.ts',
         view: 'src/view/index.ts',
+        bindings: 'src/view/bindings/index.ts',
     },
     format: ['cjs', 'esm'],
     dts: true,
