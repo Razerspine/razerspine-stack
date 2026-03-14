@@ -1,4 +1,4 @@
-import {getValue} from './utils';
+import {getValue} from '../../utils';
 
 /** Cache to store original templates for elements with [data-for] */
 const templateCache = new WeakMap<HTMLElement, string>();

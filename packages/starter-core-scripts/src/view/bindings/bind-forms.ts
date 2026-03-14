@@ -1,4 +1,4 @@
-import {setValue} from './utils';
+import {setValue} from '../../utils';
 
 /**
  * Implements two-way data binding for form inputs using the [data-model] attribute.

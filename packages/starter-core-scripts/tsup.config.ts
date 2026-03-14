@@ -1,12 +1,22 @@
 import {defineConfig} from 'tsup';
 
 export default defineConfig({
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    entry: {
+        index: 'src/index.ts',
+        core: 'src/core/index.ts',
+        http: 'src/http/index.ts',
+        platform: 'src/platform/index.ts',
+        reactivity: 'src/reactivity/index.ts',
+        router: 'src/router/index.ts',
+        utils: 'src/utils/index.ts',
+        view: 'src/view/index.ts',
+    },
+    format: ['cjs', 'esm'],
     dts: true,
-    splitting: false,
+    splitting: true,
     sourcemap: true,
     clean: true,
-    target: 'es2019',
-    outDir: 'dist',
+    minify: true,
+    treeshake: true,
+    shims: true,
 });

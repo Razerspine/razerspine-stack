@@ -1,7 +1,5 @@
-import {applyBindings} from './apply-bindings';
-import {bindClickEvents} from './bind-click-events';
-import {bindForms} from './bind-forms';
-import {createStore} from './store';
+import {applyBindings, bindForms, bindClickEvents} from './bindings';
+import {createStore} from '../reactivity';
 
 /**
  * Base abstract class for UI components and pages.

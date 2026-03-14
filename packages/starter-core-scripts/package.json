@@ -14,7 +14,6 @@
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
   "keywords": [
-    "create-webpack-starter",
     "spa",
     "typescript",
     "dependency-injection",
@@ -40,6 +39,41 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs"
+    },
+    "./http": {
+      "types": "./dist/http/index.d.ts",
+      "import": "./dist/http/index.js",
+      "require": "./dist/http/index.cjs"
+    },
+    "./platform": {
+      "types": "./dist/platform/index.d.ts",
+      "import": "./dist/platform/index.js",
+      "require": "./dist/platform/index.cjs"
+    },
+    "./reactivity": {
+      "types": "./dist/reactivity/index.d.ts",
+      "import": "./dist/reactivity/index.js",
+      "require": "./dist/reactivity/index.cjs"
+    },
+    "./router": {
+      "types": "./dist/router/index.d.ts",
+      "import": "./dist/router/index.js",
+      "require": "./dist/router/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./view": {
+      "types": "./dist/view/index.d.ts",
+      "import": "./dist/view/index.js",
+      "require": "./dist/view/index.cjs"
     }
   },
   "files": [

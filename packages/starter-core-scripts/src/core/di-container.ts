@@ -1,8 +1,4 @@
-/**
- * Type representing a class/constructor function that can be injected.
- * Uses `abstract new` to allow abstract classes to serve as injection tokens.
- */
-export type ProviderToken<T> = (abstract new (...args: any[]) => T) | (new (...args: any[]) => T);
+import {ProviderToken} from './di.types';
 
 /**
  * Dependency Injection Container.
@@ -18,7 +14,8 @@ export class DIContainer {
     /** Tracks tokens currently being resolved to detect circular dependencies */
     private resolving = new Set<ProviderToken<any>>();
 
-    private constructor() {}
+    private constructor() {
+    }
 
     /**
      * Retrieves the global container instance.

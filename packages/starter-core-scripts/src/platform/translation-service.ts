@@ -1,7 +1,6 @@
-export type Translations = Record<string, any>;
-export type Locales = Record<string, Translations>;
+import {Locales, Translations} from './translation.types';
 
-export default class TranslationService {
+export class TranslationService {
     public static STORAGE_KEY = 'lang';
 
     private locales: Locales;
