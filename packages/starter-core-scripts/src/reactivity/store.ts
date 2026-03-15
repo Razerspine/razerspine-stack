@@ -48,15 +48,19 @@ export function createStore<T extends object>(
             return value;
         },
 
-        set(target: any, prop: string | symbol, value: any): boolean {
-            target[prop] = value;
+        set(target: any, prop: string | symbol, value: any, receiver: any): boolean {
+            const oldValue = target[prop];
+            const result = Reflect.set(target, prop, value, receiver);
 
-            // Notify the system that the state has changed if the listener still exists
-            if (listener) {
+            /**
+             * Trigger only when actual state object changes.
+             * Ignore prototype writes used by data-for scopes.
+             */
+            if (listener && !Object.is(oldValue, value) && Object.prototype.hasOwnProperty.call(target, prop)) {
                 listener();
             }
 
-            return true;
+            return result;
         }
     };
 

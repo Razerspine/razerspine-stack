@@ -10,6 +10,15 @@ import {applyBindings} from '../apply-bindings';
 const templateCache = new WeakMap<HTMLElement, string>();
 
 /**
+ * Cache storing loop-local state objects.
+ *
+ * Each DOM node rendered by `data-for` gets its own
+ * persistent scope object to avoid reallocation on
+ * every render cycle.
+ */
+const contextCache = new WeakMap<HTMLElement, any>();
+
+/**
  * Processes list rendering using the `data-for` directive.
  *
  * Syntax:
@@ -107,14 +116,23 @@ export function processFor(
          * Step 2 & 3 — update existing nodes or create new ones.
          */
         items.forEach((item, index) => {
-            const localState = {
-                ...state,
-                [itemName]: item,
-                [`${itemName}_index`]: index
-            };
-            const existingChild = el.children[index] as HTMLElement;
+            const existingChild = el.children[index] as HTMLElement | undefined;
+            let localState: any;
 
             if (existingChild) {
+                /**
+                 * Reuse existing loop scope if available.
+                 */
+                localState = contextCache.get(existingChild);
+
+                if (!localState) {
+                    localState = Object.create(state);
+                    contextCache.set(existingChild, localState);
+                }
+
+                localState[itemName] = item;
+                localState[`${itemName}_index`] = index;
+
                 applyBindings(existingChild, localState);
             } else {
                 const tempDiv = document.createElement('div');
@@ -126,7 +144,15 @@ export function processFor(
                     const node = tempDiv.firstChild;
 
                     if (node.nodeType === Node.ELEMENT_NODE) {
-                        applyBindings(node as HTMLElement, localState);
+                        const elementNode = node as HTMLElement;
+
+                        localState = Object.create(state);
+                        localState[itemName] = item;
+                        localState[`${itemName}_index`] = index;
+
+                        contextCache.set(elementNode, localState);
+
+                        applyBindings(elementNode, localState);
                     }
 
                     fragment.appendChild(node);
