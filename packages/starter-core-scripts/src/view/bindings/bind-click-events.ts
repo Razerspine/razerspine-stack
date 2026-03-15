@@ -23,7 +23,7 @@ export function bindClickEvents(root: HTMLElement, context: any): () => void {
             console.warn(`[ViewCore] Method "${method}" not found on the provided context.`, context);
         }
     };
-    ''
+
     root.addEventListener('click', clickHandler as EventListener);
 
     /**
