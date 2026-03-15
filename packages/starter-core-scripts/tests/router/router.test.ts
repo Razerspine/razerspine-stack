@@ -1,5 +1,6 @@
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import {Router} from '../../src';
+import {silenceConsole} from '../helpers/silence-console';
 
 class TestPage {
     constructor(public root: HTMLElement) {
@@ -36,36 +37,36 @@ class DestroyPage {
 
 describe('Router', () => {
 
+    let errorSpy: any;
+
     beforeEach(() => {
         document.body.innerHTML = `<div id="app-root"></div>`;
         window.history.pushState({}, '', '/');
+
+        errorSpy = silenceConsole('error');
+    });
+
+    afterEach(() => {
+        errorSpy.mockRestore();
     });
 
     it('renders component for matching route', async () => {
-        const router = new Router([
-            {path: '/', component: TestPage}
-        ]);
+        const router = new Router([{path: '/', component: TestPage}]);
 
         router.start();
-
         await Promise.resolve();
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('test-page');
     });
 
     it('calls mount lifecycle if present', async () => {
-        const router = new Router([
-            {path: '/', component: MountPage}
-        ]);
+        const router = new Router([{path: '/', component: MountPage}]);
 
         router.start();
-
         await Promise.resolve();
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('mounted');
     });
 
@@ -75,7 +76,6 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await Promise.resolve();
 
         expect(document.title).toBe('Home');
@@ -88,11 +88,9 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await router.navigate('/about');
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('mounted');
     });
 
@@ -103,7 +101,6 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await Promise.resolve();
 
         const firstPage = (router as any).currentPage;
@@ -122,11 +119,9 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await router.navigate('/secret');
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('test-page');
     });
 
@@ -139,11 +134,9 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await router.navigate('/secret');
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('test-page');
     });
 
@@ -156,7 +149,6 @@ describe('Router', () => {
         ]);
 
         const errorHandler = vi.fn();
-
         router.onNavigationError = errorHandler;
 
         router.start();
@@ -164,6 +156,7 @@ describe('Router', () => {
         await router.navigate('/secret');
 
         expect(errorHandler).toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalled();
     });
 
     it('falls back to /404 route if path not found', async () => {
@@ -173,11 +166,9 @@ describe('Router', () => {
         ]);
 
         router.start();
-
         await router.navigate('/unknown');
 
         const root = document.getElementById('app-root')!;
-
         expect(root.innerHTML).toContain('mounted');
     });
 });

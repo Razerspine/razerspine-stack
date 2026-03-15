@@ -1,13 +1,13 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
 import {bindClickEvents} from '../../src';
+import {silenceConsole} from '../helpers/silence-console';
 
 describe('bindClickEvents', () => {
 
     let warnSpy: any;
 
     beforeEach(() => {
-        warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-        });
+        warnSpy = silenceConsole('warn');
     });
 
     afterEach(() => {
