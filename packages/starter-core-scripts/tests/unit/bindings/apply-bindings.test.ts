@@ -205,10 +205,10 @@ describe('applyBindings', () => {
     it('should not accumulate empty text nodes when list shrinks and grows (DOM Hygiene)', () => {
         const container = document.createElement('div');
         container.innerHTML = `
-        <ul data-for="item:items">
-            <li><span data-bind="item"></span></li>
-        </ul>
-    `;
+            <ul data-for="item:items">
+                <li><span data-bind="item"></span></li>
+            </ul>
+        `;
         const list = container.querySelector('ul')!;
 
         // 1. Initial render
