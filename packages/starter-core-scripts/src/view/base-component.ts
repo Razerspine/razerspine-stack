@@ -15,7 +15,7 @@ export abstract class BaseComponent<T extends object> {
      * The reactive state object.
      * Any modifications to this object will automatically trigger the update() method.
      */
-    private _state: T;
+    private readonly _state: T;
 
     /**
      * Internal list of cleanup functions to be executed on destruction.

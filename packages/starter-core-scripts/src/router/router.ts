@@ -14,7 +14,7 @@ import {CanActivateFn, Route} from './router.types';
 export class Router {
 
     /** The root element where components will be rendered. */
-    private root: HTMLElement | null;
+    private readonly root: HTMLElement | null;
 
     /** Reference to the currently active page instance. */
     private currentPage: any = null;
