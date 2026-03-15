@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {bindForms} from '../../src';
+import {bindForms} from '../../../src';
 
 describe('bindForms', () => {
 

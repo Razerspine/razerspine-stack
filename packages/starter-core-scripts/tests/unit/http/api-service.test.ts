@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, afterEach, vi, Mock} from 'vitest';
-import {ApiService} from '../../src';
-import {ApiError} from '../../src';
+import {ApiService} from '../../../src';
+import {ApiError} from '../../../src';
 
 const createFetchResponse = (options: {
     ok?: boolean;

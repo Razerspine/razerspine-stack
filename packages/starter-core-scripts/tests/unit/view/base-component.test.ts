@@ -1,8 +1,8 @@
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import {BaseComponent} from '../../src';
-import * as bindings from '../../src/view/bindings';
+import {BaseComponent} from '../../../src';
+import * as bindings from '../../../src/view/bindings';
 
-vi.mock('../../src/view/bindings', () => ({
+vi.mock('../../../src/view/bindings', () => ({
     applyBindings: vi.fn(),
     bindForms: vi.fn(() => vi.fn()),
     bindClickEvents: vi.fn(() => vi.fn()),

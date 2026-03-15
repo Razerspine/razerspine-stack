@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach} from 'vitest';
-import {DIContainer, inject} from '../../src';
-import {getTestContainer} from '../helpers/get-test-container';
+import {DIContainer, inject} from '../../../src';
+import {getTestContainer} from '../../helpers/get-test-container';
 
 class TestService {
     value = 123;
@@ -15,7 +15,8 @@ abstract class Logger {
 }
 
 class ConsoleLogger extends Logger {
-    log(msg: string) {}
+    log(msg: string) {
+    }
 }
 
 describe('DIContainer', () => {

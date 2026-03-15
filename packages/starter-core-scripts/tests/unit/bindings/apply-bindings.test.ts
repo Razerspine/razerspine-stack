@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach} from 'vitest';
-import {applyBindings} from '../../src';
+import {applyBindings} from '../../../src';
 
 describe('applyBindings', () => {
 

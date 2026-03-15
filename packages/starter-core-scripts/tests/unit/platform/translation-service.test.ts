@@ -1,5 +1,5 @@
-import {describe, it, expect, beforeEach} from 'vitest'
-import {TranslationService} from '../../src'
+import {describe, it, expect, beforeEach} from 'vitest';
+import {TranslationService} from '../../../src';
 
 const locales = {
     en: {
@@ -22,7 +22,7 @@ const locales = {
             save: 'Зберегти'
         }
     }
-}
+};
 
 describe('TranslationService', () => {
 

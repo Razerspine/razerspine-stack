@@ -1,7 +1,7 @@
 import {describe, it, expect, beforeEach, vi, afterEach} from 'vitest';
-import {bootstrapApplication, provideRouter, DIContainer, Router} from '../../src';
+import {bootstrapApplication, provideRouter, DIContainer, Router} from '../../../src';
 
-vi.mock('../../src/router/router', () => {
+vi.mock('../../../src/router/router', () => {
     return {
         Router: vi.fn().mockImplementation(function () {
             return {
@@ -11,7 +11,7 @@ vi.mock('../../src/router/router', () => {
     };
 });
 
-vi.mock('../../src/utils/console-logger', () => {
+vi.mock('../../../src/utils/console-logger', () => {
     return {
         ConsoleLogger: vi.fn().mockImplementation(function () {
             return {

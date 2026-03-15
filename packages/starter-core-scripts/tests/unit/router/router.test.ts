@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
-import {Router} from '../../src';
-import {silenceConsole} from '../helpers/silence-console';
+import {Router} from '../../../src';
+import {silenceConsole} from '../../helpers/silence-console';
 
 class TestPage {
     constructor(public root: HTMLElement) {

@@ -1,5 +1,5 @@
-import {describe, it, expect, beforeEach, vi} from 'vitest'
-import {ThemeService} from '../../src'
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+import {ThemeService} from '../../../src';
 
 function createStorageMock() {
     const store: Record<string, string> = {};

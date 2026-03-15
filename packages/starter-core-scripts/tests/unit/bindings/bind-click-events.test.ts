@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
-import {bindClickEvents} from '../../src';
-import {silenceConsole} from '../helpers/silence-console';
+import {bindClickEvents} from '../../../src';
+import {silenceConsole} from '../../helpers/silence-console';
 
 describe('bindClickEvents', () => {
 
