@@ -144,4 +144,83 @@ describe('applyBindings', () => {
         expect(items[0].textContent).toContain('Alice');
         expect(items[1].textContent).toContain('Bob');
     });
+
+    it('should reuse existing DOM elements when list is updated (Smart Patching)', () => {
+        document.body.innerHTML = `
+            <ul data-for="item:items">
+                <li data-bind="item"></li>
+            </ul>
+        `;
+
+        const state1 = {items: ['A', 'B']};
+        applyBindings(document.body, state1);
+
+        const firstNodeBefore = document.querySelectorAll('li')[0];
+        const secondNodeBefore = document.querySelectorAll('li')[1];
+
+        // Update state with modified data and one new item
+        const state2 = {items: ['A-updated', 'B', 'C']};
+        applyBindings(document.body, state2);
+
+        const listItems = document.querySelectorAll('li');
+
+        expect(listItems.length).toBe(3);
+
+        expect(listItems[0]).toBe(firstNodeBefore);
+        expect(listItems[1]).toBe(secondNodeBefore);
+
+        expect(listItems[0].textContent).toBe('A-updated');
+        expect(listItems[2].textContent).toBe('C');
+    });
+
+    it('should remove only excess elements when list shrinks', () => {
+        document.body.innerHTML = `
+            <ul data-for="item:items">
+                <li data-bind="item"></li>
+            </ul>
+        `;
+        applyBindings(document.body, {items: ['1', '2', '3']});
+
+        const secondNodeBefore = document.querySelectorAll('li')[1];
+
+        applyBindings(document.body, {items: ['1', '2']});
+
+        const listItems = document.querySelectorAll('li');
+        expect(listItems.length).toBe(2);
+        expect(listItems[1]).toBe(secondNodeBefore);
+    });
+
+    it('should apply bindings to the container itself if it has data-attributes (Root Binding)', () => {
+        const container = document.createElement('div');
+        container.setAttribute('data-bind', 'title');
+        container.setAttribute('data-class', 'active:isActive');
+
+        const state = {title: 'Hello', isActive: true};
+        applyBindings(container, state);
+
+        expect(container.textContent).toBe('Hello');
+        expect(container.classList.contains('active')).toBe(true);
+    });
+
+    it('should not accumulate empty text nodes when list shrinks and grows (DOM Hygiene)', () => {
+        const container = document.createElement('div');
+        container.innerHTML = `
+        <ul data-for="item:items">
+            <li><span data-bind="item"></span></li>
+        </ul>
+    `;
+        const list = container.querySelector('ul')!;
+
+        // 1. Initial render
+        applyBindings(container, {items: ['A', 'B']});
+        const initialNodeCount = list.childNodes.length;
+
+        // 2. Shrink
+        applyBindings(container, {items: ['A']});
+
+        // 3. Grow back
+        applyBindings(container, {items: ['A', 'B']});
+
+        expect(list.childNodes.length).toBe(initialNodeCount);
+    });
 });
