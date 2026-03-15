@@ -8,6 +8,8 @@ const templateCache = new WeakMap<HTMLElement, string>();
  * Prevents leakage into nested [data-for] loops.
  */
 function isDirectBinding(el: HTMLElement, container: HTMLElement): boolean {
+    if (el === container) return true;
+
     let parent = el.parentElement;
 
     while (parent && parent !== container) {
@@ -32,7 +34,20 @@ function evaluateCondition(state: any, path: string): boolean {
 }
 
 /**
+ * Helper to find elements including the container itself if it matches the selector.
+ */
+function findMatch(container: HTMLElement, selector: string): HTMLElement[] {
+    const elements = Array.from(container.querySelectorAll<HTMLElement>(selector));
+    if (container.matches(selector)) {
+        elements.unshift(container);
+    }
+    return elements.filter(el => isDirectBinding(el, container));
+}
+
+/**
  * Synchronizes the DOM with the provided state by processing data-attributes.
+ * * Optimized for `data-for`: uses a lightweight diffing strategy to reuse
+ * existing DOM nodes instead of full re-rendering.
  *
  * Supported attributes:
  * - data-for
@@ -53,9 +68,7 @@ export function applyBindings(
     // 1. LIST RENDERING (data-for="item:items")
     // ---------------------------------------------------------------------
 
-    const loopElements = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-for]')
-    ).filter(el => isDirectBinding(el, container));
+    const loopElements = findMatch(container, '[data-for]');
 
     loopElements.forEach((el) => {
         const expression = el.dataset.for;
@@ -66,27 +79,69 @@ export function applyBindings(
 
         if (!Array.isArray(items)) return;
 
+        // Ensure we have the original template cached
         if (!templateCache.has(el)) {
-            templateCache.set(el, el.innerHTML);
+            // FIX: .trim() removes leading/trailing whitespace that causes DOM cluttering
+            const rawTemplate = el.innerHTML || '';
+            templateCache.set(el, rawTemplate.trim());
         }
 
         const template = templateCache.get(el)!;
-        el.innerHTML = '';
 
+        /**
+         * SMART PATCHING LOGIC:
+         * 1. Differential Deletion: Remove excess DOM nodes from the end if the
+         * new array is smaller, including interleaved text nodes (whitespace).
+         * 2. Node Reuse (Non-keyed): Iteratively update existing DOM elements
+         * by re-applying bindings with the new local state.
+         * 3. Lazy Append: Create and append new nodes only when the array
+         * grows beyond the current DOM child count.
+         */
+
+        // Step 1: Remove excess children
+        // Remove excess elements FROM THE END to preserve the order of existing ones.
+        // We use el.lastChild to ensure we also clean up text nodes (whitespace, line breaks).
+        while (el.children.length > items.length) {
+            // Remove all text nodes that come AFTER the last HTML element
+            while (el.lastChild && el.lastChild !== el.lastElementChild) {
+                el.lastChild.remove();
+            }
+            // Remove the excess HTML element itself
+            el.lastElementChild?.remove();
+        }
+
+        // Clear any residual text content if the array is empty
+        if (items.length === 0) {
+            el.innerHTML = '';
+        }
+
+        // Step 2 & 3: Update existing or Create new
         items.forEach((item, index) => {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = template;
-
             const localState = {
                 ...state,
                 [itemName]: item,
                 [`${itemName}_index`]: index
             };
 
-            applyBindings(tempDiv, localState);
+            const existingChild = el.children[index] as HTMLElement;
 
-            while (tempDiv.firstChild) {
-                el.appendChild(tempDiv.firstChild);
+            if (existingChild) {
+                // REUSE: Update the existing node.
+                applyBindings(existingChild, localState);
+            } else {
+                // CREATE: Create a new node
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = template;
+
+                const fragment = document.createDocumentFragment();
+                while (tempDiv.firstChild) {
+                    const node = tempDiv.firstChild;
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        applyBindings(node as HTMLElement, localState);
+                    }
+                    fragment.appendChild(node);
+                }
+                el.appendChild(fragment);
             }
         });
     });
@@ -95,9 +150,7 @@ export function applyBindings(
     // 2. TEXT BINDING (data-bind)
     // ---------------------------------------------------------------------
 
-    const bindElements = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-bind]')
-    ).filter(el => isDirectBinding(el, container));
+    const bindElements = findMatch(container, '[data-bind]');
 
     bindElements.forEach((el) => {
         const path = el.dataset.bind;
@@ -113,23 +166,23 @@ export function applyBindings(
     // 3. MODEL REVERSE BINDING (state → input.value)
     // ---------------------------------------------------------------------
 
-    const modelElements = Array.from(
-        container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('[data-model]')
-    ).filter(el => isDirectBinding(el as HTMLElement, container));
+    const modelElements = findMatch(container, '[data-model]');
 
     modelElements.forEach((el) => {
         const path = el.dataset.model;
         if (!path) return;
 
+        // Type safety: identify as form-capable element
+        const inputEl = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
         const value = getValue(state, path);
 
         /**
          * Prevent unnecessary DOM writes.
-         * Only update if value differs.
+         * Only update if value differs to maintain cursor position/focus.
          */
         const normalized = value ?? '';
-        if (el.value !== String(normalized)) {
-            el.value = String(normalized);
+        if (inputEl.value !== String(normalized)) {
+            inputEl.value = String(normalized);
         }
     });
 
@@ -137,9 +190,7 @@ export function applyBindings(
     // 4. VISIBILITY (data-show)
     // ---------------------------------------------------------------------
 
-    const showElements = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-show]')
-    ).filter(el => isDirectBinding(el, container));
+    const showElements = findMatch(container, '[data-show]');
 
     showElements.forEach((el) => {
         const path = el.dataset.show;
@@ -153,9 +204,7 @@ export function applyBindings(
     // 5. CLASSES (data-class)
     // ---------------------------------------------------------------------
 
-    const classElements = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-class]')
-    ).filter(el => isDirectBinding(el, container));
+    const classElements = findMatch(container, '[data-class]');
 
     classElements.forEach((el) => {
         const rawRules = el.dataset.class?.split(',') || [];
