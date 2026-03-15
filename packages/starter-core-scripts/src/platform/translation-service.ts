@@ -1,15 +1,25 @@
 import {Locales, Translations} from './translation.types';
 
+/**
+ * Service responsible for handling internationalization (i18n).
+ * Manages locale state, persistence, string resolution via dot-notation,
+ * and automatic DOM translation application.
+ */
 export class TranslationService {
-    public static STORAGE_KEY = 'lang';
+    /** * The key used to persist the selected language in localStorage.
+     * @default 'lang'
+     */
+    public static readonly STORAGE_KEY = 'lang';
 
-    private locales: Locales;
+    private readonly locales: Locales;
     private currentLang: string;
     private translations: Translations;
 
     /**
-     * @param locales - required map of localeCode -> translations
-     * @param defaultLang - fallback language code
+     * Creates an instance of the TranslationService.
+     * @param locales - A required map of locale codes to their translation objects.
+     * @param defaultLang - The fallback language code to use if no stored preference is found. Defaults to 'en'.
+     * @throws {Error} If the `locales` object is missing or invalid.
      */
     constructor(locales: Locales, defaultLang = 'en') {
         if (!locales || typeof locales !== 'object') {
@@ -24,7 +34,9 @@ export class TranslationService {
     }
 
     /**
-     * Initialize service: Wait for DOM, then apply saved or default language.
+     * Initializes the service.
+     * It waits for the DOM to be fully loaded before applying the saved or default language
+     * to ensure all `[data-i18n]` elements are present in the document.
      */
     public init(): void {
         if (typeof document === 'undefined') return;
@@ -42,7 +54,10 @@ export class TranslationService {
     }
 
     /**
-     * Set active language and apply translations to the DOM.
+     * Sets the active language, updates internal state, persists the choice,
+     * and triggers a DOM update to reflect the new translations.
+     * Fallbacks to 'en' if the requested language does not exist in the provided locales.
+     * * @param lang - The locale code to switch to (e.g., 'en', 'uk').
      */
     public setLanguage(lang: string): void {
         if (!lang) return;
@@ -65,8 +80,10 @@ export class TranslationService {
     }
 
     /**
-     * Resolve a translation by dot-separated path.
-     * Returns defaultValue if key is missing; otherwise returns the found value.
+     * Resolves a translation string using a dot-separated path.
+     * @param path - The dot-notation path to the translation key (e.g., 'auth.login.title').
+     * @param defaultValue - An optional fallback string if the key is not found.
+     * @returns The resolved translation string, the `defaultValue`, or the `path` itself if no default is provided.
      */
     public translate(
         path: string,
@@ -95,9 +112,9 @@ export class TranslationService {
     }
 
     /**
-     * Apply translations to elements with data-i18n attributes.
-     * If an element has data-i18n-attr, the translated string is set as that attribute;
-     * otherwise the element's textContent is replaced.
+     * Scans the DOM for elements with the `data-i18n` attribute and translates them.
+     * - If `data-i18n-attr="[attribute]"` is present, the translation is applied to that specific attribute (e.g., placeholder, alt).
+     * - Otherwise, the translation replaces the element's `textContent`.
      */
     public applyTranslations(): void {
         if (typeof document === 'undefined') return;
@@ -108,13 +125,15 @@ export class TranslationService {
         nodes.forEach((el) => {
             const key = el.dataset?.i18n;
             if (!key) return;
+
             const translated = this.translate(key);
             const attr = el.dataset?.i18nAttr;
+
             if (attr) {
                 try {
                     el.setAttribute(attr, translated ?? '');
                 } catch {
-                    // ignore attribute set errors
+                    // ignore attribute set errors (e.g., invalid attribute names)
                 }
             } else {
                 el.textContent = translated ?? '';
@@ -123,33 +142,37 @@ export class TranslationService {
     }
 
     /**
-     * Get currently active language code.
+     * Retrieves the currently active language code.
+     * @returns The current locale code string.
      */
     public getCurrentLang(): string {
         return this.currentLang;
     }
 
     /**
-     * Read saved language from localStorage with safe fallback.
+     * Safely reads the saved language preference from localStorage.
+     * @returns The stored language code, or null if unavailable or an error occurs.
      */
     private _getSavedLang(): string | null {
         try {
             if (typeof localStorage === 'undefined') return null;
             return localStorage.getItem(TranslationService.STORAGE_KEY);
         } catch {
+            // handle cases where localStorage is blocked (e.g., strict privacy settings)
             return null;
         }
     }
 
     /**
-     * Persist language to localStorage with safe fallback.
+     * Safely persists the language preference to localStorage.
+     * @param lang - The language code to save.
      */
     private _saveLang(lang: string): void {
         try {
             if (typeof localStorage === 'undefined') return;
             localStorage.setItem(TranslationService.STORAGE_KEY, lang);
         } catch {
-            // ignore storage errors (e.g., privacy mode)
+            // ignore storage errors (e.g., privacy mode, QuotaExceededError)
         }
     }
 }
