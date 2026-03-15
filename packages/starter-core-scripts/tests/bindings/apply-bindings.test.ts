@@ -66,4 +66,82 @@ describe('applyBindings', () => {
 
         expect(document.getElementById('parent')!.firstChild?.textContent?.trim()).toContain('Root');
     });
+
+    it('should render nothing when array is empty', () => {
+        document.body.innerHTML = `
+            <ul data-for="item:items">
+                <li data-bind="item"></li>
+            </ul>
+        `;
+
+        applyBindings(document.body, {items: []});
+
+        const listItems = document.querySelectorAll('li');
+
+        expect(listItems.length).toBe(0);
+    });
+
+    it('should update list when data changes', () => {
+        document.body.innerHTML = `
+            <ul data-for="item:items">
+                <li data-bind="item"></li>
+            </ul>
+        `;
+
+        applyBindings(document.body, {items: ['A']});
+
+        applyBindings(document.body, {items: ['A', 'B', 'C']});
+
+        const listItems = document.querySelectorAll('li');
+
+        expect(listItems.length).toBe(3);
+    });
+
+    it('should bind text content using [data-bind]', () => {
+        document.body.innerHTML = `
+            <span data-bind="username"></span>
+        `;
+
+        applyBindings(document.body, {username: 'Alice'});
+
+        const span = document.querySelector('span')!;
+
+        expect(span.textContent).toBe('Alice');
+    });
+
+    it('should handle undefined values in bindings', () => {
+        document.body.innerHTML = `
+            <span data-bind="missing"></span>
+        `;
+
+        applyBindings(document.body, {});
+
+        const span = document.querySelector('span')!;
+
+        expect(span.textContent).toBe('');
+    });
+
+    it('should combine data-for and data-bind correctly', () => {
+        document.body.innerHTML = `
+            <ul data-for="user:users">
+                <li>
+                    <span data-bind="user.name"></span>
+                </li>
+            </ul>
+        `;
+
+        const state = {
+            users: [
+                {name: 'Alice'},
+                {name: 'Bob'}
+            ]
+        };
+
+        applyBindings(document.body, state);
+
+        const items = document.querySelectorAll('li');
+
+        expect(items[0].textContent).toContain('Alice');
+        expect(items[1].textContent).toContain('Bob');
+    });
 });
