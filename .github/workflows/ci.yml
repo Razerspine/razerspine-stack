@@ -34,5 +34,8 @@ jobs:
       - name: Build all packages
         run: npm run build
 
+      - name: Run Runtime Tests (Unit & E2E)
+        run: npm run test:runtime
+
       - name: Run create-webpack-starter E2E tests
         run: npm run test:e2e
