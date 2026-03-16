@@ -100,7 +100,11 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "vitest run tests/e2e",
+    "test:watch": "vitest",
+    "test:unit:watch": "vitest tests/unit",
+    "test:e2e:watch": "vitest tests/e2e"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.0",
