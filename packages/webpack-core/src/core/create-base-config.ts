@@ -1,17 +1,14 @@
-import path from 'path';
+import {setConfigMeta} from './config-meta';
 import {ConfigOptionType} from '../types/config-option-type';
-import {LoaderOptionsPlugin} from 'webpack';
-import {pugRule} from '../rules/pug-rule';
-import {assetsRule} from '../rules/assets-rule';
-import {scriptsRule} from '../rules/scripts-rule';
-import {stylesRule} from '../rules/styles-rule';
-import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
+import {Configuration} from 'webpack';
 import {resolveOptions} from '../options';
+import path from 'path';
+import {assetsRule, pugRule, scriptsRule, stylesRule} from '../rules';
+import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
 
-export function createBaseConfig(options: ConfigOptionType) {
+export function createBaseConfig(options: ConfigOptionType): Configuration {
     const normalized = resolveOptions(options);
-
-    return {
+    const config: Configuration = {
         mode: normalized.mode,
         context: process.cwd(),
         output: {
@@ -27,13 +24,6 @@ export function createBaseConfig(options: ConfigOptionType) {
             ],
         },
         plugins: [
-            new LoaderOptionsPlugin({
-                options: {
-                    _meta: {
-                        appType: normalized.appType,
-                    }
-                }
-            }),
             new PugTemplatesPlugin({
                 entry: normalized.templates.entry,
                 mode: normalized.mode,
@@ -45,4 +35,9 @@ export function createBaseConfig(options: ConfigOptionType) {
             alias: normalized.resolve.alias,
         },
     };
+    setConfigMeta(config, {
+        appType: normalized.appType,
+    });
+
+    return config;
 }
