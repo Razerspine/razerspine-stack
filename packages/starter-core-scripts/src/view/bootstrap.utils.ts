@@ -108,3 +108,30 @@ export function resolveRoutes(config: AppConfig): Route[] | undefined {
 
     return config.providers?.find(p => p.provide === Router && Array.isArray(p.useValue))?.useValue;
 }
+
+
+/**
+ * Starts the application router.
+ *
+ * Extracted from bootstrapApplication to allow easier testing
+ * without relying on DOM lifecycle.
+ *
+ * @internal
+ */
+export function startRouter(
+    routes: Route[],
+    rootId: string,
+    container: DIContainer
+): Router {
+    const rootElement = document.getElementById(rootId);
+
+    if (!rootElement) {
+        throw new Error(`Root element with id "${rootId}" not found. Ensure it exists in your HTML.`);
+    }
+
+    const router = new Router(routes, rootId);
+    container.register(Router, router);
+    router.start();
+
+    return router;
+}
