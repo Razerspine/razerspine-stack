@@ -2,7 +2,526 @@
 
 All notable changes to this project will be documented in this file.
 
+This project follows Semantic Versioning.
+
 ---
+
+# [1.0.0] - 2026-03-16
+
+🚀 **First stable release of the runtime engine.**
+
+This version introduces a fully refactored architecture, a stabilized public API,
+significant runtime optimizations, and full test coverage.
+
+The package will be renamed from:
+
+`@razerspine/starter-core-scripts`
+➡ `@razerspine/runtime`
+
+---
+
+## Runtime Architecture
+
+This release introduces a **completely redesigned modular runtime architecture**.
+
+The codebase has been reorganized into clearly separated modules,
+making the runtime easier to maintain, test, and extend.
+
+The previous structure mixed multiple responsibilities in large files.
+The new architecture introduces **domain-driven module separation**.
+
+### New Module Structure
+
+```text
+src/
+├── core
+│ ├── di-container.ts
+│ └── di.types.ts
+│
+├── router
+│ ├── router.ts
+│ └── router.types.ts
+│
+├── reactivity
+│ └── store.ts
+│
+├── view
+│ ├── base-component.ts
+│ ├── bootstrap.ts
+│ └── bindings/
+│
+├── http
+│ ├── api-service.ts
+│ └── api-error.ts
+│
+├── platform
+│ ├── theme-service.ts
+│ └── translation-service.ts
+│
+├── utils
+│ ├── console-logger.ts
+│ └── dom-utils.ts
+```
+
+---
+
+
+### Module Responsibilities
+
+#### core
+Contains the **Dependency Injection container** and DI related types.
+
+Responsible for:
+- service registration
+- dependency resolution
+- global injection helper
+
+---
+
+#### router
+SPA navigation engine.
+
+Features:
+- route matching
+- async navigation
+- route guards
+- safe component rendering
+
+---
+
+#### reactivity
+Reactive state system based on **Proxy**.
+
+Provides:
+
+```text
+createStore()
+```
+
+Features:
+- deep observation
+- nested proxy caching
+- stable references
+- manual cleanup via `disconnect()`
+
+---
+
+#### view
+Component system and DOM rendering engine.
+
+Contains:
+
+- `BaseComponent`
+- runtime bootstrap
+- template bindings engine
+
+Bindings supported:
+
+```text
+data-bind
+data-model
+data-show
+data-class
+data-for
+data-click
+```
+
+> The bindings engine was refactored into **processor-based architecture**:
+
+```text
+bindings/
+└── engine/
+└── processors/
+```
+
+Each directive now has an isolated processor:
+
+- `bind.processor`
+- `class.processor`
+- `for.processor`
+- `model.processor`
+- `show.processor`
+
+This greatly improves:
+
+- maintainability
+- extensibility
+- testability
+
+---
+
+#### http
+HTTP utilities and API abstraction.
+
+Includes:
+
+- `ApiService`
+- `ApiError`
+- request configuration types
+
+---
+
+#### platform
+Platform-level services for common application concerns.
+
+Includes:
+
+- `ThemeService`
+- `TranslationService`
+
+These services are designed to be used via the DI container.
+
+---
+
+#### utils
+Shared utility helpers used across the runtime.
+
+Examples:
+
+- DOM helpers
+- console logging utilities
+
+---
+
+### Benefits of the New Architecture
+
+The refactor introduces several important improvements:
+
+- **clear separation of concerns**
+- **smaller focused modules**
+- **improved testability**
+- **easier future feature development**
+- **better long-term maintainability**
+
+The runtime is now structured similarly to modern frontend frameworks,
+with clear boundaries between:
+
+- dependency injection
+- routing
+- reactivity
+- rendering
+- platform services
+
+---
+
+## Added
+
+### Runtime Architecture
+
+- **Complete runtime architecture redesign**
+- Clear separation of modules:
+  - `core`
+  - `router`
+  - `view`
+  - `reactivity`
+  - `bindings`
+  - `platform`
+
+- **Bootstrap system**
+  - `bootstrapApplication`
+  - `provideRouter`
+  - configurable `providers`
+
+- **Strict Dependency Injection**
+  - DI container operates in strict mode
+  - services must be explicitly registered
+  - prevents hidden dependencies
+
+- **Global `inject()` helper**
+  - allows resolving dependencies outside constructor context
+
+---
+
+### Router
+
+- SPA router with:
+  - route configuration
+  - dynamic navigation
+  - route guards
+  - async navigation flow
+
+- `canActivate` route guards
+  - supports async guards
+  - allows blocking navigation
+  - supports redirect via string return
+
+- Router lifecycle improvements
+  - `router.start()` initialization
+  - deterministic navigation flow
+
+- Navigation error hook
+
+```ts
+router.onNavigationError
+```
+
+---
+
+### Component System
+
+- **BaseComponent**
+  - lifecycle hooks
+  - state management
+  - deterministic cleanup
+  
+Lifecycle:
+
+```text
+render → initEventListeners → update → onInit
+```
+
+Hooks:
+
+```text
+onInit()
+onDestroy()
+```
+
+- Async lifecycle support
+
+```text
+render() -> Promise
+onInit() -> Promise
+mount() -> async
+```
+
+---
+
+### Reactive system
+
+- **Proxy-based reactive store**
+
+```text
+createStore()
+```
+
+Features:
+
+- deep observation
+- WeakMap proxy caching
+- stable references
+- manual cleanup via `disconnect()`
+
+Performance improvements:
+
+- cached nested proxies
+- optimized `set` trap
+- prototype-write protection for `data-for` scopes
+
+---
+
+### View Engine
+
+Declarative template bindings:
+
+```text
+data-bind
+data-model
+data-show
+data-class
+data-for
+data-click
+```
+
+Capabilities:
+
+- two-way binding
+- list rendering
+- conditional rendering
+- dynamic classes
+- event delegation
+
+Performance improvements:
+
+- optimized `data-for` loop rendering
+- context caching
+- minimized DOM traversal
+
+---
+
+### Bootstrap system
+
+- configurable application entrypoint
+
+```text
+bootstrapApplication({
+  rootId,
+  routes,
+  providers
+})
+```
+
+Features:
+
+- async provider factories
+- route resolution via config or providers
+- router auto-start
+- DOM readiness detection
+
+---
+
+### Error Handling
+
+Runtime safety improvements:
+
+- normalized error handling
+- safe router rendering
+- bootstrap error overlay
+- configurable `onError` hook
+
+---
+
+### Testing
+
+Full testing suite introduced.
+
+Test stack:
+
+- **Vitest**
+- **JSDOM**
+
+Coverage includes:
+
+**Unit Tests**
+
+- DI container
+- Router
+- Store reactivity
+- Bindings engine
+- Services
+- Bootstrap logic
+
+**E2E Runtime Tests**
+
+- router navigation
+- bindings interaction
+- list rendering
+- runtime integration
+
+Total:
+
+```text
+15 test files
+120 tests
+```
+
+---
+
+## Changed
+
+### Performance
+
+Significant runtime optimizations:
+
+- `data-for` rendering loop optimized
+- reduced Proxy allocations
+- context caching in bindings
+- faster DOM update cycles
+
+---
+
+### Bootstrap Refactor
+
+Internal bootstrap logic split into utilities:
+
+```text
+bootstrap.utils.ts
+```
+
+Extracted helpers:
+
+- `resolveRoutes`
+- `waitForDOM`
+- `startRouter`
+- `handleBootstrapError`
+
+Improves:
+
+- testability
+- separation of concerns
+- runtime stability
+
+---
+
+### Router Initialization
+
+Router no longer auto-starts in constructor.
+
+Initialization now occurs via:
+
+```text
+router.start()
+```
+
+Handled automatically by `bootstrapApplication`.
+
+---
+
+### Codebase Improvements
+
+- improved TypeScript typing
+- stricter generics
+- improved JSDoc annotations
+- consistent module structure
+- clearer internal APIs
+
+---
+
+## Breaking Changes
+
+### Strict DI
+
+Services are **no longer auto-instantiated**.
+
+Before:
+
+```text
+inject(Service)
+```
+
+worked even if service was not registered.
+
+Now **must be registered**:
+
+```ts
+bootstrapApplication({
+providers: [{ provide: MyService }]
+})
+```
+
+---
+
+### Router Lifecycle
+
+Router constructor no longer triggers navigation.
+
+Router must be started explicitly:
+
+```text
+router.start()
+```
+
+Handled automatically by bootstrap.
+
+---
+
+### Component Lifecycle
+
+`BaseComponent.mount()` is now async.
+
+Code interacting with lifecycle should support:
+
+```text
+await component.mount()
+```
+
+-----------------------------------------------------
+
+# Legacy Releases
+
+The following versions belong to the **pre-runtime architecture** era.
+
+They are preserved for historical context.
 
 ## [0.5.1] - 2026-03-07
 
