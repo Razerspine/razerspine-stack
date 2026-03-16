@@ -1,0 +1,113 @@
+{
+  "name": "@razerspine/runtime",
+  "version": "1.0.0",
+  "description": "Lightweight frontend runtime with DI container, router, reactive store, view bindings, and platform services.",
+  "license": "ISC",
+  "author": "Razerspine",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "directory": "packages/runtime"
+  },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/runtime#readme",
+  "bugs": {
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+  },
+  "keywords": [
+    "spa",
+    "typescript",
+    "dependency-injection",
+    "router",
+    "di-container",
+    "frontend-core",
+    "starter-kit",
+    "web-services",
+    "theme-manager",
+    "i18n-service",
+    "api-client",
+    "webpack-template",
+    "zero-config",
+    "vanilla-js",
+    "frontend-runtime",
+    "state-management",
+    "reactivity",
+    "micro-framework"
+  ],
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    },
+    "./http": {
+      "types": "./dist/http.d.ts",
+      "import": "./dist/http.js",
+      "require": "./dist/http.cjs"
+    },
+    "./platform": {
+      "types": "./dist/platform.d.ts",
+      "import": "./dist/platform.js",
+      "require": "./dist/platform.cjs"
+    },
+    "./reactivity": {
+      "types": "./dist/reactivity.d.ts",
+      "import": "./dist/reactivity.js",
+      "require": "./dist/reactivity.cjs"
+    },
+    "./router": {
+      "types": "./dist/router.d.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
+    },
+    "./view": {
+      "types": "./dist/view.d.ts",
+      "import": "./dist/view.js",
+      "require": "./dist/view.cjs"
+    },
+    "./bindings": {
+      "types": "./dist/bindings.d.ts",
+      "import": "./dist/bindings.js",
+      "require": "./dist/bindings.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "npm run clean && tsup",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "jsdom": "^28.1.0",
+    "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
