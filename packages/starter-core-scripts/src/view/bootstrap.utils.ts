@@ -7,6 +7,7 @@
 import {AppConfig} from './bootstrap.types';
 import {DIContainer} from '../core';
 import {ConsoleLogger} from '../utils';
+import {Route, Router} from "../router";
 
 /**
  * Default error handler that renders a centered error modal with a backdrop.
@@ -79,4 +80,31 @@ export function handleBootstrapError(
     } else {
         defaultErrorHandler(error, rootId);
     }
+}
+
+/**
+ * Waits until DOM is ready.
+ * Used by bootstrap to safely access root elements.
+ */
+export function waitForDOM(): Promise<void> {
+    if (document.readyState === 'loading') {
+        return new Promise(resolve => {
+            document.addEventListener('DOMContentLoaded', () => resolve(), {once: true});
+        });
+    }
+
+    return Promise.resolve();
+}
+
+/**
+ * Resolves route configuration from AppConfig.
+ *
+ * Routes can be provided either:
+ * - directly via config.routes
+ * - via provideRouter() helper in providers
+ */
+export function resolveRoutes(config: AppConfig): Route[] | undefined {
+    if (config.routes) return config.routes;
+
+    return config.providers?.find(p => p.provide === Router && Array.isArray(p.useValue))?.useValue;
 }
