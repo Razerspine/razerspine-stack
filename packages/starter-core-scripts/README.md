@@ -10,6 +10,20 @@ This package provides production-ready utilities for building modern **SPA / Hyb
 
 ---
 
+# ⚠️ DEPRECATED ⚠️
+
+This package has been officially moved and renamed.
+**New package:** [@razerspine/runtime](https://www.npmjs.com/package/@razerspine/runtime)
+
+### Why?
+The project has undergone a complete architectural refactor to provide a more lightweight and powerful foundation for SPA/Hybrid applications.
+
+### Migration
+1. Uninstall the old package: `npm uninstall @razerspine/starter-core-scripts`
+2. Install the new one: `npm install @razerspine/runtime`
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
