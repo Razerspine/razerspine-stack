@@ -14,10 +14,10 @@ export default defineConfig({
     },
     format: ['cjs', 'esm'],
     dts: true,
-    splitting: true,
+    splitting: false,
     sourcemap: true,
     clean: true,
-    minify: true,
+    minify: false,
     treeshake: true,
-    shims: true,
+    shims: false,
 });

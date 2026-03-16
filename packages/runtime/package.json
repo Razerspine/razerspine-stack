@@ -1,15 +1,15 @@
 {
-  "name": "@razerspine/starter-core-scripts",
-  "version": "0.5.1",
-  "description": "Core script services for webpack starter templates",
+  "name": "@razerspine/runtime",
+  "version": "1.0.0",
+  "description": "Lightweight frontend runtime with DI container, router, reactive store, view bindings, and platform services.",
   "license": "ISC",
   "author": "Razerspine",
   "repository": {
     "type": "git",
     "url": "https://github.com/Razerspine/webpack-starter-monorepo",
-    "directory": "packages/starter-core-scripts"
+    "directory": "packages/runtime"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/starter-core-scripts#readme",
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/runtime#readme",
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
@@ -27,7 +27,11 @@
     "api-client",
     "webpack-template",
     "zero-config",
-    "vanilla-js"
+    "vanilla-js",
+    "frontend-runtime",
+    "state-management",
+    "reactivity",
+    "micro-framework"
   ],
   "type": "module",
   "private": false,
@@ -88,6 +92,9 @@
     "README.md"
   ],
   "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "npm run clean && tsup",
     "dev": "tsup --watch",
