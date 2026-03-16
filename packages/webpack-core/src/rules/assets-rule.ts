@@ -1,4 +1,4 @@
-export function assetsLoader() {
+export function assetsRule() {
     return {
         oneOf: [
             {

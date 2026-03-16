@@ -1,6 +1,6 @@
 import {ConfigOptionType} from '../types/config-option-type';
 
-export function stylesLoader(env: ConfigOptionType) {
+export function stylesRule(env: ConfigOptionType) {
     const isLess = env.styles === 'less';
 
     return {

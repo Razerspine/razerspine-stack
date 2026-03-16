@@ -1,16 +1,15 @@
 import path from 'path';
-import {assetsLoader} from '../loaders/assets';
-import {scriptsLoader} from '../loaders/scripts';
-import {stylesLoader} from '../loaders/styles';
-import {pugRule, templatesLoader} from '../loaders/templates';
 import {ConfigOptionType} from '../types/config-option-type';
-import {validateCoreOptions} from '../validation/validate-core-options';
-import {normalizeCoreOptions} from '../utils/normalize-core-options';
 import {LoaderOptionsPlugin} from 'webpack';
+import {pugRule} from '../rules/pug-rule';
+import {assetsRule} from '../rules/assets-rule';
+import {scriptsRule} from '../rules/scripts-rule';
+import {stylesRule} from '../rules/styles-rule';
+import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
+import {resolveOptions} from '../options';
 
 export function createBaseConfig(options: ConfigOptionType) {
-    validateCoreOptions(options);
-    const normalized = normalizeCoreOptions(options);
+    const normalized = resolveOptions(options);
 
     return {
         mode: normalized.mode,
@@ -22,9 +21,9 @@ export function createBaseConfig(options: ConfigOptionType) {
         module: {
             rules: [
                 pugRule(),
-                assetsLoader(),
-                scriptsLoader(normalized),
-                stylesLoader(normalized),
+                assetsRule(),
+                scriptsRule(normalized),
+                stylesRule(normalized),
             ],
         },
         plugins: [
@@ -35,7 +34,7 @@ export function createBaseConfig(options: ConfigOptionType) {
                     }
                 }
             }),
-            ...templatesLoader({
+            new PugTemplatesPlugin({
                 entry: normalized.templates.entry,
                 mode: normalized.mode,
                 appType: normalized.appType,

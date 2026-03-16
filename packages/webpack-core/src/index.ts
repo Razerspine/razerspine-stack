@@ -1,6 +1,6 @@
-export {createBaseConfig} from './config/base';
-export {createDevConfig} from './config/dev';
-export {createProdConfig} from './config/prod';
+export {createBaseConfig} from './core/create-base-config';
+export {createDevConfig} from './core/create-dev-config';
+export {createProdConfig} from './core/create-prod-config';
 
 export * from './types/mode-type';
 export * from './types/script-type';

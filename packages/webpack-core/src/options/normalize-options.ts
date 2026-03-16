@@ -15,12 +15,11 @@ export interface NormalizedCoreOptions {
     resolve: NonNullable<Configuration['resolve']>;
 }
 
-export function normalizeCoreOptions(
+export function normalizeOptions(
     options: ConfigOptionType
 ): NormalizedCoreOptions {
     const mode: ModeType = options.mode ?? 'development';
     const appType: AppType = options.appType ?? 'mpa';
-
     const templatesEntry = options.templates?.entry ?? (appType === 'spa' ? 'src/views/app.pug' : 'src/views/pages');
 
     return {

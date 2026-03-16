@@ -1,6 +1,6 @@
 import {ConfigOptionType} from '../types/config-option-type';
 
-export function scriptsLoader(env: ConfigOptionType) {
+export function scriptsRule(env: ConfigOptionType) {
     if (env.scripts === 'ts') {
         return {
             test: /\.ts$/,
