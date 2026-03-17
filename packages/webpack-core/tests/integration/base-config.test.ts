@@ -39,4 +39,34 @@ describe('createBaseConfig', () => {
         const config = createBaseConfig(optionsWithAlias);
         expect(config.resolve?.alias).toHaveProperty('@', 'src');
     });
+
+    it('should merge user resolve config instead of overriding', () => {
+        const config = createBaseConfig({
+            ...validOptions,
+            resolve: {
+                extensions: ['.ts'],
+                alias: {'@': 'src'}
+            }
+        });
+
+        expect(config.resolve?.extensions).toContain('.ts');
+        expect(config.resolve?.alias).toHaveProperty('@');
+    });
+
+    it('should default to spa if appType is not provided', () => {
+        const config = createBaseConfig({
+            mode: 'development',
+            scripts: 'ts',
+            styles: 'scss'
+        });
+
+        const meta = getConfigMeta(config);
+        expect(meta?.appType).toBeDefined();
+    });
+
+    it('should include plugins array', () => {
+        const config = createBaseConfig(validOptions);
+
+        expect(Array.isArray(config.plugins)).toBe(true);
+    });
 });

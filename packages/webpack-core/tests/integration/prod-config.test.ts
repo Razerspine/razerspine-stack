@@ -12,6 +12,7 @@ vi.mock('node:fs', () => ({
 }));
 
 describe('createProdConfig', () => {
+
     it('should include HostingRoutingPlugin and optimizations', () => {
         const base = createBaseConfig({
             mode: 'production',
@@ -27,6 +28,7 @@ describe('createProdConfig', () => {
         const hasPlugin = prodConfig.plugins?.some(
             (p) => p instanceof HostingRoutingPlugin
         );
+
         expect(hasPlugin).toBe(true);
     });
 
@@ -42,5 +44,35 @@ describe('createProdConfig', () => {
         });
 
         expect(prodConfig.optimization?.minimize).toBe(false);
+    });
+
+    it('should merge optimization config instead of replacing', () => {
+        const base = createBaseConfig({
+            mode: 'production',
+            scripts: 'js',
+            styles: 'less'
+        });
+
+        const prodConfig = createProdConfig(base, {
+            optimization: {
+                splitChunks: {chunks: 'all'}
+            }
+        });
+
+        expect(prodConfig.optimization?.splitChunks).toBeDefined();
+        expect(prodConfig.optimization?.minimize).toBe(true);
+    });
+
+    it('should preserve plugins array', () => {
+        const base = createBaseConfig({
+            mode: 'production',
+            scripts: 'js',
+            styles: 'less'
+        });
+
+        const prodConfig = createProdConfig(base);
+
+        expect(Array.isArray(prodConfig.plugins)).toBe(true);
+        expect(prodConfig.plugins!.length).toBeGreaterThan(0);
     });
 });
