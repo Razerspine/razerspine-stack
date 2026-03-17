@@ -1,6 +1,7 @@
 export {createBaseConfig} from './core/create-base-config';
 export {createDevConfig} from './core/create-dev-config';
 export {createProdConfig} from './core/create-prod-config';
+export {resolveOptions} from './options/resolve-options';
 
 export * from './types/mode-type';
 export * from './types/script-type';
