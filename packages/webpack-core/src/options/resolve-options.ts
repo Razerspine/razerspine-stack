@@ -5,6 +5,7 @@ import {normalizeOptions, NormalizedCoreOptions} from './normalize-options';
 export function resolveOptions(
     options: ConfigOptionType
 ): NormalizedCoreOptions {
-    validateOptions(options);
-    return normalizeOptions(options);
+    const normalized = normalizeOptions(options);
+    validateOptions(normalized);
+    return normalized;
 }
