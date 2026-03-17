@@ -14,27 +14,39 @@ export function createDevConfig(
 ): DevConfig {
     const meta = getConfigMeta(baseConfig);
     const appType = meta?.appType ?? 'mpa';
-    const historyApiFallBack: DevServerConfiguration['historyApiFallback'] = {
-        disableDotRule: true,
-        rewrites: [
-            {
-                from: /./,
-                to: appType === 'spa' ? '/index.html' : '/404.html',
-            }
-        ]
-    }
-    const defaultDevServer: DevServerConfiguration = {
+    const baseDevServer: DevServerConfiguration = {
         hot: false,
         open: true,
         liveReload: true,
         compress: true,
         port: 8080,
         watchFiles: ['src/**/*'],
-        historyApiFallback: historyApiFallBack,
     };
+
+    const defaultFallbackConfig: DevServerConfiguration = {
+        historyApiFallback: {
+            disableDotRule: true,
+            rewrites: [
+                {
+                    from: /./,
+                    to: appType === 'spa' ? '/index.html' : '/404.html',
+                }
+            ]
+        }
+    };
+
+    const fallbackToMerge = options.historyApiFallback !== undefined
+        ? {}
+        : defaultFallbackConfig;
+
+    const resultDevServer = merge(
+        baseDevServer,
+        fallbackToMerge,
+        options
+    );
 
     return merge(baseConfig as WebpackConfiguration, {
         devtool: 'source-map',
-        devServer: merge(defaultDevServer, options)
+        devServer: resultDevServer,
     }) as DevConfig;
 }
