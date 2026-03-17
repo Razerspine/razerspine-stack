@@ -1,0 +1,15 @@
+{
+  "name": "mpa-fixture",
+  "private": true,
+  "devDependencies": {
+    "babel-loader": "^9.1.3",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "sass": "1.72.0",
+    "sass-loader": "^14.1.1",
+    "css-loader": "^6.8.1",
+    "postcss-loader": "^7.3.3",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.23"
+  }
+}
