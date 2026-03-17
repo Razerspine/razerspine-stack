@@ -76,3 +76,20 @@ describe('createProdConfig', () => {
         expect(prodConfig.plugins!.length).toBeGreaterThan(0);
     });
 });
+
+describe('createProdConfig integration', () => {
+
+    it('should include HostingRoutingPlugin by default', () => {
+        const config = createProdConfig({
+            mode: 'production',
+        } as any);
+
+        const hasPlugin = config.plugins?.some(p => p instanceof HostingRoutingPlugin);
+        expect(hasPlugin).toBe(true);
+    });
+
+    it('should set production-specific optimization', () => {
+        const config = createProdConfig({});
+        expect(config.optimization?.minimize).toBe(true);
+    });
+});
