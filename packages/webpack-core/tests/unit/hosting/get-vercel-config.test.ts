@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {getVercelConfig} from '../../src/hosting/get-vercel-config';
+import {getVercelConfig} from '../../../src/hosting/get-vercel-config';
 
 describe('getVercelConfig', () => {
     it('should return valid JSON for SPA', () => {

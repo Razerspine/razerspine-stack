@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {normalizeOptions} from '../../src/options/normalize-options';
+import {normalizeOptions} from '../../../src/options/normalize-options';
 
 const base = {
     mode: 'development',

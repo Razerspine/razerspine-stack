@@ -1,6 +1,6 @@
 import {describe, it, expect, vi} from 'vitest';
 import * as fs from 'node:fs';
-import {PugTemplatesPlugin} from '../../src/plugins/pug-templates-plugin';
+import {PugTemplatesPlugin} from '../../../src/plugins/pug-templates-plugin';
 
 vi.mock('node:fs', () => ({
     existsSync: vi.fn(() => true),

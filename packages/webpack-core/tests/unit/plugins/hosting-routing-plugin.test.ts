@@ -1,12 +1,12 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
-import {HostingRoutingPlugin} from '../../src/plugins/hosting-routing-plugin';
-import * as detectHostingModule from '../../src/hosting/detect-hosting';
+import {HostingRoutingPlugin} from '../../../src/plugins/hosting-routing-plugin';
+import * as detectHostingModule from '../../../src/hosting/detect-hosting';
 
-vi.mock('../../src/hosting/detect-hosting');
-vi.mock('../../src/hosting/get-redirects', () => ({
+vi.mock('../../../src/hosting/detect-hosting');
+vi.mock('../../../src/hosting/get-redirects', () => ({
     getRedirects: (type: string) => `redirects-content-for-${type}`,
 }));
-vi.mock('../../src/hosting/get-vercel-config', () => ({
+vi.mock('../../../src/hosting/get-vercel-config', () => ({
     getVercelConfig: (type: string) => `vercel-json-for-${type}`,
 }));
 

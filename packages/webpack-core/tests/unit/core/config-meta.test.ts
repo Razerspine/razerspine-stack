@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {setConfigMeta, getConfigMeta} from '../../src/core/config-meta';
+import {setConfigMeta, getConfigMeta} from '../../../src/core/config-meta';
 import {Configuration} from 'webpack';
 
 describe('config-meta', () => {

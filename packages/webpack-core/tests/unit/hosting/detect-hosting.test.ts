@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import {detectHosting} from '../../src/hosting/detect-hosting';
+import {detectHosting} from '../../../src/hosting/detect-hosting';
 
 describe('detectHosting', () => {
 

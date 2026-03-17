@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {getRedirects} from '../../src/hosting/get-redirects';
+import {getRedirects} from '../../../src/hosting/get-redirects';
 
 describe('getRedirects', () => {
     it('should return SPA redirect rules', () => {

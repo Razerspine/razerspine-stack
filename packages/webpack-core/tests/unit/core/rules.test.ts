@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {assetsRule, pugRule, scriptsRule, stylesRule} from '../../src/rules';
+import {assetsRule, pugRule, scriptsRule, stylesRule} from '../../../src/rules';
 
 describe('Webpack Rules', () => {
 
