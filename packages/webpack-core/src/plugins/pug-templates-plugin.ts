@@ -1,5 +1,5 @@
 import PugPlugin from 'pug-plugin';
-import fs from 'fs';
+import * as fs from 'node:fs';
 import path from 'path';
 import {Compiler} from 'webpack';
 import {ModeType} from '../types/mode-type';
