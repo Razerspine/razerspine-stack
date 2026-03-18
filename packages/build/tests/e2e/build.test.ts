@@ -156,7 +156,7 @@ describe('E2E: Webpack Build Matrix', () => {
                 styles: 'scss',
                 appType: 'mpa'
             })
-        ).rejects.toThrow('[webpack-core] templates.entry is required for MPA');
+        ).rejects.toThrow('[build] templates.entry is required for MPA');
     });
 
     it('should fail if template path does not exist', async () => {

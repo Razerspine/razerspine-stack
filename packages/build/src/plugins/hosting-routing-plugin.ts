@@ -23,7 +23,7 @@ export class HostingRoutingPlugin {
     }
 
     apply(compiler: Compiler) {
-        const logger = compiler.getInfrastructureLogger('@razerspine/webpack-core');
+        const logger = compiler.getInfrastructureLogger('@razerspine/build');
         compiler.hooks.thisCompilation.tap(
             'RoutingPlugin',
             (compilation: Compilation) => {

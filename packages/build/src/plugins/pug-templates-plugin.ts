@@ -25,17 +25,17 @@ export class PugTemplatesPlugin {
 
     private validate() {
         if (!fs.existsSync(this.entry)) {
-            throw new Error(`[webpack-core] Templates entry not found: ${this.entry}`);
+            throw new Error(`[build] Templates entry not found: ${this.entry}`);
         }
 
         const stats = fs.statSync(this.entry);
 
         if (this.appType === 'spa' && !stats.isFile()) {
-            throw new Error(`[webpack-core] SPA requires a single pug file as templates.entry`);
+            throw new Error(`[build] SPA requires a single pug file as templates.entry`);
         }
 
         if (this.appType === 'mpa' && !stats.isDirectory()) {
-            throw new Error(`[webpack-core] MPA requires templates.entry to be a directory`);
+            throw new Error(`[build] MPA requires templates.entry to be a directory`);
         }
     }
 

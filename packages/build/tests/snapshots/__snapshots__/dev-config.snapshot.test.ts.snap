@@ -1,9 +1,29 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`createBaseConfig (snapshots) > should match snapshot (MPA) 1`] = `
+exports[`createDevConfig (snapshots) > should match snapshot (MPA) 1`] = `
 {
-  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/webpack-core",
-  "mode": "production",
+  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "devServer": {
+    "compress": true,
+    "historyApiFallback": {
+      "disableDotRule": true,
+      "rewrites": [
+        {
+          "from": /\\./,
+          "to": "/404.html",
+        },
+      ],
+    },
+    "hot": false,
+    "liveReload": true,
+    "open": true,
+    "port": 8080,
+    "watchFiles": [
+      "src/**/*",
+    ],
+  },
+  "devtool": "source-map",
+  "mode": "development",
   "module": {
     "rules": [
       {
@@ -84,7 +104,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot (MPA) 1`] = `
   },
   "output": {
     "clean": true,
-    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/webpack-core/dist",
+    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
   },
   "plugins": [
     "PugTemplatesPlugin",
@@ -101,9 +121,29 @@ exports[`createBaseConfig (snapshots) > should match snapshot (MPA) 1`] = `
 }
 `;
 
-exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
+exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
 {
-  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/webpack-core",
+  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "devServer": {
+    "compress": true,
+    "historyApiFallback": {
+      "disableDotRule": true,
+      "rewrites": [
+        {
+          "from": /\\./,
+          "to": "/index.html",
+        },
+      ],
+    },
+    "hot": false,
+    "liveReload": true,
+    "open": true,
+    "port": 8080,
+    "watchFiles": [
+      "src/**/*",
+    ],
+  },
+  "devtool": "source-map",
   "mode": "development",
   "module": {
     "rules": [
@@ -183,7 +223,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
   },
   "output": {
     "clean": true,
-    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/webpack-core/dist",
+    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
   },
   "plugins": [
     "PugTemplatesPlugin",
