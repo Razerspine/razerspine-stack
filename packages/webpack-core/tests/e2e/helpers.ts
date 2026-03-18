@@ -19,39 +19,64 @@ export function runWebpack(config: Configuration): Promise<Stats> {
 }
 
 /**
- * Encapsulates the boilerplate for E2E build tests
+ * Encapsulates the boilerplate for E2E build tests.
+ * Runs the Webpack build process for a specific fixture and returns the output directory.
+ * @param fixtureRelativePath - Path relative to the fixtures directory (e.g., 'mpa/js-scss' or 'spa/ts-less')
+ * @param options - Configuration options for the build
+ * @returns A promise that resolves to an object containing stats, outDir, and fixturePath
  */
-export async function executeTestBuild(fixtureName: string, options: ConfigOptionType): Promise<{
+export async function executeTestBuild(
+    fixtureRelativePath: string,
+    options: ConfigOptionType
+): Promise<{
     stats: Stats;
     outDir: string;
     fixturePath: string;
 }> {
     try {
-        const fixturePath = path.resolve(__dirname, '../fixtures', fixtureName);
+        // Absolute path to the specific fixture combination (e.g., fixtures/mpa/js-scss)
+        const fixturePath = path.resolve(__dirname, '../fixtures', fixtureRelativePath);
+
+        // Build output directory (dist) will be created inside the fixture folder
         const outDir = path.resolve(fixturePath, 'dist');
+
+        // Path to the core package's node_modules to find loaders and plugins
         const coreNodeModules = path.resolve(__dirname, '../../node_modules');
 
-        // Mock CWD for the current fixture
+        // Extract the root fixture directory (e.g., 'mpa' or 'spa') where package.json is located
+        const appTypeRoot = fixtureRelativePath.split('/')[0];
+        const fixtureRootPath = path.resolve(__dirname, '../fixtures', appTypeRoot);
+
+        // Mock Current Working Directory (CWD) so Webpack treats the fixture folder as the project root
         vi.spyOn(process, 'cwd').mockReturnValue(fixturePath);
 
+        // Generate base Webpack configuration based on provided options
         const baseConfig = createBaseConfig(options);
 
-        // Ensure loaders are resolved from both fixture and core node_modules
+        // Configure where Webpack should look for loaders (babel, sass, ts-loader, etc.)
         baseConfig.resolveLoader = {
             modules: [
-                path.join(fixturePath, 'node_modules'),
-                coreNodeModules,
-                'node_modules'
+                path.join(fixtureRootPath, 'node_modules'), // Look in fixtures/[mpa|spa]/node_modules
+                coreNodeModules,                            // Look in core package node_modules
+                'node_modules'                              // Default fallback
             ],
         };
 
-        // Standard extensions for TS projects if needed
+        // Inject standard TypeScript extensions for TS-based fixtures
         if (options.scripts === 'ts') {
             if (!baseConfig.resolve) baseConfig.resolve = {};
-            baseConfig.resolve.extensions = ['.ts', '.js', '.json'];
+
+            // Ensure the extensions array exists and extend it
+            baseConfig.resolve.extensions = [
+                ...(baseConfig.resolve.extensions || []),
+                '.ts', '.js', '.json'
+            ];
         }
 
+        // Apply production-specific optimizations and configurations
         const prodConfig = createProdConfig(baseConfig);
+
+        // Execute the Webpack compilation
         const stats = await runWebpack(prodConfig);
 
         return {
@@ -60,6 +85,7 @@ export async function executeTestBuild(fixtureName: string, options: ConfigOptio
             fixturePath
         };
     } catch (err) {
+        // Reject the promise if any error occurs during the build setup or execution
         return Promise.reject(err);
     }
 }
