@@ -65,26 +65,17 @@ export class HostingRoutingPlugin {
 
                         /**
                          * SPA fallback
-                         * Needed for:
-                         * - GitHub Pages
-                         * - static hosting
+                         * Generates 404.html as a fallback for static hostings
                          */
                         if (appType === 'spa') {
                             const indexAsset = compilation.getAsset('index.html');
 
-                            if (!indexAsset) return;
+                            if (indexAsset) {
+                                const source = indexAsset.source.source().toString();
 
-                            const source = indexAsset.source.source().toString();
-
-                            if (hosting === 'github' || hosting === 'static') {
-                                const hostName =
-                                    hosting === 'github'
-                                        ? 'GitHub Pages'
-                                        : 'Static hosting';
-
-                                logger.info(
-                                    `📦 ${hostName} detected. Creating 404.html fallback for SPA...`
-                                );
+                                // Always emit 404.html for SPA to ensure
+                                // it's available for any static hosting
+                                logger.info(`📦 SPA detected. Creating 404.html fallback...`);
 
                                 compilation.emitAsset(
                                     '404.html',

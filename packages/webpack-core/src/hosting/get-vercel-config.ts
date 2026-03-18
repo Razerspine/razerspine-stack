@@ -1,27 +1,22 @@
 import {AppType} from '../types';
 
 export function getVercelConfig(appType: AppType): string {
+    // Vercel recommends using 'rewrites' for SPA fallback logic
     const config =
         appType === 'spa'
             ? {
-                routes: [
+                rewrites: [
                     {
-                        src: '/(.*)',
-                        dest: '/index.html',
+                        source: '/(.*)',
+                        destination: '/index.html',
                     },
                 ],
             }
             : {
-                routes: [
-                    {
-                        handle: 'filesystem'
-                    },
-                    {
-                        src: '/(.*)',
-                        dest: '/404.html',
-                        status: 404,
-                    },
-                ],
+                // For MPA, we don't strictly need rewrites for 404
+                // if we have a 404.html file, but we can keep it for clean URLs
+                cleanUrls: true,
+                trailingSlash: false
             };
 
     return JSON.stringify(config, null, 2);
