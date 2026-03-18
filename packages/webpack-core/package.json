@@ -33,12 +33,10 @@
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
+    "test:snapshots": "vitest run tests/snapshots",
     "test:e2e:prepare": "npm install --prefix tests/fixtures/mpa && npm install --prefix tests/fixtures/spa",
     "test:e2e": "vitest run tests/e2e",
-    "test:e2e:full": "npm run test:e2e:prepare && npm run test:e2e",
-    "test:watch": "vitest",
-    "test:unit:watch": "vitest tests/unit",
-    "test:integration:watch": "vitest tests/integration"
+    "test:e2e:full": "npm run test:e2e:prepare && npm run test:e2e"
   },
   "peerDependencies": {
     "pug-plugin": "^5 || ^6",
