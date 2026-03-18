@@ -1,23 +1,173 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
-
-This package went through an intensive stabilization phase while integrating
-Webpack, pug-plugin, and template-driven builds. Multiple patch releases were
-required to ensure correct behavior in both development and production modes.
+All notable changes to this project will be documented in this file.
 
 ---
+
+## [1.0.0] - 2026-03-18
+
+### 🚨 Breaking Changes
+
+- Package renamed from `@razerspine/webpack-core` → `@razerspine/build`
+- The internal architecture has been completely redesigned (breaking changes included)
+
+---
+
+### ✨ Major Features
+
+#### 🏗 New Architecture
+
+Complete internal restructuring with clear modular boundaries:
+
+```text
+core/ → config creation (base/dev/prod)
+options/ → validation, normalization, resolving
+rules/ → webpack module rules (scripts, styles, assets, pug)
+plugins/ → custom webpack plugins
+hosting/ → hosting detection + routing generation
+types/ → strongly typed public API
+utils/ → shared helpers
+```
+
+- Improved maintainability and scalability
+- Clear separation of concerns
+- Easier extension for future features
+
+---
+
+#### ⚙️ Options Pipeline (validate → normalize → resolve)
+
+New unified options processing flow:
+
+```ts
+resolveOptions(options)
+```
+
+- `validateOptions` - strict validation
+- `normalizeOptions` - defaults + shaping
+- `resolveOptions` - single entry point
+
+---
+
+#### 🧠 Config Metadata System
+
+Introduced internal metadata layer using WeakMap:
+
+```ts
+setConfigMeta(config, meta)
+getConfigMeta(config)
+```
+
+- Enables context-aware config behavior
+- Used internally for SPA/MPA handling
+- No mutation of webpack config object
+
+---
+
+#### 🌐 Hosting Integration
+
+- Automatic hosting detection
+- Built-in support for:
+  - Vercel (`vercel.json`)
+  - Static hosting (SPA fallback)
+- Modules:
+  - `detect-hosting`
+  - `get-vercel-config`
+  - `get-redirects`
+
+---
+
+🔌 New Plugin System
+
+- `HostingRoutingPlugin`
+- `PugTemplatesPlugin`
+
+Improved:
+
+- plugin lifecycle handling
+- better separation from config logic
+
+---
+
+#### 🧪 Testing
+
+Massively improved test coverage and quality:
+
+##### Added:
+
+- ✅ Unit tests (core, options, hosting, plugins)
+- ✅ Integration tests (config behavior)
+- ✅ E2E tests (real webpack builds with fixtures)
+- ✅ Snapshot tests (config structure regression protection)
+
+##### Test structure:
+
+```text
+unit/
+integration/
+e2e/
+snapshots/
+```
+
+---
+
+##### Highlights:
+
+- Real-world fixtures (SPA + MPA, JS/TS, SCSS/Less)
+- Snapshot-based regression detection
+- Stable config normalization for testing
+
+---
+
+#### 🧱 Internal Improvements
+
+- Refactored config creation:
+  - `createBaseConfig`
+  - `createDevConfig`
+  - `createProdConfig`
+- Improved merge strategies:
+  - `resolve`
+  - `devServer`
+  - `optimization`
+- Stronger typing across entire codebase
+
+#### 🧹 Cleanup
+
+- Removed legacy config patterns
+- Simplified public API
+- Reduced internal coupling
+
+---------------------------------------
+
+## Legacy (pre-1.0.0)
+
+All versions prior to 1.0.0 belong to the package:
+
+```text
+@razerspine/webpack-core
+```
+
+Legacy versions include:
+
+- Early architecture
+- Initial template system
+- Basic config generation
+
+> These versions are no longer actively maintained.
 
 ## [1.10.0] - 2026-03-13
 
 ### Changed
+
 - **Dependency Update**: Upgraded `pug-plugin` to `^6.1.0`.
   - Fixes vulnerabilities in transitive dependencies by forcing `minimatch@10` and `glob@13`.
   - Includes the latest `html-bundler-webpack-plugin` for improved asset handling.
 - **Environment Requirements**: Updated minimum required **Node.js version to 20**.
-- **Cleanup**: Prepared for the removal of manual `overrides` in consumer templates (resolves [issue #110](https://github.com/webdiscus/pug-plugin/issues/110)).
+- **Cleanup**: Prepared for the removal of manual `overrides` in consumer templates (
+  resolves [issue #110](https://github.com/webdiscus/pug-plugin/issues/110)).
 
 ### Fixed
+
 - **Security**: Eliminated deep-level dependency warnings related to older versions of `glob` and `minimatch`.
 
 ---
@@ -25,24 +175,32 @@ required to ensure correct behavior in both development and production modes.
 ## [1.9.0] - 2026-03-13
 
 ### Added
+
 - **Smart Auto-Hosting Adapter**
-  - Integrated `detectHosting()` utility to automatically identify deployment platforms (**Vercel, Netlify, Cloudflare, GitHub Pages**).
-  - **Zero-Config Routing**: Automatically generates platform-specific configuration files (`_redirects`, `vercel.json`) based on `appType`.
-  - **Interactive Build Logs**: Added `infrastructureLogger` integration. The build now informs the developer about detected platforms (e.g., `📦 Netlify detected. Generating _redirects for SPA...`).
+  - Integrated `detectHosting()` utility to automatically identify deployment platforms (**Vercel, Netlify, Cloudflare,
+    GitHub Pages**).
+  - **Zero-Config Routing**: Automatically generates platform-specific configuration files (`_redirects`, `vercel.json`)
+    based on `appType`.
+  - **Interactive Build Logs**: Added `infrastructureLogger` integration. The build now informs the developer about
+    detected platforms (e.g., `📦 Netlify detected. Generating _redirects for SPA...`).
 - **Enhanced SPA Fallback Strategy**
   - Automated `404.html` generation for **GitHub Pages** and static hosts when in SPA mode.
   - Ensures seamless client-side routing without manual file duplication.
 
 ### Changed
+
 - **Architectural Refactoring**
   - Decoupled hosting logic into specialized utilities: `getRedirects`, `getVercelConfig`, and `detectHosting`.
   - Improved `createProdConfig` maintainability by moving business logic out of the main configuration factory.
 - **Production Alignment**
-  - `createProdConfig` now actively reads `_meta.appType` from `LoaderOptionsPlugin` to synchronize routing logic with the development server.
+  - `createProdConfig` now actively reads `_meta.appType` from `LoaderOptionsPlugin` to synchronize routing logic with
+    the development server.
 
 ### Fixed
+
 - **Type Safety**: Improved Webpack 5 internal typing for asset emission using `sources.RawSource`.
-- **Build Reliability**: Replaced `copy-webpack-plugin` for generated assets with a native Webpack emission strategy to prevent "file not found" errors during build.
+- **Build Reliability**: Replaced `copy-webpack-plugin` for generated assets with a native Webpack emission strategy to
+  prevent "file not found" errors during build.
 
 ---
 
