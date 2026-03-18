@@ -2,8 +2,7 @@ import PugPlugin from 'pug-plugin';
 import * as fs from 'node:fs';
 import path from 'path';
 import {Compiler} from 'webpack';
-import {ModeType} from '../types/mode-type';
-import {AppType} from '../types/app-type';
+import {ModeType, AppType} from '../types';
 
 type PugTemplatesPluginOptions = {
     entry: string;

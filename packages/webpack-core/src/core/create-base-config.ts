@@ -1,5 +1,5 @@
 import {setConfigMeta} from './config-meta';
-import {ConfigOptionType} from '../types/config-option-type';
+import {ConfigOptionType} from '../types';
 import {Configuration} from 'webpack';
 import {resolveOptions} from '../options';
 import path from 'path';

@@ -1,4 +1,4 @@
-import {AppType} from '../types/app-type';
+import {AppType} from '../types';
 
 export function getRedirects(appType: AppType): string {
     return appType === 'spa'

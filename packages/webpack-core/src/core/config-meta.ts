@@ -1,5 +1,5 @@
 import {Configuration} from 'webpack';
-import {AppType} from '../types/app-type';
+import {AppType} from '../types';
 
 type ConfigMeta = {
     appType: AppType;

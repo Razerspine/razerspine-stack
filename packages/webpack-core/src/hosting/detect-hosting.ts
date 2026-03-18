@@ -1,4 +1,4 @@
-import {HostingType} from '../types/hosting-type';
+import {HostingType} from '../types';
 
 export function detectHosting(): HostingType {
     if (process.env.NETLIFY) return 'netlify';

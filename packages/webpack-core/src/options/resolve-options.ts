@@ -1,4 +1,4 @@
-import {ConfigOptionType} from '../types/config-option-type';
+import {ConfigOptionType} from '../types';
 import {validateOptions} from './validate-options';
 import {normalizeOptions, NormalizedCoreOptions} from './normalize-options';
 

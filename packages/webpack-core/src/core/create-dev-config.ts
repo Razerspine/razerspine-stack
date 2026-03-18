@@ -1,7 +1,7 @@
 import {Configuration as WebpackConfiguration} from 'webpack';
 import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
-import {BaseWebpackConfigType} from '../types/base-webpack-config-type';
+import {BaseWebpackConfigType} from '../types';
 import {getConfigMeta} from './config-meta';
 
 type DevConfig = BaseWebpackConfigType & {

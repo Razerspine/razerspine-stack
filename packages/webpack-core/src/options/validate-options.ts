@@ -1,4 +1,4 @@
-import {ConfigOptionType} from 'config-option-type';
+import {ConfigOptionType} from '../types';
 
 export function validateOptions(options: ConfigOptionType): void {
     if (!options) throw new Error('[webpack-core] Options are required.');

@@ -1,7 +1,5 @@
 import path from 'path';
-import {ConfigOptionType} from '../types/config-option-type';
-import {AppType} from '../types/app-type';
-import {ModeType} from '../types/mode-type';
+import {ConfigOptionType, AppType, ModeType} from '../types';
 import {Configuration} from 'webpack';
 
 export interface NormalizedCoreOptions {
