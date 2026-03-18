@@ -1,7 +1,7 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig} from '../../src';
 import {ConfigOptionType} from '../../src';
-import {getConfigMeta} from '../../src/core/config-meta';
+import {getConfigMeta} from '../../src/core';
 
 vi.mock('node:fs', () => ({
     default: {
