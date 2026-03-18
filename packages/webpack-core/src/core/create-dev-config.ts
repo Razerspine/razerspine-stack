@@ -1,3 +1,8 @@
+/**
+ * @module create-dev-config
+ * @description Extends the base configuration with Webpack Dev Server settings.
+ */
+
 import {Configuration as WebpackConfiguration} from 'webpack';
 import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
@@ -8,12 +13,21 @@ type DevConfig = BaseWebpackConfigType & {
     devServer?: DevServerConfiguration;
 };
 
+/**
+ * Creates a development configuration by merging base settings with DevServer options.
+ * Automatically configures routing fallbacks based on whether the app is SPA or MPA.
+ * @param {BaseWebpackConfigType} baseConfig - The base configuration from createBaseConfig.
+ * @param {DevServerConfiguration} [options={}] - Optional DevServer overrides.
+ * @returns {DevConfig} The final development configuration.
+ */
 export function createDevConfig(
     baseConfig: BaseWebpackConfigType,
     options: DevServerConfiguration = {}
 ): DevConfig {
     const meta = getConfigMeta(baseConfig);
     const appType = meta?.appType ?? 'mpa';
+
+    /** Default dev server settings */
     const baseDevServer: DevServerConfiguration = {
         hot: false,
         open: true,
@@ -23,6 +37,7 @@ export function createDevConfig(
         watchFiles: ['src/**/*'],
     };
 
+    /** Fallback logic: SPA redirects to index, MPA redirects to 404 */
     const defaultFallbackConfig: DevServerConfiguration = {
         historyApiFallback: {
             disableDotRule: true,
@@ -35,6 +50,7 @@ export function createDevConfig(
         }
     };
 
+    // Use default fallbacks unless the user provided their own historyApiFallback config
     const fallbackToMerge = options.historyApiFallback !== undefined
         ? {}
         : defaultFallbackConfig;
