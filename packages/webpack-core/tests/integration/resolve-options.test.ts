@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {resolveOptions} from '../../src/options';
+import {resolveOptions} from '../../src';
 
 const base = {
     mode: 'development',
@@ -12,7 +12,10 @@ describe('resolveOptions (integration)', () => {
     it('should resolve appType correctly', () => {
         const options = resolveOptions({
             ...base,
-            appType: 'mpa'
+            appType: 'mpa',
+            templates: {
+                entry: 'src/views/pages'
+            }
         });
 
         expect(options.appType).toBe('mpa');

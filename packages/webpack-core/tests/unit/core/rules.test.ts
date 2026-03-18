@@ -67,7 +67,7 @@ describe('Webpack Rules', () => {
             expect(rule.test.toString()).toContain('pug');
             expect(rule.oneOf).toBeDefined();
 
-            expect(rule.oneOf[0].issuer.toString()).toContain('js|ts');
+            expect(rule.oneOf[0]?.issuer?.toString()).toContain('js|ts');
             expect(rule.oneOf[0].options.method).toBe('compile');
         });
     });
