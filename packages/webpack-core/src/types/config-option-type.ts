@@ -10,9 +10,9 @@ import {ModeType} from 'mode-type';
 export type ConfigOptionType = {
     /** Build mode: 'development' or 'production' */
     mode: ModeType;
-    /** Script processing options */
+    /** Script processing options JavaScript or TypeScript */
     scripts: ScriptType;
-    /** Styling processing options (e.g., SCSS, PostCSS) */
+    /** Styling processing options SCSS or Less */
     styles: StyleType;
     /** Architecture type: 'spa' (Single Page) or 'mpa' (Multi Page) */
     appType?: AppType;
