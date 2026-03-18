@@ -19,7 +19,7 @@ export function normalizeOptions(
     options: ConfigOptionType
 ): NormalizedCoreOptions {
     const mode: ModeType = options.mode ?? 'development';
-    const appType: AppType = options.appType ?? 'mpa';
+    const appType: AppType = options.appType ?? 'spa';
     const templatesEntry = options.templates?.entry ?? (appType === 'spa' ? 'src/views/app.pug' : 'src/views/pages');
 
     return {
