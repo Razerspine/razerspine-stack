@@ -40,10 +40,19 @@ describe('E2E: Webpack Build', () => {
             scripts: 'js',
             styles: 'scss',
             appType: 'mpa',
-            templates: {entry: path.resolve(__dirname, '../fixtures/mpa/src/views/pages')}
+            templates: {
+                entry: path.resolve(__dirname, '../fixtures/mpa/src/views/pages')
+            }
         });
+        const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf-8');
+
+        expect(html).toContain('<!DOCTYPE html>');
+        expect(html).toContain('<script');
+        expect(html).toContain('<link');
 
         expect(fs.existsSync(path.join(outDir, 'index.html'))).toBe(true);
+        expect(fs.existsSync(path.join(outDir, 'about.html'))).toBe(true);
+
         expect(hasFileWithExtension(outDir, '.css')).toBe(true);
         expect(hasFileWithExtension(outDir, '.js')).toBe(true);
     });
@@ -56,10 +65,23 @@ describe('E2E: Webpack Build', () => {
             scripts: 'js',
             styles: 'scss',
             appType: 'mpa',
-            templates: {entry: path.resolve(__dirname, '../fixtures/mpa/src/views/pages')}
+            templates: {
+                entry: path.resolve(__dirname, '../fixtures/mpa/src/views/pages')
+            }
         });
 
         expect(fs.existsSync(path.join(outDir, 'vercel.json'))).toBe(true);
+    });
+
+    it('should throw if templates is missing for MPA', async () => {
+        return expect(
+            executeTestBuild('mpa', {
+                mode: 'production',
+                scripts: 'js',
+                styles: 'scss',
+                appType: 'mpa'
+            })
+        ).rejects.toThrow('[webpack-core] templates.entry is required for MPA');
     });
 
     it('should successfully build SPA project (TS + SCSS) and create 404.html', async () => {
@@ -68,10 +90,32 @@ describe('E2E: Webpack Build', () => {
             scripts: 'ts',
             styles: 'scss',
             appType: 'spa',
-            templates: {entry: path.resolve(__dirname, '../fixtures/spa/src/views/pages/index.pug')}
+            templates: {
+                entry: path.resolve(__dirname, '../fixtures/spa/src/views/pages/index.pug')
+            }
         });
+
+        const files = fs.readdirSync(outDir, {recursive: true});
+        expect(files.some(f => f.includes('index'))).toBe(true);
+
+        expect(hasFileWithExtension(outDir, '.css')).toBe(true);
+        expect(hasFileWithExtension(outDir, '.js')).toBe(true);
 
         expect(fs.existsSync(path.join(outDir, 'index.html'))).toBe(true);
         expect(fs.existsSync(path.join(outDir, '404.html'))).toBe(true);
+    });
+
+    it('should fail if template path does not exist', async () => {
+        return expect(
+            executeTestBuild('spa', {
+                mode: 'production',
+                scripts: 'ts',
+                styles: 'scss',
+                appType: 'spa',
+                templates: {
+                    entry: 'wrong/path.pug'
+                }
+            })
+        ).rejects.toThrow();
     });
 });

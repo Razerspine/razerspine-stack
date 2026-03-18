@@ -21,37 +21,45 @@ export function runWebpack(config: Configuration): Promise<Stats> {
 /**
  * Encapsulates the boilerplate for E2E build tests
  */
-export async function executeTestBuild(fixtureName: string, options: ConfigOptionType) {
-    const fixturePath = path.resolve(__dirname, '../fixtures', fixtureName);
-    const outDir = path.resolve(fixturePath, 'dist');
-    const coreNodeModules = path.resolve(__dirname, '../../node_modules');
+export async function executeTestBuild(fixtureName: string, options: ConfigOptionType): Promise<{
+    stats: Stats;
+    outDir: string;
+    fixturePath: string;
+}> {
+    try {
+        const fixturePath = path.resolve(__dirname, '../fixtures', fixtureName);
+        const outDir = path.resolve(fixturePath, 'dist');
+        const coreNodeModules = path.resolve(__dirname, '../../node_modules');
 
-    // Mock CWD for the current fixture
-    vi.spyOn(process, 'cwd').mockReturnValue(fixturePath);
+        // Mock CWD for the current fixture
+        vi.spyOn(process, 'cwd').mockReturnValue(fixturePath);
 
-    const baseConfig = createBaseConfig(options);
+        const baseConfig = createBaseConfig(options);
 
-    // Ensure loaders are resolved from both fixture and core node_modules
-    baseConfig.resolveLoader = {
-        modules: [
-            path.join(fixturePath, 'node_modules'),
-            coreNodeModules,
-            'node_modules'
-        ],
-    };
+        // Ensure loaders are resolved from both fixture and core node_modules
+        baseConfig.resolveLoader = {
+            modules: [
+                path.join(fixturePath, 'node_modules'),
+                coreNodeModules,
+                'node_modules'
+            ],
+        };
 
-    // Standard extensions for TS projects if needed
-    if (options.scripts === 'ts') {
-        if (!baseConfig.resolve) baseConfig.resolve = {};
-        baseConfig.resolve.extensions = ['.ts', '.js', '.json'];
+        // Standard extensions for TS projects if needed
+        if (options.scripts === 'ts') {
+            if (!baseConfig.resolve) baseConfig.resolve = {};
+            baseConfig.resolve.extensions = ['.ts', '.js', '.json'];
+        }
+
+        const prodConfig = createProdConfig(baseConfig);
+        const stats = await runWebpack(prodConfig);
+
+        return {
+            stats,
+            outDir,
+            fixturePath
+        };
+    } catch (err) {
+        return Promise.reject(err);
     }
-
-    const prodConfig = createProdConfig(baseConfig);
-    const stats = await runWebpack(prodConfig);
-
-    return {
-        stats,
-        outDir,
-        fixturePath
-    };
 }

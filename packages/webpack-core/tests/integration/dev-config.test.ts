@@ -31,7 +31,10 @@ describe('createDevConfig', () => {
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
-            appType: 'mpa'
+            appType: 'mpa',
+            templates: {
+                entry: 'src/views/pages'
+            }
         });
 
         const devConfig = createDevConfig(base);
@@ -44,7 +47,10 @@ describe('createDevConfig', () => {
         const base = createBaseConfig({
             mode: 'development',
             scripts: 'ts',
-            styles: 'scss'
+            styles: 'scss',
+            templates: {
+                entry: 'src/views/pages'
+            }
         });
 
         const devConfig = createDevConfig(base, {port: 3000});
@@ -89,13 +95,16 @@ describe('createDevConfig', () => {
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
-            appType: 'mpa'
+            appType: 'mpa',
+            templates: {
+                entry: 'src/views/pages'
+            }
         });
 
         const config = createDevConfig(base, {
             port: 3000,
             historyApiFallback: {
-                rewrites: [{ from: /test/, to: '/test.html' }]
+                rewrites: [{from: /test/, to: '/test.html'}]
             }
         });
 
