@@ -1,15 +1,11 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig} from '../../src';
+import {normalizeConfigForSnapshot} from './snapshot-helper';
 
 vi.mock('node:fs', () => ({
     existsSync: () => true,
     statSync: () => ({isFile: () => true, isDirectory: () => true}),
 }));
-
-const normalize = (config: any) => ({
-    ...config,
-    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
-});
 
 describe('createBaseConfig (snapshots)', () => {
 
@@ -20,7 +16,8 @@ describe('createBaseConfig (snapshots)', () => {
             styles: 'scss',
             appType: 'spa'
         });
-        expect(normalize(config)).toMatchSnapshot();
+
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 
     it('should match snapshot with buildPlugins mutation', () => {
@@ -38,7 +35,7 @@ describe('createBaseConfig (snapshots)', () => {
             ]
         });
 
-        expect(normalize(config)).toMatchSnapshot();
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 
     it('should support templates.type = none', () => {
@@ -46,9 +43,11 @@ describe('createBaseConfig (snapshots)', () => {
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
-            templates: {type: 'none'}
+            templates: {
+                type: 'none'
+            }
         });
 
-        expect(normalize(config)).toMatchSnapshot();
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 });

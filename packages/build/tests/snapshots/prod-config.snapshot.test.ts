@@ -1,15 +1,11 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig, createProdConfig} from '../../src';
+import {normalizeConfigForSnapshot} from './snapshot-helper';
 
 vi.mock('node:fs', () => ({
     existsSync: () => true,
     statSync: () => ({isFile: () => true, isDirectory: () => true}),
 }));
-
-const normalize = (config: any) => ({
-    ...config,
-    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
-});
 
 describe('createProdConfig (snapshots)', () => {
 
@@ -22,10 +18,10 @@ describe('createProdConfig (snapshots)', () => {
         });
         const config = createProdConfig(base);
 
-        const norm = normalize(config);
+        const normalize = normalizeConfigForSnapshot(config);
 
-        expect(norm).toMatchSnapshot();
-        expect(norm.plugins).toContain('HostingRoutingPlugin');
+        expect(normalize).toMatchSnapshot();
+        expect(normalize.plugins).toContain('HostingRoutingPlugin');
     });
 
     it('should match snapshot with production overrides', () => {
@@ -35,9 +31,11 @@ describe('createProdConfig (snapshots)', () => {
             styles: 'less'
         });
         const config = createProdConfig(base, {
-            optimization: {minimize: false}
+            optimization: {
+                minimize: false
+            }
         });
 
-        expect(normalize(config)).toMatchSnapshot();
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 });

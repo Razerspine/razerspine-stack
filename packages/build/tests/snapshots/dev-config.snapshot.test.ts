@@ -1,15 +1,11 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig, createDevConfig} from '../../src';
+import {normalizeConfigForSnapshot} from './snapshot-helper';
 
 vi.mock('node:fs', () => ({
     existsSync: () => true,
     statSync: () => ({isFile: () => true, isDirectory: () => true}),
 }));
-
-const normalize = (config: any) => ({
-    ...config,
-    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
-});
 
 describe('createDevConfig (snapshots)', () => {
 
@@ -22,7 +18,7 @@ describe('createDevConfig (snapshots)', () => {
         });
         const config = createDevConfig(base);
 
-        expect(normalize(config)).toMatchSnapshot();
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 
     it('should match snapshot with devServer overrides', () => {
@@ -36,6 +32,6 @@ describe('createDevConfig (snapshots)', () => {
             hot: true
         });
 
-        expect(normalize(config)).toMatchSnapshot();
+        expect(normalizeConfigForSnapshot(config)).toMatchSnapshot();
     });
 });

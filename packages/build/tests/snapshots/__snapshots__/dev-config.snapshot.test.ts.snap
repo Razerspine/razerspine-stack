@@ -1,136 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`createDevConfig (snapshots) > should match snapshot (MPA) 1`] = `
-{
-  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
-  "devServer": {
-    "compress": true,
-    "historyApiFallback": {
-      "disableDotRule": true,
-      "rewrites": [
-        {
-          "from": /\\./,
-          "to": "/404.html",
-        },
-      ],
-    },
-    "hot": false,
-    "liveReload": true,
-    "open": true,
-    "port": 8080,
-    "watchFiles": [
-      "src/**/*",
-    ],
-  },
-  "devtool": "source-map",
-  "mode": "development",
-  "module": {
-    "rules": [
-      {
-        "oneOf": [
-          {
-            "issuer": /\\\\\\.\\(js\\|ts\\|tsx\\|jsx\\)\\$/,
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
-            "options": {
-              "method": "compile",
-            },
-          },
-          {
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
-            "options": {
-              "method": "render",
-            },
-          },
-        ],
-        "test": /\\\\\\.pug\\$/,
-      },
-      {
-        "oneOf": [
-          {
-            "generator": {
-              "filename": "fonts/[name][ext][query]",
-            },
-            "include": /assets\\\\/fonts\\|node_modules/,
-            "test": /\\\\\\.\\(woff\\(2\\)\\?\\|ttf\\|otf\\|eot\\|svg\\)\\$/i,
-            "type": "asset/resource",
-          },
-          {
-            "exclude": /assets\\\\/fonts/,
-            "generator": {
-              "filename": "img/[name].[hash:8][ext]",
-            },
-            "test": /\\\\\\.\\(png\\|jpe\\?g\\|svg\\|webp\\|ico\\)\\$/i,
-            "type": "asset/resource",
-          },
-          {
-            "generator": {
-              "filename": "favicons/[name][ext]",
-            },
-            "test": /\\\\\\.webmanifest\\$/i,
-            "type": "asset/resource",
-          },
-        ],
-      },
-      {
-        "exclude": /node_modules/,
-        "test": /\\\\\\.m\\?js\\$/,
-        "use": "babel-loader",
-      },
-      {
-        "test": /\\\\\\.\\(css\\|less\\)\\$/,
-        "use": [
-          "css-loader",
-          {
-            "loader": "postcss-loader",
-            "options": {
-              "postcssOptions": {
-                "plugins": [
-                  "autoprefixer",
-                ],
-              },
-            },
-          },
-          {
-            "loader": "less-loader",
-            "options": {
-              "lessOptions": {
-                "javascriptEnabled": true,
-              },
-            },
-          },
-        ],
-      },
-    ],
-  },
-  "output": {
-    "clean": true,
-    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
-  },
-  "plugins": [
-    "PugTemplatesPlugin",
-  ],
-  "resolve": {
-    "alias": {},
-    "extensions": [
-      ".ts",
-      ".tsx",
-      ".js",
-      ".json",
-    ],
-  },
-}
-`;
-
 exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
 {
-  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "context": "<PROJECT_ROOT>/packages/build",
   "devServer": {
     "compress": true,
     "historyApiFallback": {
       "disableDotRule": true,
       "rewrites": [
         {
-          "from": /\\./,
+          "from": "/./",
           "to": "/index.html",
         },
       ],
@@ -150,20 +29,20 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
       {
         "oneOf": [
           {
-            "issuer": /\\\\\\.\\(js\\|ts\\|tsx\\|jsx\\)\\$/,
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "issuer": "/\\.(js|ts|tsx|jsx)$/",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
             "options": {
               "method": "compile",
             },
           },
           {
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
             "options": {
               "method": "render",
             },
           },
         ],
-        "test": /\\\\\\.pug\\$/,
+        "test": "/\\.pug$/",
       },
       {
         "oneOf": [
@@ -171,30 +50,30 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
             "generator": {
               "filename": "fonts/[name][ext][query]",
             },
-            "include": /assets\\\\/fonts\\|node_modules/,
-            "test": /\\\\\\.\\(woff\\(2\\)\\?\\|ttf\\|otf\\|eot\\|svg\\)\\$/i,
+            "include": "/assets\\/fonts|node_modules/",
+            "test": "/\\.(woff(2)?|ttf|otf|eot|svg)$/i",
             "type": "asset/resource",
           },
           {
-            "exclude": /assets\\\\/fonts/,
+            "exclude": "/assets\\/fonts/",
             "generator": {
               "filename": "img/[name].[hash:8][ext]",
             },
-            "test": /\\\\\\.\\(png\\|jpe\\?g\\|svg\\|webp\\|ico\\)\\$/i,
+            "test": "/\\.(png|jpe?g|svg|webp|ico)$/i",
             "type": "asset/resource",
           },
           {
             "generator": {
               "filename": "favicons/[name][ext]",
             },
-            "test": /\\\\\\.webmanifest\\$/i,
+            "test": "/\\.webmanifest$/i",
             "type": "asset/resource",
           },
         ],
       },
       {
-        "exclude": /node_modules/,
-        "test": /\\\\\\.ts\\$/,
+        "exclude": "/node_modules/",
+        "test": "/\\.ts$/",
         "use": {
           "loader": "ts-loader",
           "options": {
@@ -203,7 +82,7 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
         },
       },
       {
-        "test": /\\\\\\.\\(css\\|scss\\|sass\\)\\$/,
+        "test": "/\\.(css|scss|sass)$/",
         "use": [
           "css-loader",
           {
@@ -223,7 +102,7 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
   },
   "output": {
     "clean": true,
-    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
+    "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
     "PugTemplatesPlugin",
@@ -242,14 +121,14 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
 
 exports[`createDevConfig (snapshots) > should match snapshot with devServer overrides 1`] = `
 {
-  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "context": "<PROJECT_ROOT>/packages/build",
   "devServer": {
     "compress": true,
     "historyApiFallback": {
       "disableDotRule": true,
       "rewrites": [
         {
-          "from": /\\./,
+          "from": "/./",
           "to": "/index.html",
         },
       ],
@@ -269,20 +148,20 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
       {
         "oneOf": [
           {
-            "issuer": /\\\\\\.\\(js\\|ts\\|tsx\\|jsx\\)\\$/,
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "issuer": "/\\.(js|ts|tsx|jsx)$/",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
             "options": {
               "method": "compile",
             },
           },
           {
-            "loader": "/home/bagel/Projects/webpack-starter-monorepo/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
             "options": {
               "method": "render",
             },
           },
         ],
-        "test": /\\\\\\.pug\\$/,
+        "test": "/\\.pug$/",
       },
       {
         "oneOf": [
@@ -290,30 +169,30 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
             "generator": {
               "filename": "fonts/[name][ext][query]",
             },
-            "include": /assets\\\\/fonts\\|node_modules/,
-            "test": /\\\\\\.\\(woff\\(2\\)\\?\\|ttf\\|otf\\|eot\\|svg\\)\\$/i,
+            "include": "/assets\\/fonts|node_modules/",
+            "test": "/\\.(woff(2)?|ttf|otf|eot|svg)$/i",
             "type": "asset/resource",
           },
           {
-            "exclude": /assets\\\\/fonts/,
+            "exclude": "/assets\\/fonts/",
             "generator": {
               "filename": "img/[name].[hash:8][ext]",
             },
-            "test": /\\\\\\.\\(png\\|jpe\\?g\\|svg\\|webp\\|ico\\)\\$/i,
+            "test": "/\\.(png|jpe?g|svg|webp|ico)$/i",
             "type": "asset/resource",
           },
           {
             "generator": {
               "filename": "favicons/[name][ext]",
             },
-            "test": /\\\\\\.webmanifest\\$/i,
+            "test": "/\\.webmanifest$/i",
             "type": "asset/resource",
           },
         ],
       },
       {
-        "exclude": /node_modules/,
-        "test": /\\\\\\.ts\\$/,
+        "exclude": "/node_modules/",
+        "test": "/\\.ts$/",
         "use": {
           "loader": "ts-loader",
           "options": {
@@ -322,7 +201,7 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
         },
       },
       {
-        "test": /\\\\\\.\\(css\\|scss\\|sass\\)\\$/,
+        "test": "/\\.(css|scss|sass)$/",
         "use": [
           "css-loader",
           {
@@ -342,7 +221,7 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
   },
   "output": {
     "clean": true,
-    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
+    "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
     "PugTemplatesPlugin",
