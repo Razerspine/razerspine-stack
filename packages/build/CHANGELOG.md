@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.0.0] - 2026-03-18
+## [1.0.0] - 2026-03-20
 
 ### 🚨 Breaking Changes
 
@@ -13,9 +13,9 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-### ✨ Major Features
+### Major Features
 
-#### 🏗 New Architecture
+#### New Architecture
 
 Complete internal restructuring with clear modular boundaries:
 
@@ -35,7 +35,7 @@ utils/ → shared helpers
 
 ---
 
-#### ⚙️ Options Pipeline (validate → normalize → resolve)
+#### Options Pipeline (validate → normalize → resolve)
 
 New unified options processing flow:
 
@@ -49,7 +49,7 @@ resolveOptions(options)
 
 ---
 
-#### 🧠 Config Metadata System
+#### Config Metadata System
 
 Introduced internal metadata layer using WeakMap:
 
@@ -64,7 +64,43 @@ getConfigMeta(config)
 
 ---
 
-#### 🌐 Hosting Integration
+#### Template Engine System
+
+Introduced flexible template engine support:
+
+- `templates.type` option:
+  - `pug` (default) → uses `PugTemplatesPlugin`
+  - `html` → uses `HtmlTemplatesPlugin`
+  - `none` → disables template handling
+
+- New plugin:
+  - `HtmlTemplatesPlugin` (wrapper around html-webpack-plugin)
+
+- Conditional rule injection:
+  - `pugRule` is only applied when `templates.type === 'pug'`
+
+---
+
+#### Rules & Plugins Control
+
+Added controlled extension system:
+
+```text
+rules: {
+  extend?: RuleSetRule[]
+  override?: RuleSetRule[]
+}
+
+plugins: {
+  extend?: WebpackPluginInstance[]
+  override?: WebpackPluginInstance[]
+}
+```
+
+- Safe extension via `extend`
+- Full override via `override` (advanced usage)
+
+#### Hosting Integration
 
 - Automatic hosting detection
 - Built-in support for:
@@ -77,7 +113,7 @@ getConfigMeta(config)
 
 ---
 
-🔌 New Plugin System
+New Plugin System
 
 - `HostingRoutingPlugin`
 - `PugTemplatesPlugin`
@@ -89,7 +125,7 @@ Improved:
 
 ---
 
-#### 🧪 Testing
+#### Testing
 
 Massively improved test coverage and quality:
 
@@ -119,7 +155,7 @@ snapshots/
 
 ---
 
-#### 🧱 Internal Improvements
+#### Internal Improvements
 
 - Refactored config creation:
   - `createBaseConfig`
@@ -131,11 +167,21 @@ snapshots/
   - `optimization`
 - Stronger typing across entire codebase
 
-#### 🧹 Cleanup
+#### Cleanup
 
 - Removed legacy config patterns
 - Simplified public API
 - Reduced internal coupling
+
+---
+
+### Breaking Changes
+
+- Template system is no longer strictly tied to Pug
+- `pugRule` and `PugTemplatesPlugin` are now conditionally applied
+- Invalid combinations are now validated:
+  - `templates.type = 'none'` cannot have `entry
+  - `MPA` requires `templates.entry`
 
 ---------------------------------------
 
@@ -392,7 +438,7 @@ Legacy versions include:
   - Set `disableDotRule: true` to allow dots in URLs (useful for complex routing).
   - Added a global rewrite rule to serve `/404.html` for any non-existent paths, enabling better local testing of 404
     error pages and SPA-like navigation.
-- **DevServer Optimization:** Set `hot: false` and `liveReload: true` as a stable default for multi-page template builds
+- **DevServer Optimization:** Set `hot: false` and `liveReload: true` as a stable default for multipage template builds
   to ensure consistent page refreshes upon file changes.
 
 ---
