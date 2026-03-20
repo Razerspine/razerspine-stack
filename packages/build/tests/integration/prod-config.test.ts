@@ -92,4 +92,41 @@ describe('createProdConfig integration', () => {
         const config = createProdConfig({});
         expect(config.optimization?.minimize).toBe(true);
     });
+
+    it('should not duplicate HostingRoutingPlugin if user adds it via extend', () => {
+        const base = createBaseConfig({
+            mode: 'production',
+            scripts: 'js',
+            styles: 'less',
+            appType: 'spa',
+            plugins: {
+                extend: [
+                    new HostingRoutingPlugin({appType: 'spa'}),
+                ]
+            }
+        });
+
+        const prodConfig = createProdConfig(base);
+
+        const routingPlugins = prodConfig.plugins?.filter(p => p instanceof HostingRoutingPlugin);
+        expect(routingPlugins).toHaveLength(1);
+    });
+
+    it('should apply buildPlugins.applyProd hooks', () => {
+        const applyProdSpy = vi.fn();
+        const mockPlugin = {
+            name: 'prod-plugin',
+            applyProd: applyProdSpy
+        };
+        const base = createBaseConfig({
+            mode: 'production',
+            scripts: 'js',
+            styles: 'less',
+            appType: 'spa',
+            buildPlugins: [mockPlugin]
+        });
+        createProdConfig(base);
+
+        expect(applyProdSpy).toHaveBeenCalled();
+    });
 });

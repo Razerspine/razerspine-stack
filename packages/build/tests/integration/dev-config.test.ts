@@ -1,5 +1,6 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig, createDevConfig} from '../../src';
+import {PugTemplatesPlugin} from '../../src/plugins/pug-templates-plugin';
 
 vi.mock('node:fs', () => ({
     default: {
@@ -110,5 +111,35 @@ describe('createDevConfig', () => {
 
         expect(config.devServer?.port).toBe(3000);
         expect(config.devServer?.historyApiFallback).toBeDefined();
+    });
+
+    it('should call buildPlugins.applyDev and deduplicate results', () => {
+        const applyDevSpy = vi.fn((config) => {
+            config.plugins.push(
+                new PugTemplatesPlugin({
+                    entry: 'test',
+                    mode: 'development',
+                    appType: 'spa'
+                })
+            );
+        });
+
+        const mockPlugin = {
+            name: 'dev-plugin',
+            applyDev: applyDevSpy
+        };
+        const baseWithPlugins = createBaseConfig({
+            mode: 'development',
+            scripts: 'ts',
+            styles: 'scss',
+            appType: 'spa',
+            buildPlugins: [mockPlugin]
+        });
+
+        const finalConfig = createDevConfig(baseWithPlugins);
+
+        expect(applyDevSpy).toHaveBeenCalled();
+        const pugPlugins = finalConfig.plugins?.filter(p => p instanceof PugTemplatesPlugin);
+        expect(pugPlugins).toHaveLength(1);
     });
 });

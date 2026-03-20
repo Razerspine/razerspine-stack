@@ -164,3 +164,70 @@ describe('createBaseConfig', () => {
         });
     });
 });
+
+describe('createBaseConfig - Deduplication & BuildPlugins', () => {
+
+    it('should deduplicate plugins if the same plugin is added via extend', () => {
+        const config = createBaseConfig({
+            ...validOptions,
+            templates: {
+                type: 'pug',
+                entry: 'src/index.pug'
+            },
+            plugins: {
+                extend: [
+                    new PugTemplatesPlugin({
+                        entry: 'src/index.pug',
+                        mode: 'development',
+                        appType: 'spa'
+                    })
+                ]
+            }
+        });
+
+        const pugPlugins = config.plugins?.filter(p => p instanceof PugTemplatesPlugin);
+        expect(pugPlugins).toHaveLength(1);
+    });
+
+    it('should call buildPlugins lifecycle hooks: setup and applyBase', () => {
+        const setupSpy = vi.fn();
+        const applyBaseSpy = vi.fn();
+
+        const mockBuildPlugin = {
+            name: 'test-plugin',
+            setup: setupSpy,
+            applyBase: applyBaseSpy,
+        };
+
+        createBaseConfig({
+            ...validOptions,
+            buildPlugins: [mockBuildPlugin]
+        });
+
+        expect(setupSpy).toHaveBeenCalledOnce();
+        expect(applyBaseSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should deduplicate plugins even if added inside applyBase hook', () => {
+        const mockBuildPlugin = {
+            name: 'duplicate-injector',
+            applyBase: (config: any) => {
+                config.plugins.push(
+                    new PugTemplatesPlugin({
+                        entry: 'test',
+                        mode: 'development',
+                        appType: 'spa'
+                    })
+                );
+            },
+        };
+
+        const config = createBaseConfig({
+            ...validOptions,
+            buildPlugins: [mockBuildPlugin]
+        });
+
+        const pugPlugins = config.plugins?.filter(p => p instanceof PugTemplatesPlugin);
+        expect(pugPlugins).toHaveLength(1);
+    });
+});
