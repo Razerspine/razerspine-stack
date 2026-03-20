@@ -2,6 +2,8 @@ import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig} from '../../src';
 import {ConfigOptionType} from '../../src';
 import {getConfigMeta} from '../../src/core';
+import {PugTemplatesPlugin} from '../../src/plugins/pug-templates-plugin';
+import {HtmlTemplatesPlugin} from '../../src/plugins/html-templates-plugin';
 
 vi.mock('node:fs', () => ({
     default: {
@@ -68,5 +70,97 @@ describe('createBaseConfig', () => {
         const config = createBaseConfig(validOptions);
 
         expect(Array.isArray(config.plugins)).toBe(true);
+    });
+
+    describe('plugins system', () => {
+
+        it('should include PugTemplatesPlugin by default', () => {
+            const config = createBaseConfig(validOptions);
+
+            const hasPlugin = config.plugins?.some(
+                (p) => p instanceof PugTemplatesPlugin
+            );
+
+            expect(hasPlugin).toBe(true);
+        });
+
+        it('should include HtmlTemplatesPlugin when templates.type = html', () => {
+            const config = createBaseConfig({
+                ...validOptions,
+                templates: {
+                    type: 'html',
+                    entry: 'src/index.html'
+                }
+            });
+
+            const hasPlugin = config.plugins?.some(
+                (p) => p instanceof HtmlTemplatesPlugin
+            );
+
+            expect(hasPlugin).toBe(true);
+        });
+
+        it('should NOT include template plugins when templates.type = none', () => {
+            const config = createBaseConfig({
+                ...validOptions,
+                templates: {
+                    type: 'none'
+                }
+            });
+
+            const hasTemplatePlugin = config.plugins?.some(
+                (p) =>
+                    p instanceof PugTemplatesPlugin ||
+                    p instanceof HtmlTemplatesPlugin
+            );
+
+            expect(hasTemplatePlugin).toBe(false);
+        });
+
+        it('should extend plugins via plugins.extend', () => {
+            const customPlugin = {apply: vi.fn()} as any;
+
+            const config = createBaseConfig({
+                ...validOptions,
+                plugins: {
+                    extend: [customPlugin]
+                }
+            });
+
+            expect(config.plugins).toContain(customPlugin);
+        });
+
+        it('should override plugins via plugins.override', () => {
+            const customPlugin = {apply: vi.fn()} as any;
+
+            const config = createBaseConfig({
+                ...validOptions,
+                plugins: {
+                    override: [customPlugin]
+                }
+            });
+
+            expect(config.plugins).toHaveLength(1);
+            expect(config.plugins?.[0]).toBe(customPlugin);
+        });
+
+        it('should NOT include internal plugins when override is used', () => {
+            const customPlugin = {apply: vi.fn()} as any;
+
+            const config = createBaseConfig({
+                ...validOptions,
+                plugins: {
+                    override: [customPlugin]
+                }
+            });
+
+            const hasInternal = config.plugins?.some(
+                (p) =>
+                    p instanceof PugTemplatesPlugin ||
+                    p instanceof HtmlTemplatesPlugin
+            );
+
+            expect(hasInternal).toBe(false);
+        });
     });
 });
