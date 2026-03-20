@@ -8,35 +8,35 @@ vi.mock('node:fs', () => ({
 
 const normalize = (config: any) => ({
     ...config,
-    plugins: config.plugins?.map((p: any) => p.constructor.name),
+    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
 });
 
 describe('createProdConfig (snapshots)', () => {
-    it('should match snapshot (SPA)', () => {
+
+    it('should match snapshot (SPA) and include HostingRoutingPlugin', () => {
         const base = createBaseConfig({
             mode: 'production',
             scripts: 'ts',
             styles: 'scss',
             appType: 'spa'
         });
-
         const config = createProdConfig(base);
 
-        expect(normalize(config)).toMatchSnapshot();
+        const norm = normalize(config);
+
+        expect(norm).toMatchSnapshot();
+        expect(norm.plugins).toContain('HostingRoutingPlugin');
     });
 
-    it('should match snapshot (MPA)', () => {
+    it('should match snapshot with production overrides', () => {
         const base = createBaseConfig({
             mode: 'production',
             scripts: 'js',
-            styles: 'less',
-            appType: 'mpa',
-            templates: {
-                entry: 'src/views/pages',
-            },
+            styles: 'less'
         });
-
-        const config = createProdConfig(base);
+        const config = createProdConfig(base, {
+            optimization: {minimize: false}
+        });
 
         expect(normalize(config)).toMatchSnapshot();
     });

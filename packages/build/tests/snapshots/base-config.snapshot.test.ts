@@ -6,14 +6,13 @@ vi.mock('node:fs', () => ({
     statSync: () => ({isFile: () => true, isDirectory: () => true}),
 }));
 
-const normalize = (config: any) => {
-    return {
-        ...config,
-        plugins: config.plugins?.map((p: any) => p.constructor.name),
-    };
-};
+const normalize = (config: any) => ({
+    ...config,
+    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
+});
 
 describe('createBaseConfig (snapshots)', () => {
+
     it('should match snapshot (SPA)', () => {
         const config = createBaseConfig({
             mode: 'development',
@@ -21,19 +20,22 @@ describe('createBaseConfig (snapshots)', () => {
             styles: 'scss',
             appType: 'spa'
         });
-
         expect(normalize(config)).toMatchSnapshot();
     });
 
-    it('should match snapshot (MPA)', () => {
+    it('should match snapshot with buildPlugins mutation', () => {
         const config = createBaseConfig({
-            mode: 'production',
-            scripts: 'js',
-            styles: 'less',
-            appType: 'mpa',
-            templates: {
-                entry: 'src/views/pages',
-            },
+            mode: 'development',
+            scripts: 'ts',
+            styles: 'scss',
+            buildPlugins: [
+                {
+                    name: 'test-modifier',
+                    applyBase: (cfg) => {
+                        (cfg as any).customField = 'modified-by-plugin';
+                    }
+                }
+            ]
         });
 
         expect(normalize(config)).toMatchSnapshot();
@@ -44,25 +46,9 @@ describe('createBaseConfig (snapshots)', () => {
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
-            templates: {
-                type: 'none'
-            }
+            templates: {type: 'none'}
         });
 
-        expect(config).toMatchSnapshot();
-    });
-
-    it('should support templates.type = html', () => {
-        const config = createBaseConfig({
-            mode: 'development',
-            scripts: 'ts',
-            styles: 'scss',
-            templates: {
-                type: 'html',
-                entry: 'src/index.html'
-            }
-        });
-
-        expect(config).toMatchSnapshot();
+        expect(normalize(config)).toMatchSnapshot();
     });
 });

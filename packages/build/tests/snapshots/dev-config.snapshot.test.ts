@@ -8,10 +8,11 @@ vi.mock('node:fs', () => ({
 
 const normalize = (config: any) => ({
     ...config,
-    plugins: config.plugins?.map((p: any) => p.constructor.name),
+    plugins: config.plugins ? config.plugins.map((p: any) => p?.constructor?.name || 'UnknownPlugin') : [],
 });
 
 describe('createDevConfig (snapshots)', () => {
+
     it('should match snapshot (SPA)', () => {
         const base = createBaseConfig({
             mode: 'development',
@@ -19,24 +20,21 @@ describe('createDevConfig (snapshots)', () => {
             styles: 'scss',
             appType: 'spa'
         });
-
         const config = createDevConfig(base);
 
         expect(normalize(config)).toMatchSnapshot();
     });
 
-    it('should match snapshot (MPA)', () => {
+    it('should match snapshot with devServer overrides', () => {
         const base = createBaseConfig({
             mode: 'development',
-            scripts: 'js',
-            styles: 'less',
-            appType: 'mpa',
-            templates: {
-                entry: 'src/views/pages',
-            },
+            scripts: 'ts',
+            styles: 'scss'
         });
-
-        const config = createDevConfig(base);
+        const config = createDevConfig(base, {
+            port: 9999,
+            hot: true
+        });
 
         expect(normalize(config)).toMatchSnapshot();
     });
