@@ -1,14 +1,22 @@
 import path from 'path';
-import {ConfigOptionType, AppType, ModeType} from '../types';
+import {
+    ConfigOptionType,
+    AppType,
+    ModeType,
+    TemplatesType,
+    StyleType,
+    ScriptType
+} from '../types';
 import {Configuration} from 'webpack';
 
 export interface NormalizedCoreOptions {
     mode: ModeType;
     appType: AppType;
-    scripts: 'js' | 'ts';
-    styles: 'scss' | 'less';
+    scripts: ScriptType;
+    styles: StyleType;
     templates: {
-        entry: string;
+        type: TemplatesType;
+        entry?: string;
     };
     resolve: NonNullable<Configuration['resolve']>;
 }
@@ -18,7 +26,21 @@ export function normalizeOptions(
 ): NormalizedCoreOptions {
     const mode: ModeType = options.mode ?? 'development';
     const appType: AppType = options.appType ?? 'spa';
-    const templatesEntry = options.templates?.entry ?? (appType === 'spa' ? 'src/views/app.pug' : 'src/views/pages');
+
+    const templatesType: TemplatesType = options.templates?.type ?? 'pug';
+
+    /**
+     * Resolve templates entry only when templates system is enabled
+     */
+    let templatesEntry: string | undefined;
+
+    if (templatesType !== 'none') {
+        templatesEntry =
+            options.templates?.entry ??
+            (appType === 'spa'
+                ? 'src/views/app.pug'
+                : 'src/views/pages');
+    }
 
     return {
         mode,
@@ -26,7 +48,10 @@ export function normalizeOptions(
         scripts: options.scripts,
         styles: options.styles,
         templates: {
-            entry: path.resolve(process.cwd(), templatesEntry),
+            type: templatesType,
+            entry: templatesEntry
+                ? path.resolve(process.cwd(), templatesEntry)
+                : undefined,
         },
         resolve: {
             alias: options.resolve?.alias ?? {},

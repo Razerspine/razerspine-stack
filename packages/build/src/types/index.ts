@@ -5,3 +5,4 @@ export type {HostingType} from './hosting-type';
 export type {ModeType} from './mode-type';
 export type {ScriptType} from './script-type';
 export type {StyleType} from './style-type';
+export type {TemplatesType} from './templates-type';
