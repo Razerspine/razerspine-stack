@@ -266,7 +266,13 @@ exports[`createBaseConfig (snapshots) > should support templates.type = html 1`]
     "clean": true,
     "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
   },
-  "plugins": [],
+  "plugins": [
+    HtmlTemplatesPlugin {
+      "appType": "spa",
+      "entry": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/src/index.html",
+      "mode": "development",
+    },
+  ],
   "resolve": {
     "alias": {},
     "extensions": [
