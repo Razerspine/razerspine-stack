@@ -10,6 +10,7 @@ import {resolveOptions} from '../options';
 import path from 'path';
 import {assetsRule, pugRule, scriptsRule, stylesRule} from '../rules';
 import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
+import {HtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
 
 /**
  * Creates a base Webpack configuration object.
@@ -17,6 +18,42 @@ import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
  *
  * Supports controlled extension/override of internal rules and plugins.
  *
+ * ---
+ * Template system:
+ *
+ * The build system supports multiple template engines via `templates.type`:
+ *
+ * - `pug`  → uses PugTemplatesPlugin (default)
+ * - `html` → uses HtmlTemplatesPlugin
+ * - `none` → disables template handling (React/Vue/custom setups)
+ *
+ * This allows flexible integration with different rendering strategies.
+ *
+ * ---
+ * Rules system:
+ *
+ * Internal rules pipeline:
+ * - assets
+ * - scripts (js/ts)
+ * - styles (scss/less)
+ * - pug (only when enabled)
+ *
+ * Users can:
+ * - extend rules safely (`rules.extend`)
+ * - fully override rules (`rules.override`)
+ *
+ * ---
+ * 🔌 Plugins system:
+ *
+ * Internal plugins are conditionally applied based on template type.
+ *
+ * Users can:
+ * - extend plugins (`plugins.extend`)
+ * - override plugins completely (`plugins.override`)
+ *
+ * ⚠️ Override should be used with caution — it disables all internal plugins.
+ *
+ * ---
  * @param {ConfigOptionType} options - User-provided options for the build system.
  * @returns {Configuration} The generated base Webpack configuration.
  */
@@ -24,9 +61,7 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     const normalized = resolveOptions(options);
     const templateType = normalized.templates?.type ?? 'pug';
     /**
-     * -----------------------
      * Rules (core pipeline)
-     * -----------------------
      */
     let rules: RuleSetRule[] = [
         assetsRule(),
@@ -34,7 +69,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
         stylesRule(normalized),
     ];
 
-    // Conditionally enable pug processing
+    /**
+     * Conditionally enable pug processing
+     */
     if (templateType === 'pug') {
         rules.unshift(pugRule());
     }
@@ -53,6 +90,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      */
     let plugins: WebpackPluginInstance[] = [];
 
+    /**
+     * PUG templates support
+     */
     if (templateType === 'pug') {
         if (!normalized.templates.entry) {
             throw new Error('[build] templates.entry is required when templates.type is "pug"');
@@ -60,6 +100,23 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
 
         plugins.push(
             new PugTemplatesPlugin({
+                entry: normalized.templates.entry,
+                mode: normalized.mode,
+                appType: normalized.appType,
+            })
+        );
+    }
+
+    /**
+     * HTML templates support (HtmlWebpackPlugin wrapper)
+     */
+    if (templateType === 'html') {
+        if (!normalized.templates.entry) {
+            throw new Error('[build] templates.entry is required when templates.type is "html"');
+        }
+
+        plugins.push(
+            new HtmlTemplatesPlugin({
                 entry: normalized.templates.entry,
                 mode: normalized.mode,
                 appType: normalized.appType,
@@ -93,7 +150,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
         },
     };
 
-    // Store app metadata for later retrieval in dev/prod config creators
+    /**
+     * Store app metadata for later retrieval in dev/prod config creators
+     */
     setConfigMeta(config, {
         appType: normalized.appType,
     });
