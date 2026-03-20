@@ -11,6 +11,7 @@ import path from 'path';
 import {assetsRule, pugRule, scriptsRule, stylesRule} from '../rules';
 import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
 import {HtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
+import {dedupePlugins} from '../utils/dedupe-plugins';
 
 /**
  * Creates a base Webpack configuration object.
@@ -143,7 +144,7 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
         module: {
             rules,
         },
-        plugins,
+        plugins: dedupePlugins(plugins),
         resolve: {
             extensions: ['.ts', '.tsx', '.js', '.json'],
             alias: normalized.resolve.alias,
@@ -151,10 +152,36 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     };
 
     /**
-     * Store app metadata for later retrieval in dev/prod config creators
+     * Build Plugins (lifecycle)
+     *
+     * These are NOT webpack plugins.
+     * They are internal framework plugins used to extend config behavior.
+     */
+    const buildPlugins = options.buildPlugins ?? [];
+
+    // Run setup phase
+    for (const plugin of buildPlugins) {
+        plugin.setup?.({options: normalized});
+    }
+
+    // Apply base config hooks
+    for (const plugin of buildPlugins) {
+        plugin.applyBase?.(config);
+    }
+
+    /**
+     * Re-dedupe plugins after buildPlugins mutations
+     */
+    if (config.plugins) {
+        config.plugins = dedupePlugins(config.plugins as WebpackPluginInstance[]);
+    }
+
+    /**
+     * Store metadata (appType + buildPlugins)
      */
     setConfigMeta(config, {
         appType: normalized.appType,
+        buildPlugins,
     });
 
     return config;

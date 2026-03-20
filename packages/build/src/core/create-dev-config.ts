@@ -3,11 +3,12 @@
  * @description Extends the base configuration with Webpack Dev Server settings.
  */
 
-import {Configuration as WebpackConfiguration} from 'webpack';
+import {Configuration as WebpackConfiguration, WebpackPluginInstance} from 'webpack';
 import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
 import {BaseWebpackConfigType} from '../types';
 import {getConfigMeta} from './config-meta';
+import {dedupePlugins} from '../utils/dedupe-plugins';
 
 type DevConfig = BaseWebpackConfigType & {
     devServer?: DevServerConfiguration;
@@ -61,8 +62,28 @@ export function createDevConfig(
         options
     );
 
-    return merge(baseConfig as WebpackConfiguration, {
+    const finalConfig = merge(baseConfig as WebpackConfiguration, {
         devtool: 'source-map',
         devServer: resultDevServer,
     }) as DevConfig;
+
+    /**
+     * Build Plugins (dev lifecycle)
+     */
+    const metaWithPlugins = getConfigMeta(baseConfig);
+
+    if (metaWithPlugins?.buildPlugins) {
+        for (const plugin of metaWithPlugins.buildPlugins) {
+            plugin.applyDev?.(finalConfig);
+        }
+    }
+
+    /**
+     * Re-dedupe plugins after merge and buildPlugins mutations
+     */
+    if (finalConfig.plugins) {
+        finalConfig.plugins = dedupePlugins(finalConfig.plugins as WebpackPluginInstance[]);
+    }
+
+    return finalConfig;
 }

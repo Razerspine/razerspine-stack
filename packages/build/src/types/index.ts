@@ -6,3 +6,4 @@ export type {ModeType} from './mode-type';
 export type {ScriptType} from './script-type';
 export type {StyleType} from './style-type';
 export type {TemplatesType} from './templates-type';
+export type {BuildContextType, BuildPluginType} from './build-plugin-type';

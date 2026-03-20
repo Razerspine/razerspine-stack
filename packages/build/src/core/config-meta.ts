@@ -6,7 +6,7 @@
  */
 
 import {Configuration} from 'webpack';
-import {AppType} from '../types';
+import {AppType, BuildPluginType} from '../types';
 
 /**
  * Metadata structure for the Webpack configuration.
@@ -14,6 +14,12 @@ import {AppType} from '../types';
 type ConfigMeta = {
     /** The application architecture: 'spa' (Single Page Application) or 'mpa' (Multi Page Application) */
     appType: AppType;
+
+    /**
+     * Internal build plugins (framework-level extensions)
+     * Used for lifecycle hooks across base/dev/prod configs.
+     */
+    buildPlugins?: BuildPluginType[];
 };
 
 const configMeta = new WeakMap<Configuration, ConfigMeta>();

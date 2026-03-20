@@ -4,6 +4,7 @@ import {StyleType} from 'style-type';
 import {ScriptType} from 'script-type';
 import {ModeType} from 'mode-type';
 import {TemplatesType} from 'templates-type';
+import {BuildPluginType} from 'build-plugin-type';
 
 /**
  * Options for configuring the core build process.
@@ -17,18 +18,28 @@ export type ConfigOptionType = {
     styles: StyleType;
     /** Architecture type: 'spa' (Single Page) or 'mpa' (Multi Page) */
     appType?: AppType;
-    /** Configuration for HTML/Pug templates */
+    /**
+     * Configuration for HTML/Pug templates
+     */
     templates?: {
         /**
          * Template engine type
-         * - 'pug' → uses pug-plugin
-         * - 'html' → plain HTML (no pug processing)
-         * - 'none' → disables template handling (e.g. React/Vue)
+         * - 'pug'  → uses PugTemplatesPlugin
+         * - 'html' → uses HtmlTemplatesPlugin
+         * - 'none' → disables template handling (React/Vue/custom setups)
+         *
          * @default 'pug'
          */
         type?: TemplatesType;
         /**
          * Path to the templates entry
+         *
+         * SPA:
+         * - single file (e.g. src/views/app.pug / index.html)
+         *
+         * MPA:
+         * - directory with pages
+         *
          * @default 'src/views/app.pug' (SPA) or 'src/views/pages' (MPA)
          */
         entry?: string;
@@ -39,11 +50,19 @@ export type ConfigOptionType = {
     rules?: {
         /**
          * Extend internal rules (safe).
+         * Rules will be appended to the default pipeline.
          */
         extend?: RuleSetRule[];
         /**
-         * ⚠️ Overrides all internal rules completely.
-         * Use only if you know what you're doing.
+         * ⚠️ Overrides ALL internal rules completely.
+         *
+         * Disables:
+         * - assetsRule
+         * - scriptsRule
+         * - stylesRule
+         * - pugRule (if enabled)
+         *
+         * Use only if you fully control the webpack pipeline.
          */
         override?: RuleSetRule[];
     };
@@ -53,19 +72,50 @@ export type ConfigOptionType = {
     plugins?: {
         /**
          * Extend internal plugins (safe).
+         * Plugins will be appended after core plugins.
          */
         extend?: WebpackPluginInstance[];
-
         /**
-         * ⚠️ Overrides all internal plugins completely.
-         * Use only if you know what you're doing.
+         * ⚠️ Overrides ALL internal plugins completely.
+         *
+         * Disables:
+         * - PugTemplatesPlugin / HtmlTemplatesPlugin
+         * - HostingRoutingPlugin (in production)
+         *
+         * Use only if you fully control plugin lifecycle.
          */
         override?: WebpackPluginInstance[];
     };
-
     /**
      * Webpack resolve configuration (aliases, extensions, etc.)
-     * This is passed directly to the final Webpack config
+     * This is merged into the final Webpack config.
      */
-    resolve?: Configuration['resolve']
+    resolve?: Configuration['resolve'];
+    /**
+     * Build plugins (lite extension API)
+     *
+     * Allows hooking into config generation lifecycle
+     * without breaking webpack compatibility.
+     *
+     * Plugins can:
+     * - modify config before/after creation
+     * - inject rules/plugins programmatically
+     * - extend dev/prod behavior
+     *
+     * This is NOT a webpack plugin system replacement.
+     * It is a higher-level orchestration layer.
+     *
+     * Example:
+     * ```ts
+     * {
+     *   name: 'react-support',
+     *   setup(ctx) {
+     *     ctx.hooks.extendConfig.tap(config => {
+     *       config.resolve.extensions.push('.jsx', '.tsx');
+     *     });
+     *   }
+     * }
+     * ```
+     */
+    buildPlugins?: BuildPluginType[];
 };
