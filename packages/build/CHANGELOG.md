@@ -100,6 +100,48 @@ plugins: {
 - Safe extension via `extend`
 - Full override via `override` (advanced usage)
 
+---
+
+#### Build Plugins System (Lifecycle Hooks)
+
+Introduced a new internal plugin system for extending the build pipeline:
+
+```ts
+buildPlugins: [
+  {
+    setup(ctx) {
+    },
+    applyBase(config) {
+    },
+    applyDev(config) {
+    },
+    applyProd(config) {
+    }
+  }
+]
+```
+
+##### Lifecycle stages:
+
+- `setup` → runs before config creation (options preparation)
+- `applyBase` → extends base config
+- `applyDev` → runs only for development config
+- `applyProd` → runs only for production config
+
+##### Key benefits:
+
+- Full control over config lifecycle without mutating core logic
+- Clean separation between core and extensions
+- Enables framework-level extensibility
+
+##### Stability guarantees:
+
+- Automatic plugin deduplication prevents conflicts and double execution
+- Safe integration with existing `plugins.extend` / `override` APIs
+- No direct mutation of Webpack config metadata (uses WeakMap)
+
+---
+
 #### Hosting Integration
 
 - Automatic hosting detection
