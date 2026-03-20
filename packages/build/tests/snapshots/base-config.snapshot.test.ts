@@ -38,4 +38,31 @@ describe('createBaseConfig (snapshots)', () => {
 
         expect(normalize(config)).toMatchSnapshot();
     });
+
+    it('should support templates.type = none', () => {
+        const config = createBaseConfig({
+            mode: 'development',
+            scripts: 'ts',
+            styles: 'scss',
+            templates: {
+                type: 'none'
+            }
+        });
+
+        expect(config).toMatchSnapshot();
+    });
+
+    it('should support templates.type = html', () => {
+        const config = createBaseConfig({
+            mode: 'development',
+            scripts: 'ts',
+            styles: 'scss',
+            templates: {
+                type: 'html',
+                entry: 'src/index.html'
+            }
+        });
+
+        expect(config).toMatchSnapshot();
+    });
 });

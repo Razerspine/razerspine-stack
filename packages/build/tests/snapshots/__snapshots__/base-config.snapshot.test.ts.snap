@@ -199,3 +199,161 @@ exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
   },
 }
 `;
+
+exports[`createBaseConfig (snapshots) > should support templates.type = html 1`] = `
+{
+  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "mode": "development",
+  "module": {
+    "rules": [
+      {
+        "oneOf": [
+          {
+            "generator": {
+              "filename": "fonts/[name][ext][query]",
+            },
+            "include": /assets\\\\/fonts\\|node_modules/,
+            "test": /\\\\\\.\\(woff\\(2\\)\\?\\|ttf\\|otf\\|eot\\|svg\\)\\$/i,
+            "type": "asset/resource",
+          },
+          {
+            "exclude": /assets\\\\/fonts/,
+            "generator": {
+              "filename": "img/[name].[hash:8][ext]",
+            },
+            "test": /\\\\\\.\\(png\\|jpe\\?g\\|svg\\|webp\\|ico\\)\\$/i,
+            "type": "asset/resource",
+          },
+          {
+            "generator": {
+              "filename": "favicons/[name][ext]",
+            },
+            "test": /\\\\\\.webmanifest\\$/i,
+            "type": "asset/resource",
+          },
+        ],
+      },
+      {
+        "exclude": /node_modules/,
+        "test": /\\\\\\.ts\\$/,
+        "use": {
+          "loader": "ts-loader",
+          "options": {
+            "transpileOnly": true,
+          },
+        },
+      },
+      {
+        "test": /\\\\\\.\\(css\\|scss\\|sass\\)\\$/,
+        "use": [
+          "css-loader",
+          {
+            "loader": "postcss-loader",
+            "options": {
+              "postcssOptions": {
+                "plugins": [
+                  "autoprefixer",
+                ],
+              },
+            },
+          },
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  "output": {
+    "clean": true,
+    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
+  },
+  "plugins": [],
+  "resolve": {
+    "alias": {},
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json",
+    ],
+  },
+}
+`;
+
+exports[`createBaseConfig (snapshots) > should support templates.type = none 1`] = `
+{
+  "context": "/home/bagel/Projects/webpack-starter-monorepo/packages/build",
+  "mode": "development",
+  "module": {
+    "rules": [
+      {
+        "oneOf": [
+          {
+            "generator": {
+              "filename": "fonts/[name][ext][query]",
+            },
+            "include": /assets\\\\/fonts\\|node_modules/,
+            "test": /\\\\\\.\\(woff\\(2\\)\\?\\|ttf\\|otf\\|eot\\|svg\\)\\$/i,
+            "type": "asset/resource",
+          },
+          {
+            "exclude": /assets\\\\/fonts/,
+            "generator": {
+              "filename": "img/[name].[hash:8][ext]",
+            },
+            "test": /\\\\\\.\\(png\\|jpe\\?g\\|svg\\|webp\\|ico\\)\\$/i,
+            "type": "asset/resource",
+          },
+          {
+            "generator": {
+              "filename": "favicons/[name][ext]",
+            },
+            "test": /\\\\\\.webmanifest\\$/i,
+            "type": "asset/resource",
+          },
+        ],
+      },
+      {
+        "exclude": /node_modules/,
+        "test": /\\\\\\.ts\\$/,
+        "use": {
+          "loader": "ts-loader",
+          "options": {
+            "transpileOnly": true,
+          },
+        },
+      },
+      {
+        "test": /\\\\\\.\\(css\\|scss\\|sass\\)\\$/,
+        "use": [
+          "css-loader",
+          {
+            "loader": "postcss-loader",
+            "options": {
+              "postcssOptions": {
+                "plugins": [
+                  "autoprefixer",
+                ],
+              },
+            },
+          },
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  "output": {
+    "clean": true,
+    "path": "/home/bagel/Projects/webpack-starter-monorepo/packages/build/dist",
+  },
+  "plugins": [],
+  "resolve": {
+    "alias": {},
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json",
+    ],
+  },
+}
+`;
