@@ -7,7 +7,7 @@ import {AppType, HostingType} from '../types';
 import {detectHosting} from '../hosting/detect-hosting';
 import {getRedirects} from '../hosting/get-redirects';
 import {getVercelConfig} from '../hosting/get-vercel-config';
-import {textCapitalize} from '../utils/text-capitalize';
+import {textCapitalize} from '../utils';
 
 type HostingRoutingPluginOptions = {
     appType: AppType;

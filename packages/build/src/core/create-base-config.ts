@@ -11,7 +11,7 @@ import path from 'path';
 import {assetsRule, pugRule, scriptsRule, stylesRule} from '../rules';
 import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
 import {HtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
-import {dedupePlugins} from '../utils/dedupe-plugins';
+import {dedupePlugins, dedupeRules} from '../utils';
 
 /**
  * Creates a base Webpack configuration object.
@@ -167,6 +167,13 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     // Apply base config hooks
     for (const plugin of buildPlugins) {
         plugin.applyBase?.(config);
+    }
+
+    /**
+     * Re-dedupe rules after buildPlugins mutations
+     */
+    if (config.module?.rules) {
+        config.module.rules = dedupeRules(config.module.rules as RuleSetRule[]);
     }
 
     /**
