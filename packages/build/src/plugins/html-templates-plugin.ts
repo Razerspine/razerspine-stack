@@ -44,6 +44,7 @@ export class HtmlTemplatesPlugin {
             new HtmlWebpackPlugin({
                 template: this.entry,
                 filename: 'index.html',
+                minify: this.mode === 'production'
             }).apply(compiler);
 
             return;
@@ -57,6 +58,7 @@ export class HtmlTemplatesPlugin {
             new HtmlWebpackPlugin({
                 template: path.join(this.entry, file),
                 filename: `${name}.html`,
+                minify: this.mode === 'production'
             }).apply(compiler);
         });
     }
