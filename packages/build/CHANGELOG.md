@@ -81,6 +81,59 @@ Introduced flexible template engine support:
 
 ---
 
+#### React Preset (Beta)
+
+Introduced experimental **React preset** built on top of the Build Plugins system.
+
+Provides a near Vite-like developer experience for React applications.
+
+##### Features:
+
+- Babel-based pipeline (no `ts-loader`)
+- React Fast Refresh (development only)
+- Automatic JSX runtime (`react/jsx-runtime`)
+- TypeScript support (`.ts` / `.tsx`)
+- Zero-config entry (`src/main.tsx` or `src/main.jsx`)
+- Seamless integration with existing rules/plugins system
+- Safe rule & plugin deduplication
+
+##### Usage:
+
+```ts
+import {reactPreset} from '@razerspine/build/presets/react';
+
+createBaseConfig({
+  mode: 'development',
+  scripts: {type: 'ts'},
+  styles: {type: 'scss'},
+  templates: {type: 'none'},
+  buildPlugins: [
+    reactPreset()
+  ]
+});
+```
+
+##### Required dependencies (must be installed in the user project):
+
+```bash
+npm install -D \
+  babel-loader \
+  @babel/core \
+  @babel/preset-env \
+  @babel/preset-react \
+  @babel/preset-typescript \
+  @pmmmwh/react-refresh-webpack-plugin \
+  react-refresh
+```
+
+##### Notes:
+
+- This preset is currently in beta and may evolve.
+- Dependencies are not bundled inside `@razerspine/build` (by design).
+- Missing dependencies will not crash the build, but may degrade DX (e.g. no Fast Refresh).
+
+---
+
 #### Rules & Plugins Control
 
 Added controlled extension system:
