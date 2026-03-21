@@ -1,44 +1,127 @@
 /**
  * @module define-config
- * @description User-friendly config wrapper
+ * @description User-friendly configuration wrapper for building Webpack configs.
+ *
+ * Provides:
+ * - Cleaner API for users
+ * - Support for dynamic and async config
+ * - Presets support (mapped to buildPlugins)
+ *
+ * Does NOT modify Webpack behavior directly.
+ * Delegates all logic to core config creators.
  */
 
-import {ConfigOptionType, ModeType} from '../types';
+import {ConfigOptionType, ModeType, BuildPluginType} from '../types';
 import {createBaseConfig} from './create-base-config';
 import {createDevConfig} from './create-dev-config';
 import {createProdConfig} from './create-prod-config';
 import {Configuration} from 'webpack';
 
+/**
+ * Environment passed to config factory
+ */
 type DefineEnv = {
     mode?: ModeType;
 };
 
-type DefineConfigReturn =
-    | Configuration
-    | ((env?: DefineEnv) => Configuration);
+/**
+ * Extended config with presets support
+ */
+type ExtendedConfig = ConfigOptionType & {
+    /**
+     * Optional presets (syntactic sugar for buildPlugins)
+     */
+    presets?: BuildPluginType[];
+};
 
 /**
- * Config helper for cleaner and more scalable setup.
+ * Supported config input formats:
  *
- * - Centralizes config creation
- * - Improves DX and typing
- * - Supports dynamic mode resolution
+ * - Object config
+ * - Function config
+ * - Async function config
  */
-export function defineConfig(
-    options: ConfigOptionType
-): DefineConfigReturn {
+type DefineConfigInput =
+    | ExtendedConfig
+    | ((env?: DefineEnv) => ExtendedConfig)
+    | ((env?: DefineEnv) => Promise<ExtendedConfig>);
+
+/**
+ * Output type:
+ * - Webpack configuration
+ * - Async configuration
+ * - Function returning configuration
+ */
+type DefineConfigReturn =
+    | Configuration
+    | Promise<Configuration>
+    | ((env?: DefineEnv) => Configuration | Promise<Configuration>);
+
+/**
+ * Normalize config:
+ * - maps `presets` → `buildPlugins`
+ */
+function normalizeConfig(config: ExtendedConfig): ConfigOptionType {
+    const {presets, buildPlugins, ...rest} = config;
+
+    return {
+        ...rest,
+        buildPlugins: [
+            ...(buildPlugins || []),
+            ...(presets || []),
+        ],
+    };
+}
+
+/**
+ * Internal config resolver
+ */
+async function resolveConfig(
+    input: DefineConfigInput,
+    env?: DefineEnv
+): Promise<Configuration> {
+    const mode: ModeType = env?.mode ?? 'development';
+
+    let rawConfig: ExtendedConfig;
+
+    if (typeof input === 'function') {
+        rawConfig = await input({mode});
+    } else {
+        rawConfig = input;
+    }
+
+    const finalOptions = normalizeConfig({
+        ...rawConfig,
+        mode: rawConfig.mode ?? mode,
+    });
+
+    const base = createBaseConfig(finalOptions);
+
+    if (finalOptions.mode === 'development') {
+        return createDevConfig(base);
+    }
+
+    return createProdConfig(base);
+}
+
+/**
+ * Main config helper
+ *
+ * @example
+ * ```ts
+ * import {defineConfig, reactPreset} from '@razerspine/build';
+ *
+ * export default defineConfig({
+ *   mode: 'development',
+ *   scripts: 'ts',
+ *   styles: 'scss',
+ *   templates: {type: 'none'},
+ *   presets: [reactPreset()]
+ * });
+ * ```
+ */
+export function defineConfig(input: DefineConfigInput): DefineConfigReturn {
     return (env?: DefineEnv) => {
-        const mode: ModeType = env?.mode ?? options.mode;
-
-        const base = createBaseConfig({
-            ...options,
-            mode,
-        });
-
-        if (mode === 'development') {
-            return createDevConfig(base);
-        }
-
-        return createProdConfig(base);
+        return resolveConfig(input, env);
     };
 }

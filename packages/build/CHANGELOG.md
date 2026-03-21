@@ -69,29 +69,54 @@ getConfigMeta(config)
 
 Introduced a new `defineConfig` helper for creating Webpack configurations.
 
-Provides a cleaner and more scalable way to define build setup
-without manually composing base/gdev/prod configs.
+Provides a clean, scalable, and flexible way to define build setup
+without manually composing base/dev/prod configs.
 
 ##### Features:
 
-- Centralized configuration entry point
-- Automatic mode-based config resolution (development / production)
-- Improved typing and developer experience
-- Compatible with Build Plugins system
+- Single entry point for configuration
+- Automatic mode-based resolution (`development` / `production`)
+- Supports static, dynamic, and async config
+- Built-in `presets` support (mapped to `buildPlugins`)
+- Strong typing and improved developer experience
+- Fully compatible with Build Plugins system
 
-##### Usage:
+##### Supported formats:
 
 ```ts
+// Static config
+export default defineConfig({
+  mode: 'development',
+  scripts: 'ts',
+  styles: 'scss'
+});
+
+// Dynamic config
+export default defineConfig(({mode}) => ({
+  mode,
+  scripts: 'ts',
+  styles: 'scss'
+}));
+
+// Async config
+
+export default defineConfig(async ({mode}) => {
+  return {
+    mode,
+    scripts: 'ts',
+    styles: 'scss'
+  };
+});
+
+// Presets support:
 import {defineConfig, reactPreset} from '@razerspine/build';
 
 export default defineConfig({
   mode: 'development',
   scripts: 'ts',
   styles: 'scss',
-  templates: {
-    type: 'none'
-  },
-  buildPlugins: [
+  templates: {type: 'none'},
+  presets: [
     reactPreset()
   ]
 });
@@ -104,8 +129,8 @@ Internally composes:
 - `createBaseConfig`
 - `createDevConfig`
 - `createProdConfig`
-- Supports dynamic mode via Webpack CLI (`--mode`)
-- Designed as a foundation for future extensions (env, presets, async config)
+- `presets` is syntactic sugar over `buildPlugins`
+- No hidden behavior — all logic delegated to core modules
 
 ---
 
