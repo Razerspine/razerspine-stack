@@ -25,6 +25,7 @@ options/ → validation, normalization, resolving
 rules/ → webpack module rules (scripts, styles, assets, pug)
 plugins/ → custom webpack plugins
 hosting/ → hosting detection + routing generation
+presets/ → (Beta) built-in framework setups (React)
 types/ → strongly typed public API
 utils/ → shared helpers
 ```
@@ -100,13 +101,15 @@ Provides a near Vite-like developer experience for React applications.
 ##### Usage:
 
 ```ts
-import {reactPreset} from '@razerspine/build/presets/react';
+import {createBaseConfig, reactPreset} from '@razerspine/build';
 
 createBaseConfig({
   mode: 'development',
-  scripts: {type: 'ts'},
-  styles: {type: 'scss'},
-  templates: {type: 'none'},
+  scripts: 'ts',
+  styles: 'scss',
+  templates: {
+    type: 'none'
+  },
   buildPlugins: [
     reactPreset()
   ]
