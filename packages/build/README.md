@@ -24,6 +24,8 @@ with smart auto-hosting capabilities.
 - [Template Engines](#-template-engines)
 - [Extensibility (Hooks & Plugins)](#-extensibility)
 - [Smart Hosting Adapter](#-smart-hosting-adapter)
+- [Architecture Principles](#-architecture-principles)
+- [Requirements](#-requirements)
 - [License](#-license)
 
 ---
