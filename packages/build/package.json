@@ -55,10 +55,15 @@
   "peerDependencies": {
     "pug-plugin": "^5 || ^6",
     "webpack": "^5",
-    "webpack-dev-server": "^5"
+    "webpack-dev-server": "^5",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2"
+  },
+  "peerDependenciesMeta": {
+    "@pmmmwh/react-refresh-webpack-plugin": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@types/node": "^20.11.0",
     "@vitest/coverage-v8": "^4.1.0",
     "html-webpack-plugin": "^5.6.6",

@@ -96,17 +96,28 @@ export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
              * React Refresh (DEV ONLY)
              */
             if (isDev) {
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
-                const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-                const plugins = config.plugins || [];
+                try {
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+                    const plugins = config.plugins || [];
 
-                const hasPlugin = plugins.some(
-                    p => p && typeof p === 'object' && p.constructor?.name === 'ReactRefreshPlugin'
-                );
+                    const hasPlugin = plugins.some(
+                        p => p && typeof p === 'object' && p.constructor?.name === 'ReactRefreshPlugin'
+                    );
 
-                if (!hasPlugin) {
-                    plugins.push(new ReactRefreshPlugin());
-                    config.plugins = plugins;
+                    if (!hasPlugin) {
+                        plugins.push(new ReactRefreshPlugin());
+                        config.plugins = plugins;
+                    }
+                } catch (e) {
+                    /**
+                     * We don't throw an error here to prevent build crash.
+                     * Instead, we just skip the plugin if it's not installed by the user.
+                     */
+                    console.warn(
+                        '\n[react-preset] Warning: "@pmmmwh/react-refresh-webpack-plugin" not found.\n' +
+                        'Fast Refresh is disabled. To enable it, please install the plugin as a dev dependency.\n'
+                    );
                 }
             }
         },
