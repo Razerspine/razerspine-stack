@@ -65,6 +65,50 @@ getConfigMeta(config)
 
 ---
 
+#### defineConfig Helper
+
+Introduced a new `defineConfig` helper for creating Webpack configurations.
+
+Provides a cleaner and more scalable way to define build setup
+without manually composing base/gdev/prod configs.
+
+##### Features:
+
+- Centralized configuration entry point
+- Automatic mode-based config resolution (development / production)
+- Improved typing and developer experience
+- Compatible with Build Plugins system
+
+##### Usage:
+
+```ts
+import {defineConfig, reactPreset} from '@razerspine/build';
+
+export default defineConfig({
+  mode: 'development',
+  scripts: 'ts',
+  styles: 'scss',
+  templates: {
+    type: 'none'
+  },
+  buildPlugins: [
+    reactPreset()
+  ]
+});
+```
+
+##### Notes:
+
+Internally composes:
+
+- `createBaseConfig`
+- `createDevConfig`
+- `createProdConfig`
+- Supports dynamic mode via Webpack CLI (`--mode`)
+- Designed as a foundation for future extensions (env, presets, async config)
+
+---
+
 #### Template Engine System
 
 Introduced flexible template engine support:
