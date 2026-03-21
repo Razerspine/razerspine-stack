@@ -1,0 +1,91 @@
+{
+  "name": "@razerspine/build",
+  "version": "1.0.0",
+  "description": "Scalable Webpack build system for Pug, HTML, and React applications with smart hosting support",
+  "keywords": [
+    "webpack",
+    "webpack-config",
+    "pug",
+    "react",
+    "spa",
+    "mpa",
+    "define-config",
+    "vercel",
+    "build-tool"
+  ],
+  "license": "ISC",
+  "author": "Razerspine",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
+    "directory": "packages/build"
+  },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/build#readme",
+  "bugs": {
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+  },
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/types/index.js"
+    }
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:snapshots": "vitest run tests/snapshots",
+    "test:e2e:prepare": "npm install --prefix tests/fixtures/mpa && npm install --prefix tests/fixtures/spa",
+    "test:e2e": "vitest run tests/e2e",
+    "test:e2e:full": "npm run test:e2e:prepare && npm run test:e2e"
+  },
+  "peerDependencies": {
+    "pug-plugin": "^5 || ^6",
+    "webpack": "^5",
+    "webpack-dev-server": "^5",
+    "html-webpack-plugin": "^5",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2"
+  },
+  "peerDependenciesMeta": {
+    "pug-plugin": {
+      "optional": true
+    },
+    "html-webpack-plugin": {
+      "optional": true
+    },
+    "@pmmmwh/react-refresh-webpack-plugin": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "html-webpack-plugin": "^5.6.6",
+    "jsdom": "^29.0.0",
+    "pug-plugin": "^6.1.0",
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.0",
+    "webpack": "^5.105.0",
+    "webpack-dev-server": "^5.2.3",
+    "webpack-merge": "^5.10.0"
+  }
+}

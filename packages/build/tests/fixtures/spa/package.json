@@ -1,0 +1,21 @@
+{
+  "name": "spa-martix-fixture",
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@types/node": "^25.1.0",
+    "babel-loader": "^10.0.0",
+    "less": "^4.5.1",
+    "less-loader": "^12.3.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "pug-plugin": "^6.1.0",
+    "autoprefixer": "^10.4.23",
+    "css-loader": "^6.10.0",
+    "postcss": "^8.5.6",
+    "postcss-loader": "^8.2.0",
+    "sass": "1.72.0",
+    "sass-loader": "^14.1.1"
+  }
+}

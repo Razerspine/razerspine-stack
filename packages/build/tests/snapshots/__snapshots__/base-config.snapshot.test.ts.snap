@@ -1,0 +1,279 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
+{
+  "context": "<PROJECT_ROOT>/packages/build",
+  "mode": "development",
+  "module": {
+    "rules": [
+      {
+        "oneOf": [
+          {
+            "issuer": "/\\.(js|ts|tsx|jsx)$/",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "options": {
+              "method": "compile",
+            },
+          },
+          {
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "options": {
+              "method": "render",
+            },
+          },
+        ],
+        "test": "/\\.pug$/",
+      },
+      {
+        "oneOf": [
+          {
+            "generator": {
+              "filename": "fonts/[name][ext][query]",
+            },
+            "include": "/assets\\/fonts|node_modules/",
+            "test": "/\\.(woff(2)?|ttf|otf|eot|svg)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "exclude": "/assets\\/fonts/",
+            "generator": {
+              "filename": "img/[name].[hash:8][ext]",
+            },
+            "test": "/\\.(png|jpe?g|svg|webp|ico)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "generator": {
+              "filename": "favicons/[name][ext]",
+            },
+            "test": "/\\.webmanifest$/i",
+            "type": "asset/resource",
+          },
+        ],
+      },
+      {
+        "exclude": "/node_modules/",
+        "test": "/\\.ts$/",
+        "use": {
+          "loader": "ts-loader",
+          "options": {
+            "transpileOnly": true,
+          },
+        },
+      },
+      {
+        "test": "/\\.(css|scss|sass)$/",
+        "use": [
+          "css-loader",
+          {
+            "loader": "postcss-loader",
+            "options": {
+              "postcssOptions": {
+                "plugins": [
+                  "autoprefixer",
+                ],
+              },
+            },
+          },
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  "output": {
+    "clean": true,
+    "path": "<PROJECT_ROOT>/packages/build/dist",
+  },
+  "plugins": [
+    "PugTemplatesPlugin",
+  ],
+  "resolve": {
+    "alias": {},
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json",
+    ],
+  },
+}
+`;
+
+exports[`createBaseConfig (snapshots) > should match snapshot with buildPlugins mutation 1`] = `
+{
+  "context": "<PROJECT_ROOT>/packages/build",
+  "customField": "modified-by-plugin",
+  "mode": "development",
+  "module": {
+    "rules": [
+      {
+        "oneOf": [
+          {
+            "issuer": "/\\.(js|ts|tsx|jsx)$/",
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "options": {
+              "method": "compile",
+            },
+          },
+          {
+            "loader": "<PROJECT_ROOT>/node_modules/html-bundler-webpack-plugin/src/Loader/index.js",
+            "options": {
+              "method": "render",
+            },
+          },
+        ],
+        "test": "/\\.pug$/",
+      },
+      {
+        "oneOf": [
+          {
+            "generator": {
+              "filename": "fonts/[name][ext][query]",
+            },
+            "include": "/assets\\/fonts|node_modules/",
+            "test": "/\\.(woff(2)?|ttf|otf|eot|svg)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "exclude": "/assets\\/fonts/",
+            "generator": {
+              "filename": "img/[name].[hash:8][ext]",
+            },
+            "test": "/\\.(png|jpe?g|svg|webp|ico)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "generator": {
+              "filename": "favicons/[name][ext]",
+            },
+            "test": "/\\.webmanifest$/i",
+            "type": "asset/resource",
+          },
+        ],
+      },
+      {
+        "exclude": "/node_modules/",
+        "test": "/\\.ts$/",
+        "use": {
+          "loader": "ts-loader",
+          "options": {
+            "transpileOnly": true,
+          },
+        },
+      },
+      {
+        "test": "/\\.(css|scss|sass)$/",
+        "use": [
+          "css-loader",
+          {
+            "loader": "postcss-loader",
+            "options": {
+              "postcssOptions": {
+                "plugins": [
+                  "autoprefixer",
+                ],
+              },
+            },
+          },
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  "output": {
+    "clean": true,
+    "path": "<PROJECT_ROOT>/packages/build/dist",
+  },
+  "plugins": [
+    "PugTemplatesPlugin",
+  ],
+  "resolve": {
+    "alias": {},
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json",
+    ],
+  },
+}
+`;
+
+exports[`createBaseConfig (snapshots) > should support templates.type = none 1`] = `
+{
+  "context": "<PROJECT_ROOT>/packages/build",
+  "mode": "development",
+  "module": {
+    "rules": [
+      {
+        "oneOf": [
+          {
+            "generator": {
+              "filename": "fonts/[name][ext][query]",
+            },
+            "include": "/assets\\/fonts|node_modules/",
+            "test": "/\\.(woff(2)?|ttf|otf|eot|svg)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "exclude": "/assets\\/fonts/",
+            "generator": {
+              "filename": "img/[name].[hash:8][ext]",
+            },
+            "test": "/\\.(png|jpe?g|svg|webp|ico)$/i",
+            "type": "asset/resource",
+          },
+          {
+            "generator": {
+              "filename": "favicons/[name][ext]",
+            },
+            "test": "/\\.webmanifest$/i",
+            "type": "asset/resource",
+          },
+        ],
+      },
+      {
+        "exclude": "/node_modules/",
+        "test": "/\\.ts$/",
+        "use": {
+          "loader": "ts-loader",
+          "options": {
+            "transpileOnly": true,
+          },
+        },
+      },
+      {
+        "test": "/\\.(css|scss|sass)$/",
+        "use": [
+          "css-loader",
+          {
+            "loader": "postcss-loader",
+            "options": {
+              "postcssOptions": {
+                "plugins": [
+                  "autoprefixer",
+                ],
+              },
+            },
+          },
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  "output": {
+    "clean": true,
+    "path": "<PROJECT_ROOT>/packages/build/dist",
+  },
+  "plugins": [],
+  "resolve": {
+    "alias": {},
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json",
+    ],
+  },
+}
+`;

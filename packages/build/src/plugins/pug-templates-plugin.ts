@@ -1,0 +1,79 @@
+import PugPlugin from 'pug-plugin';
+import * as fs from 'node:fs';
+import path from 'path';
+import {Compiler} from 'webpack';
+import {ModeType, AppType} from '../types';
+
+type PugTemplatesPluginOptions = {
+    entry: string;
+    mode: ModeType;
+    appType: AppType;
+};
+
+export class PugTemplatesPlugin {
+    private readonly entry: string;
+    private readonly mode: ModeType;
+    private readonly appType: AppType;
+
+    constructor(options: PugTemplatesPluginOptions) {
+        this.entry = path.resolve(options.entry);
+        this.mode = options.mode;
+        this.appType = options.appType;
+
+        this.validate();
+    }
+
+    private validate() {
+        if (!fs.existsSync(this.entry)) {
+            throw new Error(`[build] Templates entry not found: ${this.entry}`);
+        }
+
+        const stats = fs.statSync(this.entry);
+
+        if (this.appType === 'spa' && !stats.isFile()) {
+            throw new Error(`[build] SPA requires a single pug file as templates.entry`);
+        }
+
+        if (this.appType === 'mpa' && !stats.isDirectory()) {
+            throw new Error(`[build] MPA requires templates.entry to be a directory`);
+        }
+    }
+
+    apply(compiler: Compiler) {
+        const pluginEntry = this.appType === 'spa' ? {index: this.entry} : this.entry;
+
+        const pugPlugin = new PugPlugin({
+            entry: pluginEntry,
+
+            filename: ({chunk}: any) => {
+                if (this.appType === 'spa') {
+                    return 'index.html';
+                }
+
+                let [name] = chunk.name.split('/');
+
+                if (name === 'home') {
+                    name = 'index';
+                }
+
+                return `${name}.html`;
+            },
+
+            js: {
+                filename:
+                    this.mode === 'production'
+                        ? 'js/[name].[contenthash:8].js'
+                        : 'js/[name].js',
+            },
+
+            css: {
+                filename:
+                    this.mode === 'production'
+                        ? 'css/[name].[contenthash:8].css'
+                        : 'css/[name].css',
+            },
+        });
+
+        pugPlugin.apply(compiler);
+    }
+}
