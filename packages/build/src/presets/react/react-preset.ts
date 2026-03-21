@@ -1,22 +1,105 @@
 /**
  * @module react-preset
- * @description Production-ready React preset (Babel + Fast Refresh + TS/JSX)
+ * @description Production-ready React preset for @razerspine/build.
+ *
+ * Provides a modern React development experience using:
+ * - Babel (no ts-loader)
+ * - Automatic JSX runtime (react/jsx-runtime)
+ * - TypeScript support (.ts / .tsx)
+ * - React Fast Refresh (development only)
+ *
+ * ---
+ * Behavior:
+ *
+ * - Automatically sets `templates.type = 'none'` if not defined
+ * - Warns if incompatible template engines are used (pug/html)
+ * - Injects Babel-based React pipeline
+ * - Adds React Refresh plugin in development mode (if installed)
+ *
+ * ---
+ * Requirements (must be installed in user project):
+ *
+ * ```bash
+ * npm install -D \
+ *   babel-loader \
+ *   @babel/core \
+ *   @babel/preset-env \
+ *   @babel/preset-react \
+ *   @babel/preset-typescript \
+ *   @pmmmwh/react-refresh-webpack-plugin \
+ *   react-refresh
+ * ```
+ *
+ * ---
+ * Example:
+ *
+ * ```ts
+ * import {defineConfig, reactPreset} from '@razerspine/build';
+ *
+ * export default defineConfig({
+ *   mode: 'development',
+ *   scripts: 'ts',
+ *   styles: 'scss',
+ *   presets: [reactPreset()]
+ * });
+ * ```
  */
 
 import {BuildPluginType} from '../../types';
 import {Configuration, RuleSetRule} from 'webpack';
 
+/**
+ * Options for React preset
+ */
 type ReactPresetOptions = {
+    /**
+     * Enables TypeScript support (.ts / .tsx)
+     *
+     * @default true
+     */
     typescript?: boolean;
 };
 
+/**
+ * React preset factory
+ *
+ * @param options - React preset configuration
+ * @returns Build plugin instance
+ */
 export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
     const useTS = options.typescript ?? true;
 
     return {
         name: 'react-preset',
         /**
-         * Base config extension
+         * Setup phase
+         *
+         * - Ensures templates are disabled by default (React does not use Pug/HTML templates)
+         * - Emits warning if user explicitly enables incompatible template engines
+         */
+        setup({options}) {
+            const type = options.templates?.type;
+
+            // Default to "none" if not explicitly defined
+            if (!type) {
+                options.templates = {type: 'none'};
+            }
+
+            // Warn about potential conflicts
+            if (type === 'pug' || type === 'html') {
+                console.warn(
+                    `[react-preset] templates.type='${type}' may conflict with React setup.`
+                );
+            }
+        },
+        /**
+         * Base configuration extension
+         *
+         * Injects:
+         * - entry (if not provided)
+         * - resolve.extensions
+         * - Babel loader rule for React
+         * - React Refresh plugin (development only)
          */
         applyBase(config: Configuration) {
             const isDev = config.mode === 'development';
@@ -24,12 +107,10 @@ export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
              * Entry
              */
             if (!config.entry) {
-                config.entry = useTS
-                    ? './src/main.tsx'
-                    : './src/main.jsx';
+                config.entry = useTS ? './src/main.tsx' : './src/main.jsx';
             }
             /**
-             * Resolve
+             * Resolve extensions
              */
             config.resolve = {
                 ...config.resolve,
@@ -41,7 +122,7 @@ export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
                 ])),
             };
             /**
-             * Babel loader rule (React + Env + TS)
+             * Babel loader configuration
              */
             const babelLoader = {
                 loader: 'babel-loader',
@@ -93,7 +174,7 @@ export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
                 };
             }
             /**
-             * React Refresh (DEV ONLY)
+             * React Fast Refresh (development only)
              */
             if (isDev) {
                 try {
@@ -102,35 +183,37 @@ export function reactPreset(options: ReactPresetOptions = {}): BuildPluginType {
                     const plugins = config.plugins || [];
 
                     const hasPlugin = plugins.some(
-                        p => p && typeof p === 'object' && p.constructor?.name === 'ReactRefreshPlugin'
+                        p =>
+                            p &&
+                            typeof p === 'object' &&
+                            p.constructor?.name === 'ReactRefreshPlugin'
                     );
 
                     if (!hasPlugin) {
                         plugins.push(new ReactRefreshPlugin());
                         config.plugins = plugins;
                     }
-                } catch (e) {
+                } catch {
                     /**
-                     * We don't throw an error here to prevent build crash.
-                     * Instead, we just skip the plugin if it's not installed by the user.
+                     * Do not throw — keep build stable
                      */
                     console.warn(
                         '\n[react-preset] Warning: "@pmmmwh/react-refresh-webpack-plugin" not found.\n' +
-                        'Fast Refresh is disabled. To enable it, please install the plugin as a dev dependency.\n'
+                        'Fast Refresh is disabled. Install it to enable better DX.\n'
                     );
                 }
             }
         },
 
         /**
-         * Dev-specific tweaks
+         * Development-specific configuration
          */
         applyDev(config: Configuration) {
             config.devtool = 'eval-source-map';
         },
 
         /**
-         * Production tweaks
+         * Production-specific configuration
          */
         applyProd(config: Configuration) {
             config.devtool = 'source-map';
