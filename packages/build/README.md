@@ -5,9 +5,6 @@
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/build.svg)](./LICENSE)
 
-> **Note:** This package was formerly known as `@razerspine/webpack-core`. Starting from v1.0.0, it has been completely
-> redesigned and renamed to `@razerspine/build`.
-
 A scalable, modular, and highly extensible Webpack build system. Whether you are building template-driven MPA websites (
 Pug/HTML) or modern SPA applications (React), `@razerspine/build` provides a zero-hassle, production-ready foundation
 with smart auto-hosting capabilities.
