@@ -36,6 +36,7 @@ with smart auto-hosting capabilities.
 - **Hybrid Architectures**: Seamlessly switch between Multi-page (MPA) and Single-page (SPA) modes.
 - **Smart Auto-Hosting**: Automatically detects **Vercel, Netlify, Cloudflare**, and **GitHub Pages** to generate
   required routing configs.
+- **Enhanced DX**: Recursive file watching (`src/**/*`), automatic browser opening, and detailed infrastructure logging.
 - **Build Plugins Lifecycle**: Extend the build process safely using `setup`, `applyBase`, `applyDev`, and `applyProd`
   hooks.
 - **Rock Solid**: Covered by 90+ Unit, Integration, E2E, and Snapshot tests.
@@ -208,6 +209,22 @@ configurations in-memory.
 | **Vercel**               | `vercel.json`  | Configures Vercel Edge Network routing based on `appType`.               |
 | **GitHub Pages**         | `404.html`     | Duplicates `index.html` to prevent 404 errors on deep links in SPA mode. |
 | **Static / Others**      | `404.html`     | Generic fallback for SPA mode.                                           |
+
+---
+
+## 🏗 Architecture Principles
+
+- **Template-First**: While Webpack handles assets, templates (Pug/HTML) drive the entry points.
+- **Stability-First**: Aggressive optimizations (like `splitChunks`) are carefully tuned or disabled by default to
+  ensure reliable asset resolution within templates.
+- **Type Safety**: Built with TypeScript for excellent IDE support and internal build reliability.
+
+---
+
+## ⚠️ Requirements
+
+- **Node.js**: v20.0.0 or higher
+- **Webpack**: v5.0.0 or higher
 
 ---
 

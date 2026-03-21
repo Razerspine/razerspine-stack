@@ -1,12 +1,17 @@
 {
   "name": "@razerspine/build",
   "version": "1.0.0",
-  "description": "Core webpack config and loaders for starter templates",
+  "description": "Scalable Webpack build system for Pug, HTML, and React applications with smart hosting support",
   "keywords": [
     "webpack",
     "webpack-config",
     "pug",
-    "pug-plugin"
+    "react",
+    "spa",
+    "mpa",
+    "define-config",
+    "vercel",
+    "build-tool"
   ],
   "license": "ISC",
   "author": "Razerspine",
@@ -34,12 +39,13 @@
   },
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "files": [
     "dist",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -56,9 +62,16 @@
     "pug-plugin": "^5 || ^6",
     "webpack": "^5",
     "webpack-dev-server": "^5",
+    "html-webpack-plugin": "^5",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2"
   },
   "peerDependenciesMeta": {
+    "pug-plugin": {
+      "optional": true
+    },
+    "html-webpack-plugin": {
+      "optional": true
+    },
     "@pmmmwh/react-refresh-webpack-plugin": {
       "optional": true
     }
