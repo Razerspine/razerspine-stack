@@ -88,16 +88,14 @@ without manually composing base/dev/prod configs.
 export default defineConfig({
   mode: 'development',
   scripts: 'ts',
-  styles: 'scss',
-  templates: {type: 'none'},
+  styles: 'scss'
 });
 
 // Dynamic config
 export default defineConfig(({mode}) => ({
   mode,
   scripts: 'ts',
-  styles: 'scss',
-  templates: {type: 'none'},
+  styles: 'scss'
 }));
 
 // Async config
@@ -106,8 +104,7 @@ export default defineConfig(async ({mode}) => {
   return {
     mode,
     scripts: 'ts',
-    styles: 'scss',
-    templates: {type: 'none'},
+    styles: 'scss'
   };
 });
 
@@ -118,7 +115,6 @@ export default defineConfig({
   mode: 'development',
   scripts: 'ts',
   styles: 'scss',
-  templates: {type: 'none'},
   presets: [
     reactPreset()
   ]
