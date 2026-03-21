@@ -21,7 +21,7 @@ import {Configuration} from 'webpack';
  * Environment passed to config factory
  */
 type DefineEnv = {
-    mode?: ModeType;
+    mode: ModeType;
 };
 
 /**
@@ -43,19 +43,16 @@ type ExtendedConfig = ConfigOptionType & {
  */
 type DefineConfigInput =
     | ExtendedConfig
-    | ((env?: DefineEnv) => ExtendedConfig)
-    | ((env?: DefineEnv) => Promise<ExtendedConfig>);
+    | ((env: DefineEnv) => ExtendedConfig)
+    | ((env: DefineEnv) => Promise<ExtendedConfig>);
 
 /**
  * Output type:
- * - Webpack configuration
- * - Async configuration
- * - Function returning configuration
+ * Always returns a function (Webpack-compatible)
  */
-type DefineConfigReturn =
-    | Configuration
-    | Promise<Configuration>
-    | ((env?: DefineEnv) => Configuration | Promise<Configuration>);
+type DefineConfigReturn = (
+    env?: { mode?: ModeType }
+) => Configuration | Promise<Configuration>;
 
 /**
  * Normalize config:
@@ -78,7 +75,7 @@ function normalizeConfig(config: ExtendedConfig): ConfigOptionType {
  */
 async function resolveConfig(
     input: DefineConfigInput,
-    env?: DefineEnv
+    env?: { mode?: ModeType }
 ): Promise<Configuration> {
     const mode: ModeType = env?.mode ?? 'development';
 
@@ -119,9 +116,14 @@ async function resolveConfig(
  *   presets: [reactPreset()]
  * });
  * ```
+ *
+ * @remarks
+ * - Always returns a function (Webpack-compatible)
+ * - Supports async config
+ * - Supports dynamic mode via CLI (`--mode`)
  */
 export function defineConfig(input: DefineConfigInput): DefineConfigReturn {
-    return (env?: DefineEnv) => {
+    return (env) => {
         return resolveConfig(input, env);
     };
 }
