@@ -9,6 +9,40 @@ Core webpack configuration and loaders for **Pug-based** projects.
 This package provides a stable, production-safe webpack foundation for template-driven builds using `pug-plugin`, now
 with **Smart Auto-Hosting** support.
 
+# ⚠️ DEPRECATED ⚠️
+
+**This package has been officially moved and renamed
+to [@razerspine/build](https://www.npmjs.com/package/@razerspine/build).**
+
+---
+
+### ❓ Why?
+
+Starting from version **1.0.0**, the project has undergone a complete architectural redesign. We’ve moved from a rigid
+Webpack configuration to a modular, plugin-based build system that supports:
+
+- **New `defineConfig` API** for better DX.
+- **Multi-engine support** (Pug, HTML, or none).
+- **React Fast Refresh** (via `reactPreset`).
+- **Smart Auto-Hosting** detection (Vercel, Netlify, etc.).
+
+### 🛠 Migration
+
+To stay up to date with the latest features and security fixes, please migrate to the new package:
+
+1. **Uninstall the old package:**
+ ```bash
+ npm uninstall @razerspine/webpack-core
+ ```
+2. **Install the new one**:
+```bash
+npm install -D @razerspine/build
+```
+3. **Update your config**:
+
+The internal API has changed. Please refer to the new documentation to update your `webpack.config.js`
+
+
 ---
 
 ## 🚀 Key Features
