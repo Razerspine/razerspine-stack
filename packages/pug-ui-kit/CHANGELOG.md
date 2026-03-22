@@ -1,12 +1,38 @@
 # Changelog
 
+## [1.0.0] - 2026-03-22
+
+### 🚨 BREAKING CHANGES
+
+- Renamed style entry files:
+  - `ui-kit.scss → ui.scss`
+  - `ui-kit.less → ui.less`
+
+- Updated SCSS import paths:
+
+```text
+- @use '@razerspine/pug-ui-kit/scss/ui-kit';
++ @use '@razerspine/pug-ui-kit/scss/ui';
+```
+
+- Reorganized Pug structure:
+  - Legacy mixins moved to `pug/legacy`
+  - New components introduced in `pug/components`
+- Removed / changed legacy JS API (`index.js paths helpers`)
+- Package now uses compiled output (`dist/`) as entry point
+
+------------------------
+
+# Legacy
+
 ## [1.5.1] - 2026-02-23
 
 ### Fixed
 
 - LESS Grid System (Mobile-First Order)
 - Fixed a critical bug in the LESS version where md classes would override lg classes due to incorrect recursion order.
-- Refactored .generate-responsive and .generate-offset-bp to generate media queries in ascending order (sm → xl), ensuring proper CSS cascade.
+- Refactored .generate-responsive and .generate-offset-bp to generate media queries in ascending order (sm → xl),
+  ensuring proper CSS cascade.
 
 ---
 
