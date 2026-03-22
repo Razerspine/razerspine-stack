@@ -2,24 +2,17 @@
 
 ## [1.0.0] - 2026-03-22
 
-### 🚨 BREAKING CHANGES
+### ⚠️ Breaking Changes
 
-- Renamed style entry files:
-  - `ui-kit.scss → ui.scss`
-  - `ui-kit.less → ui.less`
-
-- Updated SCSS import paths:
-
-```text
-- @use '@razerspine/pug-ui-kit/scss/ui-kit';
-+ @use '@razerspine/pug-ui-kit/scss/ui';
-```
-
-- Reorganized Pug structure:
-  - Legacy mixins moved to `pug/legacy`
-  - New components introduced in `pug/components`
-- Removed / changed legacy JS API (`index.js paths helpers`)
-- Package now uses compiled output (`dist/`) as entry point
+- Renamed:
+  - `ui-kit.scss` → `ui.scss`
+  - `ui-kit.less` → `ui.less`
+- Changed:
+  - Pug components now support optional runtime bindings via `data-*` attributes
+- New:
+  - `bindings` param in components (runtime-agnostic)
+- Changed:
+  - SCSS/LESS import paths now use `exports` field
 
 ------------------------
 
