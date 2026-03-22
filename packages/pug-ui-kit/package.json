@@ -7,12 +7,21 @@
     "components",
     "mixins"
   ],
+  "files": [
+    "dist",
+    "src",
+    "fonts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "style": "dist/css/ui.min.css",
   "exports": {
     ".": {
       "require": "./dist/index.js",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./scss/*": "./src/styles/scss/*",
@@ -21,13 +30,6 @@
     "./fonts/*": "./fonts/*",
     "./css/*": "./dist/css/*"
   },
-  "files": [
-    "dist",
-    "fonts",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
   "scripts": {
     "clean": "rm -rf dist",
     "build:css": "ts-node builder/index.ts",
@@ -42,6 +44,7 @@
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
     "sass": "^1.77.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
 }

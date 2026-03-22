@@ -6,7 +6,3 @@ export const paths = {
     less: path.join(__dirname, '../src/styles/less'),
     pug: path.join(__dirname, '../src/pug')
 };
-
-export function getStylePath(type: 'scss' | 'less' = 'scss') {
-    return path.join(__dirname, `../src/styles/${type}/ui-kit.${type}`);
-}
