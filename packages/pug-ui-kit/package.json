@@ -7,50 +7,41 @@
     "components",
     "mixins"
   ],
-  "main": "index.js",
-  "style": "style/style.min.css",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "style": "dist/css/ui.min.css",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./scss/*": "./src/styles/scss/*",
+    "./less/*": "./src/styles/less/*",
+    "./pug/*": "./src/pug/*",
+    "./fonts/*": "./fonts/*",
+    "./css/*": "./dist/css/*"
+  },
   "files": [
-    "mixins",
+    "dist",
     "fonts",
-    "scss",
-    "less",
-    "style",
-    "index.js",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build:css": "sass scss/ui-kit.scss style/style.css",
-    "build:postcss": "postcss style/style.css --config postcss.config.js --output style/style.min.css",
-    "build": "npm run clean && npm run build:css && npm run build:postcss",
-    "clean": "rm -rf style",
+    "clean": "rm -rf dist",
+    "build:css": "ts-node builder/index.ts",
+    "build:ts": "tsc",
+    "build": "npm run clean && npm run build:css && npm run build:ts",
     "prepublishOnly": "npm run build"
   },
-  "author": "Razerspine",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
-    "directory": "packages/pug-ui-kit"
-  },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/pug-ui-kit#readme",
-  "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
-  },
-  "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
-  "browserslist": [
-    ">0.5%",
-    "last 2 versions",
-    "not dead"
-  ],
   "devDependencies": {
-    "sass": "^1.77.0",
+    "@types/node": "^25.5.0",
+    "autoprefixer": "^10.4.19",
+    "cssnano": "^6.1.2",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
-    "autoprefixer": "^10.4.19",
-    "cssnano": "^6.1.2"
+    "sass": "^1.77.0",
+    "typescript": "^5.9.3"
   }
 }
