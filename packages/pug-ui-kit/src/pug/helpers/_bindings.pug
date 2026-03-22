@@ -1,0 +1,27 @@
+//- Internal helper to map reactive bindings to data-attributes.
+//- This ensures sync with @razerspine/runtime without duplicating logic.
+-  function _mapRuntimeBindings(bindings) {
+-    if (!bindings || typeof bindings !== 'object') return {};
+-
+-    const map = {
+-      click: 'data-click',
+-      model: 'data-model',
+-      bind: 'data-bind',
+-      show: 'data-show',
+-      class: 'data-class',
+-      for: 'data-for'
+-    };
+-
+-    const result = {};
+-
+-    Object.keys(bindings).forEach(function(key) {
+-      const value = bindings[key];
+-      const dataAttr = map[key];
+-
+-      if (value && dataAttr) {
+-        result[dataAttr] = value;
+-      }
+-    });
+-
+-    return result;
+-  }

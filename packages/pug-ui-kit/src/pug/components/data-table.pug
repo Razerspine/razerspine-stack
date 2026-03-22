@@ -1,3 +1,5 @@
+include ../helpers/_bindings.pug
+
 //- dataTable mixin
 //- Renders a flexible table from an array of objects. Columns are derived
 //- from the provided `columns` array or automatically collected from object keys.
@@ -17,54 +19,46 @@
 //-                 - labels: **Object** — Map of column -> header label string.
 //-                   Example: { id: 'ID', user_name: 'Name' }.
 //-                 - actions: **Array** — List of action objects to render in the last column.
-//-                   Replaces the deprecated block/slot mechanism.
 //-                   Structure:
 //-                     [
 //-                       {
 //-                         label: String,              // Text of the link/button
 //-                         url: Function(item),        // Callback returning the URL string based on the row item
-//-                         class: String (optional)    // CSS classes for the link
+//-                         class: String (optional),   // CSS classes for the link
+//-                         bindings: Function(item)    // Optional: Reactive bindings (e.g. { click: 'edit(item.id)' })
 //-                       }
 //-                     ]
 //-                   Default: []
+//-   bindings    - **Object | null** — Reactive bindings for the table element itself.
+//-                 Maps keys to data attributes via internal helper.
+//-                 Default: {}
 //-
 //- Behavior:
 //-   - Renders a table with Bootstrap-like classes (`table`).
 //-   - If `items` is empty, displays a unified row with `emptyText`.
 //-   - Actions are rendered as `<a>` tags in a separate column if `options.actions` is provided.
+//-   - Supports @razerspine/runtime bindings for the table and specific row actions.
 //-
 //- Examples:
 //-   const data = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
 //-
-//-   // 1. Basic usage
-//-   +dataTable(data)
+//-   // 1. Basic usage with reactive table visibility
+//-   +dataTable(data, null, {}, { show: 'isTableVisible' })
 //-
-//-   // 2. Advanced usage with Actions and Custom Labels
+//-   // 2. Advanced usage with Actions and Reactive Click
 //-   +dataTable(data, ['id', 'name'], {
 //-     showIndex: true,
 //-     labels: { name: 'Full Name' },
 //-     actions: [
 //-       {
-//-         label: 'Edit',
-//-         class: 'btn btn--text-primary btn--medium',
-//-         url: (item) => `/users/${item.id}/edit`
-//-       },
-//-       {
 //-         label: 'Delete',
 //-         class: 'btn btn--text-secondary btn--medium',
-//-         url: (item) => `/users/${item.id}/delete`
+//-         bindings: (item) => ({ click: `deleteUser(${item.id})` })
 //-       }
 //-     ]
 //-   })
 //-
-//-   // 3. Explicit columns, labels and formatters
-//-      +dataTable(data, ['id','name'], {
-//-        showIndex: false,
-//-        labels: { id: 'ID', name: 'Full name' },
-//-        formatters: { id: v => '#' + v }
-//-      })
-//-
-mixin dataTable(items, columns, options)
+mixin dataTable(items, columns, options, bindings={})
   - const _items = Array.isArray(items) ? items : [];
   - const cols = Array.isArray(columns) && columns.length ? columns : Array.from(new Set(_items.reduce((acc, it) => acc.concat(Object.keys(it || {})), [])));
 
@@ -73,6 +67,9 @@ mixin dataTable(items, columns, options)
 
   //- Check if actions column is needed
   - const hasActions = Array.isArray(opts.actions) && opts.actions.length > 0;
+
+  //- Process table-level bindings
+  - const tableAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
 
   //- Helper: Humanize keys (user_id -> User id)
   - const humanize = function(key) {
@@ -90,13 +87,12 @@ mixin dataTable(items, columns, options)
   -   return String(v);
   - }
 
-  if !_items.length
-    table.table.data-table
+  table.table.data-table&attributes(tableAttrs)
+    if !_items.length
       thead
         tr
           th(colspan=cols.length + (opts.showIndex ? 1 : 0) + (hasActions ? 1 : 0)) #{opts.emptyText}
-  else
-    table.table.data-table
+    else
       thead
         tr
           if opts.showIndex
@@ -112,12 +108,16 @@ mixin dataTable(items, columns, options)
             if opts.showIndex
               td.data-table__index #{i + 1}
             each col in cols
-              - const val = (item && Object.prototype.hasOwnProperty.call(item, col)) ? item[col] : ''
+              - const val = (item && Object.prototype.hasOwnProperty.call(item, col)) ? item[col] : '';
               td.data-table__cell!= formatValue(val, col)
             if hasActions
               td.data-table__actions-cell
                 each action in opts.actions
-                  - const href = (typeof action.url === 'function') ? action.url(item) : '#'
-                  - const className = action.class || ''
-                  a(href=href class=className) #{action.label}
+                  - const href = (typeof action.url === 'function') ? action.url(item) : '#';
+                  - const className = action.class || '';
+                  //- Handle reactive bindings for buttons (mostly for 'click')
+                  - const rawActionBindings = (typeof action.bindings === 'function') ? action.bindings(item) : (action.bindings || {});
+                  - const actionAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(rawActionBindings) : {};
+
+                  a(href=href class=className)&attributes(actionAttrs) #{action.label}
                   |

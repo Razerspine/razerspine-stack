@@ -1,0 +1,87 @@
+include ../helpers/_bindings.pug
+
+//- Button mixin
+//- Renders a configurable button with optional icon and text. Visual appearance
+//- is primarily controlled by the `variant` and `size` parameters and by CSS
+//- classes applied via `attrs` or global styles.
+//-
+//- NOTE: project migrated to an SVG sprite. The mixin references symbols by id
+//- using <use href="#icon-{iconName}"> (xlink:href kept for legacy browsers).
+//- Ensure your sprite contains <symbol id="icon-{name}"> entries.
+//-
+//- Parameters:
+//-   text        - **String | null** — Visible button text. If `null` or an empty
+//-                 string, the text node is omitted (icon-only button).
+//-                 Default: null
+//-   variant     - **String** — Visual variant modifier appended to `.btn--{variant}`.
+//-                 Common values: 'primary', 'secondary', 'outline', 'text-primary',
+//-                 'text-secondary', 'icon-primary', 'icon-secondary', 'icon-outline', 'icon'.
+//-                 Default: 'primary'
+//-   size        - **String** — Size modifier appended to `.btn--{size}` and used
+//-                 for icon sizing `.icon--{size}`. Common values: 'small', 'medium', 'large'.
+//-                 Default: 'medium'
+//-   attrs       - **Object | null** — Attributes to spread onto the `<button>`
+//-                 element via `&attributes(attrs)`. Use this to pass `type`,
+//-                 `id`, `aria-*`, etc. If `null`, no attributes are spread.
+//-                 If `attrs.class` is present it will be merged with the base classes.
+//-                 Default: { type: 'button' }
+//-   iconName    - **String | null** — Icon name (without prefix). The mixin uses
+//-                 `#icon-{iconName}` in <use> to reference the SVG sprite symbol.
+//-                 If `null`, no icon is rendered.
+//-                 Default: null
+//-   bindings    - **Object | null** — Reactive bindings from @razerspine/runtime.
+//-                 Maps keys to data attributes via internal helper: click -> data-click,
+//-                 model -> data-model, bind -> data-bind, show -> data-show,
+//-                 class -> data-class, for -> data-for.
+//-                 Default: {}
+//-
+//- Accessibility notes:
+//-   - If the button has visible text, the SVG is treated as decorative and gets
+//-     `aria-hidden="true"` so screen readers ignore it.
+//-   - If the button is icon-only (text === null or empty), the mixin will set
+//-     `aria-label` on the button if `attrs` does not already provide one. Provide
+//-     a meaningful `aria-label` in `attrs` for icon-only buttons.
+//-
+//- Behavior summary:
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Computes `hasText` to decide whether to render the text node.
+//-   - Builds base classes and safely merges any `attrs.class` with them.
+//-   - Renders <svg><use href="#icon-{iconName}" xlink:href="#icon-{iconName}"></use></svg>
+//-     when `iconName` is provided.
+//-   - Sets `aria-hidden` on the SVG when text is present; ensures icon-only buttons
+//-     have an accessible label.
+//-
+//- Examples:
+//-   // Button with reactive click and visibility
+//-   +btn('Save', 'primary', 'medium', {type: 'submit'}, null, { click: 'save', show: 'isDirty' })
+//-
+//-   // Icon-only button with binding
+//-   +btn(null, 'icon-primary', 'small', {}, 'refresh', { click: 'reload' })
+
+mixin btn(text, variant='primary', size='medium', attrs={'type':'button'}, iconName=null, bindings={})
+  //- Process reactive bindings into data attributes using a shared helper
+  //- to maintain "Single Source of Truth" with @razerspine/runtime
+  -  const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  -  const hasText = typeof text === 'string' && text.trim().length > 0;
+  -  const baseClass = 'btn btn--' + variant + ' btn--' + size;
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  const combinedClass = incomingClass ? incomingClass + ' ' + baseClass : baseClass;
+
+  //- Merge standard attributes with mapped reactive bindings
+  -  const safeAttrs = Object.assign({}, attrs || {}, runtimeAttrs);
+  -  safeAttrs.class = combinedClass;
+
+  //- Accessibility fallback for icon-only buttons
+  -  const hasAriaLabel = safeAttrs['aria-label'] || safeAttrs.ariaLabel || safeAttrs['aria-labelledby'];
+  -  if (!hasText && iconName && !hasAriaLabel) {
+  -    safeAttrs['aria-label'] = iconName.replace(/[-_]/g, ' ');
+  -  }
+
+  button&attributes(safeAttrs)
+    if iconName
+    - const svgAttrs = Object.assign({}, hasText ? {'aria-hidden': 'true'} : {role: 'img'}, {class: 'button-icon icon--' + size});
+      svg&attributes(svgAttrs)
+        use(xlink:href='#icon-' + iconName, href='#icon-' + iconName)
+    if hasText
+      | #{text}
