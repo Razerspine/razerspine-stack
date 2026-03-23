@@ -1,5 +1,5 @@
 import {describe, it, expect, vi} from 'vitest';
-import {setupFixture} from '../fixtures/with-runtime/main';
+import {setupFixture} from '../../fixtures/with-runtime/main';
 
 describe('Pug UI Kit: Button Integration', () => {
 
