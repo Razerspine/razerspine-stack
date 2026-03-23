@@ -18,8 +18,7 @@ describe('Pug UI Kit: DataTable Integration', () => {
         const actionBtn = container.querySelector(`[data-click="deleteUser(${userId})"]`) as HTMLElement;
 
         actionBtn.click();
-        expect(deleteMock).toHaveBeenCalled();
-        expect(deleteMock.mock.calls[0][0]).toBe(userId);
+        expect(deleteMock).toHaveBeenCalledWith(userId, expect.anything(), expect.anything());
 
         cleanup();
     });
@@ -35,6 +34,7 @@ describe('Pug UI Kit: DataTable Integration', () => {
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState);
 
         expect(container.querySelectorAll('tbody tr').length).toBe(2);
+
         cleanup();
     });
 });
