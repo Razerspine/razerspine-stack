@@ -1,7 +1,7 @@
 import {describe, it, expect, vi} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: DataTable Integration', () => {
+describe('DataTable: Runtime Integration', () => {
 
     it('should call action handler via runtime bindings', () => {
         const deleteMock = vi.fn();

@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: FormTextarea Integration', () => {
+describe('FormTextarea: Runtime Integration', () => {
 
     it('should handle reactive visibility and custom attributes', async () => {
         const initialState = {

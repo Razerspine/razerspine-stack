@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: InputCheckbox Integration', () => {
+describe('InputCheckbox: Runtime Integration', () => {
 
     it('should render checkbox with label and model binding', () => {
         const initialState = {

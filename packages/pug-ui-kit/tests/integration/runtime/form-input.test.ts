@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: FormInput Integration', () => {
+describe('FormInput: Runtime Integration', () => {
 
     it('should render input with correct attributes and label', () => {
         const initialState = {

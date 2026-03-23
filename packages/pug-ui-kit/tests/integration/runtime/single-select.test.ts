@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: SingleSelect Integration', () => {
+describe('SingleSelect: Runtime Integration', () => {
 
     it('should apply reactive model binding (data-model)', () => {
         const initialState = {

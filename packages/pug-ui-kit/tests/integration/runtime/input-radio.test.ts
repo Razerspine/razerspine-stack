@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/with-runtime/main';
 
-describe('Pug UI Kit: InputRadio Integration', () => {
+describe('InputRadio: Runtime Integration', () => {
 
     it('should render a radio group with shared model binding', () => {
         const initialState = {
