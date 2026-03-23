@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest';
 import {setupFixture} from '../../fixtures/without-runtime/main';
 
 describe('DataTable: Static Integration', () => {
+
     it('should humanize column headers when labels are not provided', () => {
         const state = {
             users: [
