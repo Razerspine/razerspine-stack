@@ -21,11 +21,10 @@ export function setupFixture(
 
     const {state, disconnect} = createStore(initialState, () => {
         applyBindings(container, state);
-        bindForms(container, context, state);
     });
 
     applyBindings(container, state);
-    bindForms(container, context, state);
+
     const cleanupClicks = bindClickEvents(container, context);
     const cleanupForms = bindForms(container, context, state);
 
