@@ -1,0 +1,10 @@
+{
+  "name": "fixture-without-runtime",
+  "private": "true",
+  "dependencies": {
+    "pug": "^3.0.4"
+  },
+  "devDependencies": {
+    "@types/pug": "^2.0.10"
+  }
+}

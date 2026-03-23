@@ -1,0 +1,14 @@
+include ../../../../dist/pug/mixins/data-table.pug
+
+div
+  +dataTable(users, null, {
+    showIndex: true,
+    labels: {name: 'Full Name'},
+    actions: [
+      {
+        label: 'Delete',
+        class: 'btn',
+        bindings: (item) => ({click: `deleteUser(${item.id})`})
+      }
+    ]
+  }, {show: 'isTableVisible'})

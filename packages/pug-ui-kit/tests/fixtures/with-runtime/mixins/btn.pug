@@ -1,0 +1,5 @@
+include ../../../../dist/pug/mixins/btn.pug
+
+div
+  +btn('Save', 'primary', 'medium', {type: 'submit'}, null, {click: 'save', show: 'isDirty'})
+  +btn(null, 'icon-primary', 'small', {id: 'reload-btn'}, 'refresh', {click: 'reload'})
