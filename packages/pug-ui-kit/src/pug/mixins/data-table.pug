@@ -71,21 +71,20 @@ mixin dataTable(items, columns, options, bindings={})
   //- Process table-level bindings
   - const tableAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
 
-  //- Helper: Humanize keys (user_id -> User id)
-  - const humanize = function(key) {
+  //- Helper functions definition
+  - const humanize = (key) => {
   -   if (!key && key !== 0) return '';
   -   const s = String(key).replace(/_/g, ' ');
   -   return s.charAt(0).toUpperCase() + s.slice(1);
-  - }
+  - };
 
-  //- Helper: Format cell values
-  - const formatValue = function(v, col) {
+  - const formatValue = (v, col) => {
   -   if (v === null || v === undefined || v === '') return '';
   -   if (opts.formatters && typeof opts.formatters[col] === 'function') return opts.formatters[col](v);
   -   if (Array.isArray(v)) return v.join(', ');
   -   if (typeof v === 'object') return JSON.stringify(v);
   -   return String(v);
-  - }
+  - };
 
   table.table.data-table&attributes(tableAttrs)
     if !_items.length
@@ -115,9 +114,8 @@ mixin dataTable(items, columns, options, bindings={})
                 each action in opts.actions
                   - const href = (typeof action.url === 'function') ? action.url(item) : '#';
                   - const className = action.class || '';
-                  //- Handle reactive bindings for buttons (mostly for 'click')
-                  - const rawActionBindings = (typeof action.bindings === 'function') ? action.bindings(item) : (action.bindings || {});
-                  - const actionAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(rawActionBindings) : {};
+                  - const rawBindings = (typeof action.bindings === 'function') ? action.bindings(item) : (action.bindings || {});
+                  - const actionAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(rawBindings) : {};
 
                   a(href=href class=className)&attributes(actionAttrs) #{action.label}
                   |
