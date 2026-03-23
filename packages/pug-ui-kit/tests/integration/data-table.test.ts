@@ -12,14 +12,15 @@ describe('Pug UI Kit: DataTable Integration', () => {
             ]
         };
         const userId = initialState.users[0].id;
-
-        const context = {[`deleteUser(${userId})`]: deleteMock};
+        const context = {deleteUser: deleteMock};
 
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState, context);
         const actionBtn = container.querySelector(`[data-click="deleteUser(${userId})"]`) as HTMLElement;
 
         actionBtn.click();
         expect(deleteMock).toHaveBeenCalled();
+        expect(deleteMock.mock.calls[0][0]).toBe(userId);
+
         cleanup();
     });
 

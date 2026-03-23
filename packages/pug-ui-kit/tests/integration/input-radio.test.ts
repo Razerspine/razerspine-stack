@@ -23,8 +23,6 @@ describe('Pug UI Kit: InputRadio Integration', () => {
         expect(maleRadio.getAttribute('value')).toBe('male');
         expect(femaleRadio.getAttribute('value')).toBe('female');
 
-        console.log('RADIO HTML:', container.innerHTML);
-
         cleanup();
     });
 
