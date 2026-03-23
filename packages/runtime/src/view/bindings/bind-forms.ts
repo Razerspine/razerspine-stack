@@ -1,4 +1,5 @@
 import {setValue} from '../../utils';
+import {resolveInputValue} from './bind-forms.utils';
 
 /**
  * Implements two-way data binding for form inputs using the [data-model] attribute.
@@ -10,6 +11,13 @@ import {setValue} from '../../utils';
  * IMPORTANT:
  * No manual update() call is required.
  * The Proxy store automatically triggers DOM updates via onChange().
+ *
+ * Supports:
+ * - text inputs
+ * - textarea
+ * - select
+ * - radio (checked-based update)
+ * - checkbox (boolean binding)
  *
  * @param root - The container element to attach the delegated listener to.
  * @param context - The component instance (not used directly, but kept for API symmetry).
@@ -28,10 +36,20 @@ export function bindForms(root: HTMLElement, context: any, state: Record<string,
         if (!path) return;
 
         /**
+         * Resolve correct value depending on input type.
+         */
+        const value = resolveInputValue(target);
+
+        /**
+         * Skip updates when not applicable (e.g. unchecked radio).
+         */
+        if (value === undefined) return;
+
+        /**
          * Update nested property in the reactive store.
          * Proxy will automatically trigger onChange → update().
          */
-        setValue(state, path, target.value);
+        setValue(state, path, value);
     };
 
     root.addEventListener('input', inputHandler);

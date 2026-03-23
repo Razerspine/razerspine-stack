@@ -1,7 +1,7 @@
 # @razerspine/runtime
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/runtime.svg)](https://www.npmjs.com/package/@razerspine/runtime)
-[![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen)]()
+[![Vitest](https://img.shields.io/badge/Vitest-120_passed-success?logo=vitest)](#)
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/runtime.svg)](./LICENSE)
 
