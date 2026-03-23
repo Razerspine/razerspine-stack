@@ -72,10 +72,20 @@ mixin btn(text, variant='primary', size='medium', attrs={'type':'button'}, iconN
   -  const safeAttrs = Object.assign({}, attrs || {}, runtimeAttrs);
   -  safeAttrs.class = combinedClass;
 
-  //- Accessibility fallback for icon-only buttons
+  //- Accessibility fallback for icon-only buttons (with i18n support)
   -  const hasAriaLabel = safeAttrs['aria-label'] || safeAttrs.ariaLabel || safeAttrs['aria-labelledby'];
   -  if (!hasText && iconName && !hasAriaLabel) {
-  -    safeAttrs['aria-label'] = iconName.replace(/[-_]/g, ' ');
+  -    const generatedLabel = iconName.replace(/[-_]/g, ' ');
+  -    safeAttrs['aria-label'] = generatedLabel;
+  -    if (!safeAttrs['data-i18n']) {
+  -      safeAttrs['data-i18n'] = generatedLabel;
+  -      safeAttrs['data-i18n-attr'] = 'aria-label';
+  -    }
+  -  }
+
+  //- Auto-add data-i18n for visible text (if not manually overridden in attrs)
+  -  if (hasText && !safeAttrs['data-i18n']) {
+  -    safeAttrs['data-i18n'] = text;
   -  }
 
   button&attributes(safeAttrs)

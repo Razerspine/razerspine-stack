@@ -60,6 +60,6 @@ mixin formInput(type, id, label, placeholder='', name='', value='', attrs={}, bi
   -  inputAttrs.class = incomingClass ? incomingClass + ' form-control' : 'form-control';
 
   if label
-    label.form-label(for=id)= label
+    label.form-label(for=id data-i18n=label)= label
 
   input&attributes(inputAttrs)

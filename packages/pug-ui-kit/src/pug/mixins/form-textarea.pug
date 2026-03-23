@@ -54,6 +54,6 @@ mixin formTextarea(id, label, placeholder='', name='', attrs={}, bindings={})
   -  textareaAttrs.class = incomingClass ? incomingClass + ' form-textarea' : 'form-textarea';
 
   if label
-    label.form-label(for=id)= label
+    label.form-label(for=id data-i18n=label)= label
 
   textarea&attributes(textareaAttrs)
