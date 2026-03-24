@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 function resolveDist() {
     const local = path.resolve(process.cwd(), 'dist');
@@ -21,37 +21,66 @@ const normalizeCSS = (css: string) =>
 
 const normalizeSource = (src: string) =>
     src
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\/\/.*$/gm, '')
         .replace(/\s+/g, ' ')
         .trim();
 
+function getFiles(dir: string, filesList: string[] = []): string[] {
+    if (!fs.existsSync(dir)) return filesList;
+
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const filePath = path.join(dir, file);
+        if (fs.statSync(filePath).isDirectory()) {
+            getFiles(filePath, filesList);
+        } else {
+            filesList.push(filePath);
+        }
+    }
+    return filesList;
+}
+
 describe('UI Snapshots', () => {
+
     it('matches compiled CSS snapshot', () => {
         const cssPath = path.join(distRoot, 'css/ui.css');
-
         expect(fs.existsSync(cssPath)).toBe(true);
-
         const css = normalizeCSS(read(cssPath));
-
         expect(css).toMatchSnapshot();
     });
 
-    it('matches SCSS entry snapshot', () => {
-        const scssPath = path.join(distRoot, 'scss/ui.scss');
+    const extensions = ['scss', 'less'];
+    const targetDirs = ['settings', 'themes', 'components'];
 
-        expect(fs.existsSync(scssPath)).toBe(true);
+    extensions.forEach((ext) => {
+        describe(`${ext.toUpperCase()} Files`, () => {
 
-        const scss = normalizeSource(read(scssPath));
+            it(`matches ${ext} entry snapshot`, () => {
+                const entryPath = path.join(distRoot, ext, `ui.${ext}`);
+                expect(fs.existsSync(entryPath)).toBe(true);
+                const source = normalizeSource(read(entryPath));
+                expect(source).toMatchSnapshot();
+            });
 
-        expect(scss).toMatchSnapshot();
-    });
+            targetDirs.forEach((targetDir) => {
+                it(`matches snapshots for ${ext}/${targetDir}`, () => {
+                    const dirPath = path.join(distRoot, ext, targetDir);
 
-    it('matches LESS entry snapshot', () => {
-        const lessPath = path.join(distRoot, 'less/ui.less');
+                    expect(fs.existsSync(dirPath)).toBe(true);
 
-        expect(fs.existsSync(lessPath)).toBe(true);
+                    const files = getFiles(dirPath).sort();
 
-        const less = normalizeSource(read(lessPath));
+                    const snapshots: Record<string, string> = {};
 
-        expect(less).toMatchSnapshot();
+                    for (const file of files) {
+                        const relativePath = path.relative(dirPath, file).replace(/\\/g, '/');
+                        snapshots[relativePath] = normalizeSource(read(file));
+                    }
+
+                    expect(snapshots).toMatchSnapshot();
+                });
+            });
+        });
     });
 });
