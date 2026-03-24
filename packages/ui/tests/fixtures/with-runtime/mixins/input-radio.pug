@@ -2,5 +2,5 @@ include ../../../../dist/pug/mixins/input-radio.pug
 
 div
   .input-group
-    +inputRadio('m', 'Male', 'gender', 'male', false, {}, {model: 'user.gender'})
-    +inputRadio('f', 'Female', 'gender', 'female', false, {}, {model: 'user.gender'})
+    each item in radioItems
+      +inputRadio(item.id, item.label, name, item.value, item.checked, attrs, bindings)

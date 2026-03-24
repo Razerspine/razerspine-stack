@@ -3,45 +3,49 @@ import {setupFixture} from '../../fixtures/with-runtime/main';
 
 describe('InputRadio: Runtime Integration', () => {
 
-    it('should render a radio group with shared model binding', () => {
+    it('should render a radio group where both buttons share the same model', () => {
         const initialState = {
-            user: {
-                gender: 'male'
+            name: 'gender',
+            radioItems: [
+                {id: 'm', label: 'Male', value: 'male', checked: true},
+                {id: 'f', label: 'Female', value: 'female', checked: false}
+            ],
+            bindings: {
+                model: 'user.gender'
             }
         };
         const {container, cleanup} = setupFixture('./mixins/input-radio.pug', initialState);
 
-        const maleRadio = container.querySelector('input#m') as HTMLInputElement;
-        const femaleRadio = container.querySelector('input#f') as HTMLInputElement;
+        const radios = container.querySelectorAll('input[type="radio"]');
 
-        expect(maleRadio.name).toBe('gender');
-        expect(femaleRadio.name).toBe('gender');
+        expect(radios.length).toBe(2);
 
-        expect(maleRadio.getAttribute('data-model')).toBe('user.gender');
-        expect(femaleRadio.getAttribute('data-model')).toBe('user.gender');
-
-        expect(maleRadio.getAttribute('value')).toBe('male');
-        expect(femaleRadio.getAttribute('value')).toBe('female');
+        radios.forEach((radio, index) => {
+            const input = radio as HTMLInputElement;
+            expect(input.name).toBe('gender');
+            expect(input.getAttribute('data-model')).toBe('user.gender');
+            expect(input.value).toBe(initialState.radioItems[index].value);
+        });
 
         cleanup();
     });
 
-    it('should render correct labels for radio buttons', () => {
+    it('should apply static attributes from attrs to all items in the group', () => {
         const initialState = {
-            user: {
-                gender: 'female'
+            radioItems: [
+                {id: 'r1', label: 'Opt 1', value: '1'}
+            ],
+            attrs: {
+                disabled: true,
+                class: 'custom-radio'
             }
         };
         const {container, cleanup} = setupFixture('./mixins/input-radio.pug', initialState);
 
-        const labels = container.querySelectorAll('label.check-control-label');
+        const input = container.querySelector('input') as HTMLInputElement;
 
-        expect(labels[0].getAttribute('for')).toBe('m');
-        expect(labels[1].getAttribute('for')).toBe('f');
-
-        const texts = container.querySelectorAll('.input-text');
-        expect(texts[0].getAttribute('data-i18n')).toBe('Male');
-        expect(texts[1].getAttribute('data-i18n')).toBe('Female');
+        expect(input.disabled).toBe(true);
+        expect(input.classList.contains('custom-radio')).toBe(true);
 
         cleanup();
     });

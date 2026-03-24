@@ -1,4 +1,6 @@
 include ../../../../dist/pug/mixins/input-radio.pug
 
 div
-  +inputRadio(id, label, name, value, checked, attrs, bindings)
+  .input-group
+    each item in radioItems
+      +inputRadio(item.id, item.label, name, item.value, item.checked, attrs, bindings)
