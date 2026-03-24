@@ -33,15 +33,15 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build:css": "ts-node builder/index.ts",
     "build:ts": "tsc",
-    "copy": "ts-node builder/copy.ts",
-    "build": "npm run clean && npm run build:css && npm run build:ts && npm run copy",
+    "build:css": "ts-node scripts/index.ts",
+    "build:copy": "ts-node scripts/copy.ts",
+    "build": "npm run clean && npm run build:css && npm run build:copy && npm run build:ts",
     "setup:fixtures": "npm --prefix tests/fixtures/with-runtime install && npm --prefix tests/fixtures/without-runtime install",
-    "pretest": "npm run build && npm run setup:fixtures",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
-    "test:snapshots": "npm run build && vitest run tests/snapshots",
+    "test:snapshots": "vitest run tests/snapshots",
+    "test:full": "npm run build && npm run setup:fixtures && npm run test",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
