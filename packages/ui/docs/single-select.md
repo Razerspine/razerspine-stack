@@ -1,108 +1,95 @@
-ї# Single Select Mixin (`+singleSelect`)
+# Single Select Mixin (`+singleSelect`)
 
-Renders a configurable `<select>` dropdown element with an optional label. This mixin supports both simple arrays of
-strings and complex arrays of objects, providing flexible mapping for display text and values.
+Renders a configurable `<select>` dropdown element. This mixin intelligently handles both simple and complex data
+structures, automates internationalization for all options, and integrates with the reactive system.
 
 ---
 
 ## Parameters
 
-| Parameter           | Type             | Default       | Description                                                                                       |
-|---------------------|------------------|---------------|---------------------------------------------------------------------------------------------------|
-| **`id`**            | `String`         | *required*    | Unique identifier for the select element. Used for `id`, `name`, and the label's `for` attribute. |
-| **`label`**         | `String \| null` | `null`        | Visible label text. If `null` or empty, the `<label>` element is omitted.                         |
-| **`options`**       | `Array`          | `[]`          | Data source for dropdown options. Can be an array of strings or objects.                          |
-| **`labelKey`**      | `String`         | `'text'`      | The key name in option objects used for the visible text.                                         |
-| **`valueKey`**      | `String`         | `'value'`     | The key name in option objects used for the `value` attribute.                                    |
-| **`selectedValue`** | `String`         | `''`          | The value of the option that should be marked as `selected` by default.                           |
-| **`placeholder`**   | `String`         | `'Choose...'` | Text for the initial placeholder option.                                                          |
-| **`attrs`**         | `Object`         | `{}`          | Additional HTML attributes (e.g., `{ required: true }`).                                          |
-| **`bindings`**      | `Object`         | `{}`          | Reactive bindings for `@razerspine/runtime`.                                                      |
+| Parameter           | Type             | Default       | Description                                                              |
+|:--------------------|:-----------------|:--------------|:-------------------------------------------------------------------------|
+| **`id`**            | `String`         | *required*    | Unique identifier. Also used for the `name` attribute and label linking. |
+| **`label`**         | `String \| null` | `null`        | Visible label text. Automatically assigned to `data-i18n`.               |
+| **`options`**       | `Array`          | `[]`          | Array of strings or objects to populate the dropdown.                    |
+| **`labelKey`**      | `String`         | `'text'`      | Key name in option objects for the visible text.                         |
+| **`valueKey`**      | `String`         | `'value'`     | Key name in option objects for the `value` attribute.                    |
+| **`selectedValue`** | `String`         | `''`          | The value that should be selected by default.                            |
+| **`placeholder`**   | `String`         | `'Choose...'` | Text for the fallback option (when no selection is made).                |
+| **`attrs`**         | `Object`         | `{}`          | Additional HTML attributes.                                              |
+| **`bindings`**      | `Object`         | `{}`          | Reactive bindings for `@razerspine/runtime`.                             |
 
 ---
 
 ## Behavior & Features
 
-### Data Mapping
+### Default Validation
 
-The mixin is designed to be highly adaptive to your data structure:
+Unlike other inputs, the `singleSelect` has `required: true` set in its **base attributes**. This means the field is
+mandatory unless explicitly overridden in the `attrs` parameter.
 
-- **Array of Strings:** If `options` is an array of strings, each string is used for both the label and the value.
-- **Array of Objects:** The mixin looks for `labelKey` and `valueKey` within each object to populate the `<option>`
-  tags.
+### Deep i18n Support
+
+This mixin provides comprehensive translation support:
+
+- **Label:** The `<label>` receives `data-i18n`.
+- **Placeholder:** The default empty option receives `data-i18n`.
+- **Options:** Every `<option>` generated from the `options` array receives a `data-i18n` attribute, ensuring the entire
+  dropdown is translatable.
 
 ### Placeholder Logic
 
-If no `selectedValue` is provided and a `placeholder` string is present, the mixin prepends a special `<option>`:
+The "Choose an option" placeholder is rendered only if **both** `label` and `selectedValue` are absent. This option is:
 
-- It is typically disabled or hidden to encourage the user to make a valid selection.
-- Default text is "Choose an option" if not specified.
+- `disabled` and `hidden` (cannot be re-selected by the user).
+- `selected` by default to trigger HTML5 validation if the field is required.
 
-### Styling & Integration
+### Technical Attributes
 
-- **Base Class:** Automatically applies the `.single-select` CSS class.
-- **Class Merging:** Custom classes in the `attrs` object are merged with the base `.single-select` class.
-- **Reactive Bindings:** Uses `_mapRuntimeBindings` to handle directives like `model` (for two-way data binding),
-  `show`, and `change`.
+For better integration with scripts and reactive models, each option also receives a `data-opt-value` attribute,
+mirroring the standard `value`.
 
 ---
 
 ## Accessibility (A11y)
 
-- **Labeling:** The mixin strictly associates the `<label>` with the `<select>` via the `id`.
-- **Placeholder:** The placeholder option is handled in a way that doesn't interfere with required field validation in
-  most modern browsers.
+- **Strict Linking:** The `id` is used to perfectly sync the label and the select element.
+- **Validation:** The use of a disabled/hidden empty value as the first option is a standard pattern for accessible "
+  required" selects.
 
 ---
 
 ## Examples
 
-### 1. Basic Select with Strings
+### 1. Simple String Array
 
-A simple dropdown linked to a reactive user role model.
+Each string is used as value, text, and i18n key.
+
+```pug
++singleSelect('theme', 'Select Theme', ['Light', 'Dark'])
+```
+
+### 2. Complex Objects with i18n
+
+Using custom keys for data mapping. Each option will get `data-i18n` from the `name` field.
+
+```pug
+- const roles = [{ id: 'adm', name: 'Administrator' }, { id: 'usr', name: 'Regular User' }];
++singleSelect('user-role', 'Role', roles, 'name', 'id', 'adm')
+```
+
+### 3. Reactive Binding and Custom Attributes
 
 ```pug
 +singleSelect(
-  'role', 
-  'User Role', 
-  ['Admin', 'Editor', 'Viewer'], 
+  'status', 
+  null, 
+  ['Active', 'Pending'], 
   'text', 
   'value', 
   '', 
-  'Select a role', 
-  {}, 
-  { model: 'user.role' }
-)
-```
-
-### 2. Using Objects with Custom Keys
-
-Mapping a list of countries where the data uses `id` and `name` fields.
-
-```pug
-- const countries = [{ id: 'ua', name: 'Ukraine' }, { id: 'us', name: 'USA' }];
-+singleSelect(
-  'country', 
-  'Country', 
-  countries, 
-  'name', 
-  'id', 
-  'ua'
-)
-```
-
-### 3. Required Select with Reactive Visibility
-
-```pug
-+singleSelect(
-  'category', 
-  'Category', 
-  categories, 
-  'title', 
-  'slug', 
-  '', 
-  'Pick one...', 
-  { required: true }, 
-  { show: 'hasDepartmentSelected' }
+  'Set Status', 
+  { required: false, class: 'select--custom' }, 
+  { model: 'item.status' }
 )
 ```

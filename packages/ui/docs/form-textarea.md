@@ -1,90 +1,76 @@
 # Form Textarea Mixin (`+formTextarea`)
 
-Renders a configurable `<textarea>` element with an optional `<label>`. This mixin is designed for multi-line text
-input, providing automatic ID mapping, base styling, and seamless integration with reactive data models.
+Renders a configurable `<textarea>` element with an optional `<label>`. This mixin simplifies multi-line text input by
+handling accessibility, applying base styles, and integrating with the reactive state via `@razerspine/runtime`.
 
 ---
 
 ## Parameters
 
-| Parameter         | Type             | Default    | Description                                                                    |
-|-------------------|------------------|------------|--------------------------------------------------------------------------------|
-| **`id`**          | `String`         | *required* | Unique identifier for the textarea. Also used for the label's `for` attribute. |
-| **`label`**       | `String \| null` | `null`     | Visible label text. If `null` or empty, the `<label>` element is omitted.      |
-| **`placeholder`** | `String`         | `''`       | Placeholder text displayed inside the textarea when empty.                     |
-| **`name`**        | `String`         | `''`       | The `name` attribute used for form submission.                                 |
-| **`attrs`**       | `Object \| null` | `{}`       | Additional HTML attributes (e.g., `{ rows: 5, readonly: true }`).              |
-| **`bindings`**    | `Object \| null` | `{}`       | Reactive bindings for `@razerspine/runtime`.                                   |
+| Parameter         | Type             | Default    | Description                                                                |
+|-------------------|------------------|------------|----------------------------------------------------------------------------|
+| **`id`**          | `String`         | *required* | Unique identifier. Used for the textarea `id` and label `for` attribute.   |
+| **`label`**       | `String \| null` | `null`     | Visible label text. If provided, triggers automatic `data-i18n` attribute. |
+| **`placeholder`** | `String`         | `''`       | Text displayed inside the textarea when empty.                             |
+| **`name`**        | `String`         | `''`       | The `name` attribute for form submission.                                  |
+| **`attrs`**       | `Object`         | `{}`       | Additional attributes (e.g., `{ rows: 5, readonly: true }`).               |
+| **`bindings`**    | `Object`         | `{}`       | Reactive bindings for `@razerspine/runtime`.                               |
 
 ---
 
 ## Behavior & Features
 
-### Reactive Bindings
+### Automatic Internationalization (i18n)
 
-The mixin processes the `bindings` object using the `_mapRuntimeBindings` helper to create `data-*` attributes:
+Just like the input mixin, if a `label` is provided, the `<label>` element automatically receives a `data-i18n`
+attribute. This allows the UI to be translated without manual attribute management.
 
-- `model` ➔ `data-model` (Two-way data binding for the textarea content)
-- `show` ➔ `data-show`
-- `bind` ➔ `data-bind`
+### Attribute Priority Mapping
 
-### Styling & Structure
+Attributes are merged in a predictable order (lowest to highest priority):
 
-- **Base Class:** Automatically applies the `.form-textarea` CSS class.
-- **Class Merging:** Any `class` provided within the `attrs` object is merged with the base `.form-textarea` class.
-- **Label Association:** Ensures proper accessibility by linking the `<label for="...">` to the `<textarea id="...">`.
+1. **Base:** `id`, `name`, `placeholder`.
+2. **Custom:** Attributes passed via the `attrs` object.
+3. **Reactive:** Attributes generated from the `bindings` object.
+
+### Styling & Class Handling
+
+- **Base Class:** The element always receives the `.form-textarea` class.
+- **Label Class:** The label receives the `.form-label` class.
+- **Class Merging:** Custom classes from `attrs` are prepended to the base `.form-textarea` class.
 
 ---
 
 ## Accessibility (A11y)
 
-- **Labeled Inputs:** Providing a `label` string automatically creates an accessible relationship between the label and
-  the field.
-- **Hidden Labels:** If `label` is not provided, it is highly recommended to pass an `aria-label` via the `attrs`
-  parameter to ensure the field is identifiable by screen readers.
+- **Label Association:** The mixin links `<label for="...">` and `<textarea id="...">` using the `id` parameter.
+- **Screen Readers:** If you choose not to provide a `label`, ensure you include `aria-label` or `aria-labelledby` in
+  the `attrs` object for a compliant user experience.
 
 ---
 
 ## Examples
 
-### 1. Basic Textarea with Model Binding
+### 1. Basic Textarea with i18n
 
-Standard usage for a comment field linked to a reactive post object.
+The label will render as `<label class="form-label" for="bio" data-i18n="Biography">`.
 
 ```pug
-+formTextarea(
-  'comment', 
-  'Comment', 
-  'Enter your thoughts here...', 
-  'comment', 
-  {}, 
-  { model: 'post.comment' }
-)
++formTextarea('bio', 'Biography', 'Tell us about yourself...')
 ```
 
-### 2. Custom Rows and Visibility
+### 2. Reactive Model Binding
 
-A feedback field with a specific height that only appears based on a reactive condition.
+Synchronizes the textarea content with the `post.content` reactive path.
 
 ```pug
-+formTextarea(
-  'feedback', 
-  'Your Feedback', 
-  'How can we improve?', 
-  'feedback', 
-  { rows: 10, minlength: 20 }, 
-  { show: 'isFeedbackVisible' }
-)
++formTextarea('comment', 'Comment', '', 'comment', { rows: 4 }, { model: 'post.content' })
 ```
 
-### 3. Read-only State
+### 3. Read-only Display
+
+Useful for displaying logs or static multi-line data.
 
 ```pug
-+formTextarea(
-  'logs', 
-  'System Logs', 
-  '', 
-  'logs', 
-  { readonly: true, rows: 5, class: 'textarea--monospaced' }
-)
++formTextarea('logs', 'System Logs', '', 'logs', { readonly: true, rows: 8, class: 'is-monospaced' })
 ```

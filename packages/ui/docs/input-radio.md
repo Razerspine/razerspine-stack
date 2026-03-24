@@ -1,55 +1,58 @@
 # Radio Mixin (`+inputRadio`)
 
-Renders a configurable radio input element with an associated label. This mixin is specifically designed to work within
-reactive radio groups, where multiple inputs share the same name and data model.
+Renders a configurable radio input element nested within a label wrapper. This mixin is optimized for reactive radio
+groups, ensuring consistent styling, accessibility, and internationalization.
 
 ---
 
 ## Parameters
 
-| Parameter      | Type      | Default    | Description                                                                      |
-|----------------|-----------|------------|----------------------------------------------------------------------------------|
-| **`id`**       | `String`  | *required* | Unique identifier for the input. Also used for the label's `for` attribute.      |
-| **`label`**    | `String`  | *required* | Visible label text shown next to the radio button.                               |
-| **`name`**     | `String`  | *required* | The `name` attribute used to group multiple radio buttons together.              |
-| **`value`**    | `String`  | *required* | The value submitted or stored in the model when this specific radio is selected. |
-| **`checked`**  | `Boolean` | `false`    | Whether this radio button is selected by default.                                |
-| **`attrs`**    | `Object`  | `{}`       | Additional HTML attributes for the `<input>` (e.g., `{ disabled: true }`).       |
-| **`bindings`** | `Object`  | `{}`       | Reactive bindings for `@razerspine/runtime`.                                     |
+| Parameter      | Type      | Default    | Description                                                |
+|----------------|-----------|------------|------------------------------------------------------------|
+| **`id`**       | `String`  | *required* | Unique identifier for the input and label association.     |
+| **`label`**    | `String`  | *required* | Visible label text. Automatically assigned to `data-i18n`. |
+| **`name`**     | `String`  | *required* | Attribute used to group multiple radio buttons together.   |
+| **`value`**    | `String`  | *required* | Value stored in the model when this radio is selected.     |
+| **`checked`**  | `Boolean` | `false`    | Initial selection state.                                   |
+| **`attrs`**    | `Object`  | `{}`       | Additional HTML attributes for the `<input>`.              |
+| **`bindings`** | `Object`  | `{}`       | Reactive bindings for `@razerspine/runtime`.               |
 
 ---
 
 ## Behavior & Features
 
-### Radio Groups
+### HTML Structure
 
-To create a functional radio group where only one option can be selected at a time:
+To provide a larger click area and flexible styling, the mixin uses a nested approach:
 
-1. All `+inputRadio` instances in the group **must** share the same `name` attribute.
-2. For reactive behavior, all instances in the group should share the same `bindings.model` key.
+1. **Wrapper:** A `label.check-control-label` container.
+2. **Input:** The `<input type="radio">` element.
+3. **Text:** The visible text wrapped in a `span.input-text`.
 
-### Structure & Styling
+### Built-in i18n
 
-- **Wrapper:** Like the checkbox mixin, this wraps the input and label in a `.check-control-label` inline container.
-- **Base Class:** The radio input receives the `.input-base` class by default.
-- **Class Merging:** Custom classes provided in the `attrs` object are automatically merged with the base styling.
+The `span.input-text` element automatically receives a `data-i18n` attribute. This ensures that every radio option in
+your group is ready for translation without extra code.
 
-### Reactive Bindings
+### Styling & Class Handling
 
-Uses the `_mapRuntimeBindings` helper to link the radio state to the application data:
+- **Base Class:** The radio input receives the `.input-base` class.
+- **Custom Classes:** Classes passed via `attrs.class` are prepended to the base `.input-base` class.
+- **Wrapper Class:** The container always uses `.check-control-label`.
 
-- `model` ➔ `data-model` (The group's shared data property)
-- `click` ➔ `data-click`
-- `show` ➔ `data-show`
+### Attribute Priority
+
+The `Object.assign` logic ensures the following override order (highest priority last):
+`baseAttrs` (type, id, name, value, checked) < `attrs` < `runtimeAttrs` (from bindings).
 
 ---
 
 ## Accessibility (A11y)
 
-- **Labeling:** The mixin ensures the `<label>` is correctly linked to the radio via `id`, allowing users to select the
-  option by clicking the text.
-- **Grouping:** Using the same `name` attribute across a group of radios is essential for screen readers to understand
-  that the options are mutually exclusive.
+- **Grouping:** All radios in a logical set **must** share the same `name` attribute. This allows screen readers to
+  treat them as a single group where only one choice is possible.
+- **Interaction:** Nesting the input inside the label allows users to toggle the radio by clicking either the button
+  itself or the associated text.
 
 ---
 
@@ -57,39 +60,29 @@ Uses the `_mapRuntimeBindings` helper to link the radio state to the application
 
 ### 1. Reactive Radio Group
 
-Multiple radio buttons bound to a single reactive property (`user.gender`).
+All options share the same `name` and `model` binding to act as a single reactive unit.
 
 ```pug
-.input-group
-  +inputRadio('m', 'Male', 'gender', 'male', false, {}, { model: 'user.gender' })
-  +inputRadio('f', 'Female', 'gender', 'female', false, {}, { model: 'user.gender' })
-  +inputRadio('o', 'Other', 'gender', 'other', false, {}, { model: 'user.gender' })
+.radio-group
+  +inputRadio('gender-m', 'Male', 'gender', 'm', false, {}, { model: 'user.gender' })
+  +inputRadio('gender-f', 'Female', 'gender', 'f', false, {}, { model: 'user.gender' })
 ```
 
-### 2. Disabled Option
-
-A radio button that is visible but cannot be interacted with.
+### 2. Pre-selected and Disabled Option
 
 ```pug
 +inputRadio(
-  'opt-restricted', 
-  'Premium Feature (Disabled)', 
+  'opt-1', 
+  'Standard Plan', 
   'plan', 
-  'premium', 
-  false, 
-  { disabled: true }
+  'std', 
+  true, 
+  { disabled: true, class: 'is-locked' }
 )
 ```
 
-### 3. Radio with Custom Attributes
+### 3. Custom Attributes
 
 ```pug
-+inputRadio(
-  'contact-email', 
-  'Email Notification', 
-  'contact-method', 
-  'email', 
-  true, 
-  { class: 'input--highlight' }
-)
++inputRadio('notify-yes', 'Yes', 'notify', '1', false, { 'aria-describedby': 'hint-text' })
 ```

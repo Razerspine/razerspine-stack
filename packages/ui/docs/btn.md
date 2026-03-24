@@ -20,49 +20,54 @@ Renders a configurable button with an optional icon and text. The visual appeara
 
 ## Behavior & Features
 
+### Automatic i18n Support
+
+The mixin automatically handles translation attributes:
+- **With text:** Adds `data-i18n="{text}"` to the button.
+- **Icon-only:** Generates a label from `iconName` (e.g., `arrow-left` ➔ `arrow left`), sets it as `aria-label`, and adds `data-i18n-attr="aria-label"`.
+
 ### Reactive Bindings
 
-The mixin uses an internal `_mapRuntimeBindings` helper to process the `bindings` object into data attributes:
-
-- `click` ➔ `data-click`
-- `model` ➔ `data-model`
-- `bind` ➔ `data-bind`
-- `show` ➔ `data-show`
-- `class` ➔ `data-class`
-- `for` ➔ `data-for`
+Mapped via `_mapRuntimeBindings` into `data-*` attributes:
+- `click`, `model`, `bind`, `show`, `class`, `for`.
 
 ### SVG Sprite System
 
-The project has migrated to an SVG sprite.
-
-- The mixin references symbols by ID: `<use href="#icon-{iconName}">`.
-- `xlink:href` is kept for legacy browser compatibility.
-- **Note:** Ensure your sprite contains `<symbol id="icon-{name}">` entries.
+- References symbols via `<use href="#icon-{iconName}">`.
+- Includes `xlink:href` for legacy support.
+- Icons receive the `.button-icon` class and size-specific class.
 
 ---
 
 ## Accessibility (A11y)
 
-- **Decorative Icons:** If the button has visible text, the SVG is treated as decorative and gets `aria-hidden="true"`
-  so screen readers ignore it.
-- **Icon-only Buttons:** If the button is icon-only (`text` is `null` or empty), the mixin will set an `aria-label` on
-  the button if `attrs` does not already provide one.
+- **Decorative:** If text is present, SVG is hidden via `aria-hidden="true"`.
+- **Informative:** If icon-only, SVG gets `role="img"` and the button gets an `aria-label`.
+- **Smart Fallback:** If no `aria-label` is provided for an icon-only button, it is automatically generated from the `iconName`.
 
-> [!TIP]
-> Always provide a meaningful `aria-label` in `attrs` for icon-only buttons for better accessibility.
+> [!IMPORTANT]
+> The mixin checks for `aria-label`, `ariaLabel`, or `aria-labelledby` in `attrs` before generating a fallback.
 
 ---
 
 ## Examples
 
-### Button with reactive click and visibility
+### Button with i18n and Binding
 
 ```pug
-+btn('Save', 'primary', 'medium', { type: 'submit' }, null, { click: 'save', show: 'isDirty' })
+//- Automatically gets data-i18n="Save"
++btn('Save', 'primary', 'medium', { type: 'submit' }, null, { click: 'save' })
 ```
 
-### Icon-only button with binding
+### Icon-only Button with Generated Label
 
 ```pug
+//- Gets aria-label="refresh", role="img" for SVG, and i18n attributes
 +btn(null, 'icon-primary', 'small', {}, 'refresh', { click: 'reload' })
+```
+
+### Custom Accessibility Label
+
+```pug
++btn(null, 'icon', 'medium', { 'aria-label': 'Close Sidebar' }, 'close')
 ```

@@ -1,99 +1,95 @@
 # Data Table Mixin (`+dataTable`)
 
-Renders a flexible and configurable data table from an array of objects. It support automatic column detection, custom
-cell formatting, and row-level actions with reactive bindings.
+Renders a flexible and configurable data table from an array of objects. It supports automatic column detection, smart
+data formatting, and row-level actions with reactive bindings.
 
 ---
 
 ## Parameters
 
-| Parameter      | Type                  | Default | Description                                                                                          |
-|----------------|-----------------------|---------|------------------------------------------------------------------------------------------------------|
-| **`items`**    | `Array`               | `[]`    | Array of objects to render as rows. Each object represents one row.                                  |
-| **`columns`**  | `Array \| undefined`  | *auto*  | Optional ordered list of keys to use as columns. If omitted, unique keys are collected from `items`. |
-| **`options`**  | `Object \| undefined` | `{}`    | Configuration object for headers, formatting, and actions (see [Options](#options) below).           |
-| **`bindings`** | `Object \| null`      | `{}`    | Reactive bindings for the `<table>` element itself (e.g., `show`, `class`).                          |
+| Parameter      | Type                  | Default | Description                                                                       |
+|:---------------|:----------------------|:--------|:----------------------------------------------------------------------------------|
+| **`items`**    | `Array`               | `[]`    | Array of objects to render as rows.                                               |
+| **`columns`**  | `Array \| undefined`  | *auto*  | List of keys for columns. If omitted, unique keys are extracted from all `items`. |
+| **`options`**  | `Object \| undefined` | `{}`    | Configuration object (see [Options](#options)).                                   |
+| **`bindings`** | `Object \| null`      | `{}`    | Reactive bindings for the `<table>` element.                                      |
 
 ---
 
 ## Options
 
-The `options` object allows fine-grained control over the table behavior:
+The `options` object provides the following controls:
 
-- **`emptyText`** (`String`): Text displayed in a single row when `items` is empty. Default: `'No data'`.
-- **`showIndex`** (`Boolean`): If `true`, renders a leading column with the row index (1, 2, 3...). Default: `false`.
-- **`labels`** (`Object`): Map of column keys to header display strings. Example: `{ user_id: 'ID' }`.
-- **`formatters`** (`Object`): Map of column keys to functions for custom cell rendering.
-  - *Example:* `{ price: v => `$${v.toFixed(2)}` }`.
-- **`actions`** (`Array`): List of action objects rendered in the final column.
-
----
-
-## Automatic Column Detection
-
-When the `columns` parameter is omitted or `undefined`, the mixin automatically determines the table structure:
-
-1. It iterates through all objects in the `items` array.
-2. It collects every **unique key** found across all objects.
-3. These keys are used as the column identifiers in the order they were first encountered.
-
-> [!NOTE]
-> If your data objects have inconsistent keys, automatic detection ensures all data is represented, but it's recommended
-> to pass an explicit `columns` array for a predictable UI.
-
----
-
-## Row Actions
-
-Actions are rendered as `<a>` tags within a separate "Actions" column. Each action object supports:
-
-| Property       | Type             | Description                                                               |
-|----------------|------------------|---------------------------------------------------------------------------|
-| **`label`**    | `String`         | The visible text of the link/button.                                      |
-| **`url`**      | `Function(item)` | Callback returning the URL string based on the current row data.          |
-| **`class`**    | `String`         | Optional CSS classes for the action link.                                 |
-| **`bindings`** | `Function(item)` | Optional callback returning reactive bindings (e.g., `{ click: '...' }`). |
+- **`emptyText`** (`String`): Text shown when `items` is empty. Default: `'No data'`.
+- **`showIndex`** (`Boolean`): Renders a `#` column with row indices. Default: `false`.
+- **`labels`** (`Object`): Map of column keys to custom header text.
+- **`formatters`** (`Object`): Functions to transform cell values. Example: `{ date: v => new Date(v).getFullYear() }`.
+- **`actions`** (`Array`): List of action objects for the final column.
 
 ---
 
 ## Behavior & Features
 
-- **Styling:** Automatically applies Bootstrap-like `.table` classes.
-- **Empty States:** Renders a unified `colspan` row with `emptyText` if no data is present.
-- **Reactive Integration:** Supports `@razerspine/runtime` bindings for both the table container and individual action
-  elements via the `_mapRuntimeBindings` helper.
+### Smart Header Generation
+
+If a label for a column is not provided in `options.labels`, the mixin "humanizes" the key:
+
+- Replaces underscores with spaces.
+- Capitalizes the first letter (e.g., `user_role` ➔ `User role`).
+
+### Automatic Value Formatting
+
+The mixin handles different data types inside cells automatically:
+
+- **Arrays:** Joined into a string with commas (`, `).
+- **Objects:** Rendered as a JSON string.
+- **Empty values:** `null`, `undefined`, or `''` result in an empty cell.
+- **HTML:** Values from formatters are rendered using `!=`, allowing custom HTML inside cells.
+
+### Automatic Column Detection
+
+If `columns` is not provided, the mixin reduces the entire `items` array to find every **unique key** present in any
+object, ensuring no data is hidden even if objects have inconsistent structures.
+
+---
+
+## Row Actions
+
+Actions are rendered as `<a>` tags. Each action supports:
+
+| Property       | Type                       | Description                                                                         |
+|----------------|----------------------------|-------------------------------------------------------------------------------------|
+| **`label`**    | `String`                   | Visible text of the action.                                                         |
+| **`url`**      | `Function(item)`           | Function that returns the `href` string. Default: `#`.                              |
+| **`class`**    | `String`                   | CSS classes for the link.                                                           |
+| **`bindings`** | `Function(item) \| Object` | Reactive bindings. Can be a static object or a function receiving the row's `item`. |
 
 ---
 
 ## Examples
 
-### 1. Basic Usage
+### 1. Basic Usage (Auto-formatting)
 
-Renders all keys from the objects and controls table visibility reactively.
+The table will automatically join the `tags` array and humanize the `is_active` header.
 
 ```pug
-- const data = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
-+dataTable(data, null, {}, { show: 'isTableVisible' })
+- const data = [{ id: 1, tags: ['web', 'ui'], is_active: true }];
++dataTable(data)
 ```
 
 ### 2. Advanced Usage (Formatters & Actions)
 
-Explicit columns, custom labels, and a delete action with a reactive click handler.
-
 ```pug
-+dataTable(data, ['id', 'name', 'createdAt'], {
++dataTable(data, ['id', 'name'], {
   showIndex: true,
-  labels: { 
-    name: 'Full Name',
-    createdAt: 'Joined'
-  },
+  labels: { name: 'Full Name' },
   formatters: {
-    createdAt: (val) => new Date(val).toLocaleDateString()
+    name: (val) => `<strong>${val.toUpperCase()}</strong>`
   },
   actions: [
     {
       label: 'Delete',
-      class: 'btn btn--text-secondary',
+      class: 'btn btn--danger',
       bindings: (item) => ({ click: `deleteUser(${item.id})` })
     }
   ]

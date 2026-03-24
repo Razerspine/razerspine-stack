@@ -1,95 +1,81 @@
 # Checkbox Mixin (`+inputCheckbox`)
 
-Renders a configurable checkbox input paired with a label. This mixin automates the association between the input and
-its label while providing a consistent layout structure and support for reactive data binding.
+Renders a configurable checkbox input nested within a label wrapper. This mixin provides a consistent accessible
+structure, handles state initialization, and integrates with the reactive system.
 
 ---
 
 ## Parameters
 
-| Parameter      | Type      | Default    | Description                                                                 |
-|----------------|-----------|------------|-----------------------------------------------------------------------------|
-| **`id`**       | `String`  | *required* | Unique identifier for the input. Also used for the label's `for` attribute. |
-| **`label`**    | `String`  | *required* | Visible text shown next to the checkbox.                                    |
-| **`name`**     | `String`  | `''`       | The `name` attribute used for form submission or grouping.                  |
-| **`value`**    | `String`  | `'on'`     | The value submitted to the server when the checkbox is checked.             |
-| **`checked`**  | `Boolean` | `false`    | Whether the checkbox is initially in a checked state.                       |
-| **`attrs`**    | `Object`  | `{}`       | Additional HTML attributes for the `<input>` (e.g., `{ disabled: true }`).  |
-| **`bindings`** | `Object`  | `{}`       | Reactive bindings for `@razerspine/runtime`.                                |
+| Parameter      | Type      | Default    | Description                                                       |
+|----------------|-----------|------------|-------------------------------------------------------------------|
+| **`id`**       | `String`  | *required* | Unique identifier for the input. Links the label to the checkbox. |
+| **`label`**    | `String`  | *required* | Visible text displayed next to the checkbox.                      |
+| **`name`**     | `String`  | `''`       | The `name` attribute for form submission or grouping.             |
+| **`value`**    | `String`  | `'on'`     | The value submitted when the checkbox is checked.                 |
+| **`checked`**  | `Boolean` | `false`    | Initial checked state of the input.                               |
+| **`attrs`**    | `Object`  | `{}`       | Additional HTML attributes for the `<input>`.                     |
+| **`bindings`** | `Object`  | `{}`       | Reactive bindings for `@razerspine/runtime`.                      |
 
 ---
 
 ## Behavior & Features
 
-### Structure & Styling
+### HTML Structure
 
-- **Wrapper:** The input and label text are wrapped together in an inline control container with the
-  `.check-control-label` class.
-- **Base Class:** The checkbox itself receives the `.input-base` class.
-- **Class Merging:** Any `class` provided inside the `attrs` object is automatically merged with the base `.input-base`
-  class.
+Unlike standard inputs, this mixin uses a nested structure for better styling and click-target area:
 
-### Reactive Bindings
+1. **Wrapper:** A `label.check-control-label` acts as the main container.
+2. **Input:** The `<input type="checkbox">` is placed inside the label.
+3. **Text:** The label text is wrapped in a `span.input-text`.
 
-The mixin utilizes the `_mapRuntimeBindings` helper to map keys in the `bindings` object to `data-*` attributes:
+### Built-in i18n
 
-- `model` ➔ `data-model` (links the checked state to a data property)
-- `click` ➔ `data-click`
-- `show` ➔ `data-show`
+The `span.input-text` element automatically receives a `data-i18n` attribute set to the `label` value, ensuring the
+checkbox label is translatable.
+
+### Styling & Class Handling
+
+- **Base Class:** The checkbox input receives the `.input-base` class.
+- **Custom Classes:** Any `class` passed via `attrs` is prepended to `.input-base`.
+- **Control Class:** The outer wrapper always has the `.check-control-label` class.
+
+### Attribute Priority
+
+The mixin merges attributes in the following order (highest priority last):
+`baseAttrs` (type, id, name, etc.) < `attrs` < `runtimeAttrs` (from bindings).
 
 ---
 
 ## Accessibility (A11y)
 
-The mixin ensures a proper accessibility tree by strictly linking the `<label for="...">` to the `<input id="...">`.
-This allows screen readers to correctly identify the purpose of the checkbox and enables users to toggle the checkbox by
-clicking the label text.
+- **Implicit Association:** By nesting the `<input>` inside the `<label>`, the mixin provides a large, accessible click
+  area.
+- **Explicit Linking:** The `for` attribute on the label is still provided to ensure maximum compatibility with all
+  assistive technologies.
 
 ---
 
 ## Examples
 
-### 1. Basic Checkbox with Model Binding
+### 1. Basic Checkbox with i18n
 
-A standard "Terms of Service" agreement checkbox linked to a reactive form model.
+The text will be wrapped in a translatable span: `<span class="input-text" data-i18n="I agree">I agree</span>`.
 
 ```pug
-+inputCheckbox(
-  'agree', 
-  'I agree to the terms', 
-  'terms', 
-  'yes', 
-  false, 
-  {}, 
-  { model: 'form.agreed' }
-)
++inputCheckbox('agree', 'I agree', 'terms')
 ```
 
-### 2. Disabled Pre-checked State
+### 2. Reactive Model Binding
 
-A subscription checkbox that is checked by default but currently disabled.
+Links the checkbox state to the `form.accepted` reactive property.
 
 ```pug
-+inputCheckbox(
-  'newsletter', 
-  'Subscribe to newsletter', 
-  'news', 
-  '1', 
-  true, 
-  { disabled: true }
-)
++inputCheckbox('agree', 'Accept', 'terms', 'yes', false, {}, { model: 'form.accepted' })
 ```
 
-### 3. Checkbox with Reactive Click Handler
+### 3. Disabled & Pre-checked
 
 ```pug
-+inputCheckbox(
-  'toggle-debug', 
-  'Enable Debug Mode', 
-  'debug', 
-  'on', 
-  false, 
-  { class: 'input--warning' }, 
-  { click: 'onDebugToggle' }
-)
++inputCheckbox('news', 'Newsletter', 'sub', '1', true, { disabled: true, class: 'is-readonly' })
 ```
