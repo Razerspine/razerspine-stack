@@ -1,5 +1,4 @@
 include ../../../../dist/pug/mixins/input-checkbox.pug
 
 div
-  +inputCheckbox('agree', 'I agree', 'terms', 'yes', false, {}, {model: 'form.agreed'})
-  +inputCheckbox('newsletter', 'Subscribe', 'news', '1', true, {disabled: true})
+  +inputCheckbox(id, label, name, value, checked, attrs, bindings)
