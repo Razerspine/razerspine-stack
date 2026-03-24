@@ -6,7 +6,7 @@ function resolveDist() {
     const local = path.resolve(process.cwd(), 'dist');
     if (fs.existsSync(local)) return local;
 
-    return path.resolve(process.cwd(), 'packages/pug-ui-kit/dist');
+    return path.resolve(process.cwd(), 'packages/ui/dist');
 }
 
 const distRoot = resolveDist();

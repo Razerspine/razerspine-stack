@@ -257,14 +257,14 @@ Reusable mixins located in `mixins/`.
 To avoid complex relative paths, configure Webpack alias:
 
 ```js
-const uiKit = require('@razerspine/pug-ui-kit');
+const uiKit = require('packages/ui');
 
 module.exports = {
-  resolve: {
-    alias: {
-      'pug-ui-kit': uiKit.paths.mixins,
+    resolve: {
+        alias: {
+            'pug-ui-kit': uiKit.paths.mixins,
+        },
     },
-  },
 };
 ```
 

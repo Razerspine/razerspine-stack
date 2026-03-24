@@ -13,4 +13,4 @@ $total-ratio: $aside-ratio + $main-ratio;
 $available-width: calc(#{$container-max} - #{calc(#{$gutter} * 2)}); // when layout have gap
 
 // font path
-$font-path: '~@razerspine/pug-ui-kit/fonts' !default;
+$font-path: '~@razerspine/ui/fonts' !default;
