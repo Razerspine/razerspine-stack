@@ -40,9 +40,8 @@
     "setup:fixtures": "npm --prefix tests/fixtures/with-runtime install && npm --prefix tests/fixtures/without-runtime install",
     "pretest": "npm run build && npm run setup:fixtures",
     "test": "vitest run",
-    "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:e2e": "vitest run tests/e2e",
+    "test:snapshots": "npm run build && vitest run tests/snapshots",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
