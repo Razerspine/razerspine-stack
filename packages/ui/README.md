@@ -1,196 +1,142 @@
-# @razerspine/pug-ui-kit
+# @razerspine/ui
 
-[![npm version](https://img.shields.io/npm/v/@razerspine/pug-ui-kit.svg)](https://www.npmjs.com/package/@razerspine/pug-ui-kit)
+[![npm version](https://img.shields.io/npm/v/@razerspine/ui.svg)](https://www.npmjs.com/package/@razerspine/ui)
+[![Vitest](https://img.shields.io/badge/Vitest-89_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
-[![license](https://img.shields.io/npm/l/@razerspine/pug-ui-kit.svg)](./LICENSE)
+[![license](https://img.shields.io/npm/l/@razerspine/ui.svg)](./LICENSE)
 
-Professional, modular UI Kit for **Pug (Jade)** templates.  
-Includes reusable mixins and a complete styling system (SCSS / LESS / compiled CSS).
-
-Designed to work seamlessly with  
-👉 https://github.com/Razerspine/webpack-starter-monorepo
+A modern, modular **UI layer for Pug-based applications**.
+Provides a complete styling system (SCSS / LESS / CSS) and reusable Pug components.
 
 ---
 
-## 📦 Installation
+## Table of Contents
 
-This package is automatically included in templates generated via the CLI.
+- [Installation](#installation)
+- [Quick Start](#-quick-start)
+  - [Use Compiled CSS](#use-compiled-css)
+  - [Use SCSS](#use-scss)
+  - [Use LESS](#use-less)
+- [Styling System](#styling-system)
+- [Fonts](fonts)
+- [Modular Imports](#modular-imports-advanced)
+- [Pug Components](#pug-components)
+- [Documentation](#documentation)
+- [Package Structure](#package-structure)
+- [Build (Contributors)](#build-for-contributors)
+- [License](#license)
 
-To install manually:
+---
+
+# Installation
 
 ```bash
-npm install @razerspine/pug-ui-kit
+npm install @razerspine/ui
 ```
 
 ---
 
-# ⚡ Quick Start
+## ⚡ Quick Start
 
-Choose the setup that fits your workflow.
+### Use Compiled CSS
+
+Best for simple setups without preprocessors.
+
+```scss
+@import "@razerspine/ui/css/ui.min.css";
+```
+
+✔ Autoprefixed
+✔ Minified
+✔ Ready for production
 
 ---
 
-## 1️⃣ Use Compiled CSS (Simplest)
-
-Recommended for simple setups without Sass/Less processing.
-
-Minified (production):
+### Use SCSS
 
 ```scss
-@import "@razerspine/pug-ui-kit/style/style.min.css";
-```
-
-Non-minified:
-
-```scss
-@import "@razerspine/pug-ui-kit/style/style.css";
-```
-
-✔ Includes vendor prefixes  
-✔ Cross-browser ready  
-✔ Dark mode support via `html[data-theme="dark"]`
-
----
-
-## 2️⃣ Use SCSS (Customizable)
-
-The UI Kit uses `!default` flags, allowing you to override any part of the theme.
-```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss" as *;
 ```
 
 Override variables:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/settings" with (
-  $font-path: "/my-custom-path/fonts"
+@use "@razerspine/ui/scss/settings" with (
+  $font-path: "/my-fonts"
 );
 
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss" as *;
 ```
 
 ---
 
-## 3️⃣ Use LESS
+### Use LESS
 
 ```less
-@import "@razerspine/pug-ui-kit/less/ui-kit";
+@import "@razerspine/ui/less";
 ```
 
 Override variables:
 
 ```less
-@font-path: "/my-custom-path/fonts";
-@import "@razerspine/pug-ui-kit/less/ui-kit";
+@font-path: "/my-fonts";
+@import "@razerspine/ui/less";
 ```
 
 ---
 
-# 🎨 Styling System
+## Styling System
 
-##### The UI Kit is a full style system including:
+The UI layer includes:
 
-- **Design Tokens**: Comprehensive palette (50-900) for Brand and Neutral colors.
-- **Themes**: Built-in Light and Dark modes using CSS Variables.
-- **Base reset**: Modern CSS reset.
-- **Layout & Components**: Grid system and reusable UI elements.
+- Design tokens (color system, spacing, typography)
+- Light / Dark themes (via CSS variables)
+- Base reset
+- Layout system (grid)
+- UI components
 
-#### The main entry file:
-
-SCSS:
-```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
-```
-
-LESS:
-```less
-@import "@razerspine/pug-ui-kit/less/ui-kit";
-```
-
-#### Theme Variables (CSS)
-
-The system maps SCSS/LESS tokens to native CSS variables (example):
-
-| CSS Variable      | Default (Light)     | Default (Dark)       |
-|-------------------|---------------------|----------------------|
-| `--brand-500`     | `#6366f1` (Indigo)  | Inherited            |
-| `--bg-color`      | `#fafafa` (Zinc 50) | `#09090b` (Zinc 950) |
-| `--text-primary`  | `#18181b`           | `#f4f4f5`            |
-| `--border-subtle` | `#e4e4e7`           | `#27272a`            |
-
----
-
-# 🧩 Modular Imports (Advanced Usage)
-
-The UI Kit is fully modular.
-
-Each directory contains its own `_index` file, allowing granular imports.
-
-## SCSS structure
-
-```
-scss/
-├── ui-kit.scss
-├── fonts.scss
-├── base/
-├── settings/
-├── themes/
-├── layout/
-├── components/
-└── utils/
-```
-
-Example: import only components + tokens
-
-```scss
-@use "@razerspine/pug-ui-kit/scss/settings/index" as *;
-@use "@razerspine/pug-ui-kit/scss/components/index" as *;
-```
-
-Import single component:
-
-```scss
-@use "@razerspine/pug-ui-kit/scss/settings/index" as *;
-@use "@razerspine/pug-ui-kit/scss/components/buttons";
-```
-
-⚠ When using partial imports, you must import required dependencies manually (e.g., settings before components).
-
----
-
-# 🔎 Font Architecture (Since v1.4.0)
-
-`@font-face` declarations are no longer injected automatically.
-
-This improves:
-
-- flexibility
-- performance control
-- enterprise compatibility
-- design system neutrality
-
-## Use bundled Roboto
+### Entry points
 
 SCSS:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/fonts";
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss" as *;
 ```
 
 LESS:
 
 ```less
-@import "@razerspine/pug-ui-kit/less/fonts";
-@import "@razerspine/pug-ui-kit/less/ui-kit";
+@import "@razerspine/ui/less";
 ```
 
-## Use your own font
+---
+
+## Fonts
+
+Fonts are **optional and not auto-included**.
+
+### Use bundled Roboto
 
 SCSS:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" with (
+@use "@razerspine/ui/scss/fonts";
+@use "@razerspine/ui/scss" as *;
+```
+
+LESS:
+
+```less
+@import "@razerspine/ui/less/fonts";
+@import "@razerspine/ui/less";
+```
+
+### Use custom font
+
+SCSS:
+
+```scss
+@use "@razerspine/ui/scss" with (
   $font-family: "Inter", system-ui, sans-serif
 );
 ```
@@ -199,204 +145,116 @@ LESS:
 
 ```less
 @font-family: "Inter", system-ui, sans-serif;
-@import "@razerspine/pug-ui-kit/less/ui-kit";
+@import "@razerspine/ui/less";
 ```
 
-The UI Kit controls typography styling — not font delivery.
-
 ---
 
-# 🔄 Migration Guide (v1.4.0)
+## Modular Imports (Advanced)
 
-## What changed?
+Each layer is split into modules:
 
-`@font-face` is no longer auto-included in `ui-kit`.
+```text
+scss/
+  base/
+  settings/
+  themes/
+  layout/
+  components/
+  utils/
+```
 
-Compiled CSS users are NOT affected.
-
----
-
-### Before (≤1.3.x)
-
-SCSS:
+Example:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss/settings" as *;
+@use "@razerspine/ui/scss/components";
 ```
 
-LESS:
-
-```less
-@import "@razerspine/pug-ui-kit/less/ui-kit";
-```
+> ⚠ When using partial imports, you must include dependencies manually.
 
 ---
 
-### After (≥1.4.0)
+## Pug Components
 
-SCSS:
+Reusable mixins are available via:
 
-```scss
-@use "@razerspine/pug-ui-kit/scss/fonts";
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+```text
+dist/pug/mixins/*
 ```
 
-LESS:
-
-```less
-@import "@razerspine/pug-ui-kit/less/fonts";
-@import "@razerspine/pug-ui-kit/less/ui-kit";
-```
-
----
-
-# 🧱 Pug Components
-
-Reusable mixins located in `mixins/`.
-
-To avoid complex relative paths, configure Webpack alias:
+### Webpack alias example
 
 ```js
-const uiKit = require('packages/ui');
+const ui = require('@razerspine/ui');
 
 module.exports = {
-    resolve: {
-        alias: {
-            'pug-ui-kit': uiKit.paths.mixins,
-        },
+  resolve: {
+    alias: {
+      'ui-mixins': ui.paths.mixins,
     },
+  },
 };
 ```
 
-Then import in Pug:
+Usage:
 
 ```pug
-include ~pug-ui-kit/btn.pug
+include ~ui-mixins/btn.pug
 ```
 
 ---
 
-## 🔘 Button
+## Documentation
 
-```pug
-include ~pug-ui-kit/btn.pug
+Full documentation for all mixins is available in:
 
-+btn('Save', 'primary', 'small', { type: 'submit' })
+```text
+docs/
 ```
 
-#### Parameters:
-
-| Param    | Type   | Default              | Description      |
-|----------|--------|----------------------|------------------|
-| text     | String | null                 | Button text      |
-| variant  | String | 'primary'            | Style modifier   |
-| size     | String | 'medium'             | Size modifier    |
-| attrs    | Object | `{ type: 'button' }` | Extra attributes |
-| iconName | String | null                 | SVG sprite icon  |
+- [Button](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/btn.md)
+- [Data Table](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/data-table.md)
+- [Form Input](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/form-input.md)
+- [Textarea](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/form-textarea.md)
+- [Checkbox](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/input-checkbox.md)
+- [Radio](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/input-radio.md)
+- [Single Select](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/single-select.md)
 
 ---
 
-## 📊 Data Table
+## Package Structure
 
-```pug
-include ~pug-ui-kit/data-table.pug
+```text
+src/        → source files
+scripts/    → build tools (not published)
+dist/       → distributable output
 
-- const data = [{id:1, name:'Alice'}, {id:2, name:'Bob'}]
-
-+dataTable(data, ['id','name'], {
-  showIndex: true,
-  labels: { name: 'Full Name' }
-})
-```
-
-Features:
-
-- Auto column detection
-- Custom formatters
-- Optional actions column
-- Empty state support
-
----
-
-## 📝 Form Input
-
-```pug
-include ~pug-ui-kit/form-input.pug
-
-+formInput('text', 'username', 'Name', 'Enter your name', 'username')
+dist/
+  css/      → compiled CSS
+  scss/     → SCSS sources
+  less/     → LESS sources
+  pug/      → mixins
+fonts/      → font assets
+docs/       → mixin documentation
 ```
 
 ---
 
-## 📄 Textarea
-
-```pug
-include ~pug-ui-kit/form-textarea.pug
-
-+formTextarea('message', 'Message', 'Type your message...', 'message')
-```
-
----
-
-## ☑ Checkbox
-
-```pug
-include ~pug-ui-kit/input-checkbox.pug
-
-+inputCheckbox('agree', 'I agree to all terms')
-```
-
----
-
-## 🔘 Radio
-
-```pug
-include ~pug-ui-kit/input-radio.pug
-
-+inputRadio('contact-email', 'Email', 'contact', 'email')
-```
-
----
-
-## 🔽 Single Select
-
-```pug
-include ~pug-ui-kit/single-select.pug
-
-+singleSelect('topic', 'Topic', [
-  {value:'support', text:'Support'},
-  {value:'feedback', text:'Feedback'}
-])
-```
-
----
-
-# 📂 Package Structure
-
-```
-mixins/   → Pug components
-scss/     → Complete SCSS system (with !default variables)
-less/     → Complete LESS system
-style/    → Compiled CSS output
-index.js  → Path resolution helper
-```
-
----
-
-# ⚙ Build (For Contributors)
+## Build (For Contributors)
 
 ```bash
 npm run build
 ```
 
-This will:
+Pipeline:
 
-- Compile SCSS
-- Run PostCSS + Autoprefixer
-- Generate minified CSS
+```text
+clean → build:css → build:copy → build:ts
+```
 
 ---
 
-# 📄 License
+## License
 
 ISC License
