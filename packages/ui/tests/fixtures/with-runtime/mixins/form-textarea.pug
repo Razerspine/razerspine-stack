@@ -1,5 +1,4 @@
 include ../../../../dist/pug/mixins/form-textarea.pug
 
 div
-  +formTextarea('feedback', 'Feedback', '', 'feedback', {rows: 10}, {show: 'isFeedbackVisible'})
-  +formTextarea('comment', 'Comment', 'Enter here...', 'comment', {}, {model: 'post.comment'})
+  +formTextarea(id, label, placeholder, name, attrs, bindings)

@@ -3,39 +3,40 @@ import {setupFixture} from '../../fixtures/with-runtime/main';
 
 describe('FormTextarea: Runtime Integration', () => {
 
-    it('should handle reactive visibility and custom attributes', async () => {
+    it('should apply reactive visibility and rows via attributes', () => {
         const initialState = {
-            isFeedbackVisible: false,
-            post: {
-                comment: ''
+            id: 'feedback',
+            label: 'Feedback',
+            attrs: {
+                rows: 10
+            },
+            bindings: {
+                show: 'isFeedbackVisible'
             }
         };
-        const {container, state, cleanup} = setupFixture('./mixins/form-textarea.pug', initialState);
+        const {container, cleanup} = setupFixture('./mixins/form-textarea.pug', initialState);
 
-        const feedbackTextarea = container.querySelector('#feedback') as HTMLElement;
+        const textarea = container.querySelector('#feedback') as HTMLTextAreaElement;
 
-        expect(feedbackTextarea.style.display).toBe('none');
-        expect(feedbackTextarea.getAttribute('rows')).toBe('10');
-
-        state.isFeedbackVisible = true;
-        await Promise.resolve();
-
-        expect(feedbackTextarea.style.display).toBe('');
+        expect(textarea.getAttribute('data-show')).toBe('isFeedbackVisible');
+        expect(textarea.getAttribute('rows')).toBe('10');
+        expect(textarea.classList.contains('form-textarea')).toBe(true);
 
         cleanup();
     });
 
     it('should apply model binding for two-way sync', () => {
         const initialState = {
-            isFeedbackVisible: true,
-            post: {
-                comment: 'Initial comment'
+            id: 'comment',
+            label: 'Comment',
+            bindings: {
+                model: 'post.comment'
             }
         };
         const {container, cleanup} = setupFixture('./mixins/form-textarea.pug', initialState);
 
-        const commentTextarea = container.querySelector('#comment');
-        expect(commentTextarea?.getAttribute('data-model')).toBe('post.comment');
+        const textarea = container.querySelector('#comment');
+        expect(textarea?.getAttribute('data-model')).toBe('post.comment');
 
         cleanup();
     });

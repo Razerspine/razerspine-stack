@@ -77,4 +77,45 @@ describe('FormTextarea: Static Integration', () => {
 
         cleanup();
     });
+
+    it('should allow runtime bindings to override static attrs', () => {
+        const state = {
+            id: 'desc',
+            name: 'static-name',
+            bindings: {
+                model: 'dynamicName'
+            }
+        };
+        const {container, cleanup} = setupFixture('./mixins/form-textarea.pug', state);
+        const textarea = container.querySelector('textarea');
+
+        expect(textarea?.getAttribute('data-model')).toBe('dynamicName');
+        expect(textarea?.getAttribute('name')).toBe('static-name');
+
+        cleanup();
+    });
+
+    it('should render data-i18n attribute on label for localization', () => {
+        const state = {
+            id: 'field',
+            label: 'translation.key'
+        };
+        const {container, cleanup} = setupFixture('./mixins/form-textarea.pug', state);
+
+        const label = container.querySelector('label');
+        expect(label?.getAttribute('data-i18n')).toBe('translation.key');
+
+        cleanup();
+    });
+
+    it('should not render label if label parameter is null', () => {
+        const state = {
+            id: 'no-label',
+            label: null
+        };
+        const {container, cleanup} = setupFixture('./mixins/form-textarea.pug', state);
+        expect(container.querySelector('label')).toBeNull();
+
+        cleanup();
+    });
 });
