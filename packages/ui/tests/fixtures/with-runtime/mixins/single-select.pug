@@ -1,4 +1,4 @@
 include ../../../../dist/pug/mixins/single-select.pug
 
 div
-  +singleSelect('role', 'User Role', ['Admin', 'User'], 'text', 'value', '', '', {}, { model: 'user.role' })
+  +singleSelect(id, label, options, labelKey, valueKey, selectedValue, placeholder, attrs, bindings)
