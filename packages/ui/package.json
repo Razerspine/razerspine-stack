@@ -2,10 +2,31 @@
   "name": "@razerspine/ui",
   "version": "1.0.0",
   "description": "UI kit with SCSS/LESS sources, compiled CSS, and Pug components for modern frontend projects",
+  "license": "ISC",
+  "author": "Razerspine",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "directory": "packages/ui"
+  },
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/ui",
+  "bugs": {
+    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "keywords": [
+    "ui",
+    "ui-kit",
+    "design-system",
     "pug",
-    "components",
-    "mixins"
+    "pug-mixins",
+    "scss",
+    "less",
+    "css",
+    "frontend",
+    "webpack"
   ],
   "files": [
     "dist",
@@ -17,11 +38,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "style": "dist/css/ui.min.css",
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "*.less"
+  ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     },
     "./scss": "./dist/scss/ui.scss",
     "./scss/*": "./dist/scss/*",
