@@ -9,7 +9,16 @@ describe('DataTable: Runtime Integration', () => {
             isTableVisible: true,
             users: [
                 {id: 1, name: 'Alice'}
-            ]
+            ],
+            options: {
+                actions: [
+                    {
+                        label: 'Delete',
+                        class: 'btn',
+                        bindings: (item: any) => ({click: `deleteUser(${item.id})`})
+                    }
+                ]
+            }
         };
         const userId = initialState.users[0].id;
         const context = {deleteUser: deleteMock};
@@ -41,10 +50,20 @@ describe('DataTable: Runtime Integration', () => {
     it('should call action handler with correct ID and event arguments', () => {
         const deleteMock = vi.fn();
         const initialState = {
-            isTableVisible: true,
-            users: [{id: 42, name: 'John Doe'}]
+            users: [
+                {id: 42, name: 'John Doe'}
+            ],
+            options: {
+                actions: [
+                    {
+                        label: 'Delete',
+                        class: 'btn',
+                        bindings: (item: any) => ({click: `deleteUser(${item.id})`})
+                    }
+                ]
+            }
         };
-        const context = { deleteUser: deleteMock };
+        const context = {deleteUser: deleteMock};
 
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState, context);
         const actionBtn = container.querySelector('[data-click="deleteUser(42)"]') as HTMLElement;
@@ -56,7 +75,14 @@ describe('DataTable: Runtime Integration', () => {
     });
 
     it('should apply table-level bindings for reactive visibility', () => {
-        const initialState = { isTableVisible: true, users: [{id: 1}] };
+        const initialState = {
+            users: [
+                {id: 1}
+            ],
+            bindings: {
+                show: 'isTableVisible'
+            }
+        };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState);
 
         const table = container.querySelector('table');
@@ -65,7 +91,9 @@ describe('DataTable: Runtime Integration', () => {
     });
 
     it('should render empty state message when items are empty', () => {
-        const initialState = { isTableVisible: true, users: [] };
+        const initialState = {
+            users: []
+        };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState);
 
         const emptyCell = container.querySelector('thead th');
@@ -76,8 +104,17 @@ describe('DataTable: Runtime Integration', () => {
 
     it('should respect custom labels and humanize snake_case keys', () => {
         const initialState = {
-            isTableVisible: true,
-            users: [{ name: 'Alice', joined_at: '2024-01-01' }]
+            users: [
+                {name: 'Alice', joined_at: '2024-01-01'}
+            ],
+            columns: ['name', 'joined_at'],
+            options: {
+                showIndex: false,
+                labels: {
+                    name: 'Full Name',
+                    joined_at: 'Joined At'
+                }
+            }
         };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState);
 
@@ -85,15 +122,20 @@ describe('DataTable: Runtime Integration', () => {
         const headerTexts = headers.map(th => th.textContent?.trim());
 
         expect(headerTexts).toContain('Full Name');
-        expect(headerTexts).toContain('Joined at');
+        expect(headerTexts).toContain('Joined At');
 
         cleanup();
     });
 
     it('should render row indices when showIndex is true', () => {
         const initialState = {
-            isTableVisible: true,
-            users: [{id: 10}, {id: 20}]
+            users: [
+                {id: 10},
+                {id: 20}
+            ],
+            options: {
+                showIndex: true
+            }
         };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', initialState);
 

@@ -21,7 +21,9 @@ describe('DataTable: Static Integration', () => {
 
     it('should format array values using join(", ")', () => {
         const state = {
-            users: [{name: 'Project', tags: ['web', 'ui', 'kit']}]
+            users: [
+                {name: 'Project', tags: ['web', 'ui', 'kit']}
+            ]
         };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', state);
 
@@ -36,7 +38,9 @@ describe('DataTable: Static Integration', () => {
             users: [{
                 name: 'Alice',
                 tags: ['admin', 'dev'],
-                meta: {age: 25}
+                meta: {
+                    age: 25
+                }
             }]
         };
         const {container, cleanup} = setupFixture('./mixins/data-table.pug', state);
