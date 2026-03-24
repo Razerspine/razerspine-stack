@@ -1,0 +1,60 @@
+include ../helpers/_bindings.pug
+
+//- inputRadio mixin
+//- Renders a configurable radio input with label for use in reactive radio groups.
+//-
+//- Parameters
+//-   id        - **String** — Unique id for the <input>. Also used by <label for>.
+//-               Required; example: 'contact-email'.
+//-   label     - **String** — Visible label text shown next to the radio.
+//-               Required; example: 'Email'.
+//-   name      - **String** — Name attribute to group radios.
+//-               Required; example: 'contact'.
+//-   value     - **String** — Value submitted when selected.
+//-               Required; example: 'email'.
+//-   checked   - **Boolean** — Whether this radio is selected by default.
+//-               Optional; default: false.
+//-   attrs     - **Object** — Additional attributes for the <input> (e.g. { disabled: true }).
+//-               Optional; default: {}.
+//-   bindings  - **Object** — Reactive bindings from @razerspine/runtime.
+//-               Maps keys: model -> data-model, click -> data-click, etc.
+//-               Optional; default: {}.
+//-
+//- Behavior summary
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Wraps input and label in a single inline control element (.check-control-label).
+//-   - All radios in a group should share the same `name` and `bindings.model`.
+//-   - Merges base class (.input-base) with any custom classes from `attrs`.
+//-
+//- Examples
+//-   // Reactive radio group bound to 'user.gender'
+//-   .input-group
+//-     +inputRadio('m', 'Male', 'gender', 'male', false, {}, { model: 'user.gender' })
+//-     +inputRadio('f', 'Female', 'gender', 'female', false, {}, { model: 'user.gender' })
+//-
+//-   // Disabled radio option
+//-   +inputRadio('opt', 'Option', 'group', 'val', false, { disabled: true })
+
+mixin inputRadio(id, label, name, value, checked=false, attrs={}, bindings={})
+  //- Process reactive bindings for @razerspine/runtime integration
+  -  const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Prepare base input attributes
+  -  const baseAttrs = {
+  -    type: 'radio',
+  -    id: id,
+  -    name: name,
+  -    value: value,
+  -    checked: checked
+  -  };
+
+  //- Merge: base < attrs < runtime bindings
+  -  const inputAttrs = Object.assign({}, baseAttrs, attrs || {}, runtimeAttrs);
+
+  //- Maintain consistent styling with .input-base class
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  inputAttrs.class = incomingClass ? incomingClass + ' input-base' : 'input-base';
+
+  label.check-control-label(for=id)
+    input&attributes(inputAttrs)
+    span.input-text(data-i18n=label)= label

@@ -1,0 +1,74 @@
+include ../helpers/_bindings.pug
+
+//- singleSelect mixin
+//- Renders a configurable <select> element with label, options, and reactive bindings.
+//- Supports both arrays of strings and arrays of objects with configurable keys.
+//-
+//- Parameters:
+//-   id             - **String** — Unique identifier for the <select> element and `name`.
+//-                    Default: none (required).
+//-   label          - **String | null** — Visible label text. If `null` or empty,
+//-                    no label is rendered.
+//-                    Default: null.
+//-   options        - **Array** — Options to render (strings or objects).
+//-                    Default: [].
+//-   labelKey       - **String** — Key name in option objects for display text.
+//-                    Default: 'text'.
+//-   valueKey       - **String** — Key name in option objects for option value.
+//-                    Default: 'value'.
+//-   selectedValue  - **String** — Value of the option that should be selected by default.
+//-                    Default: ''.
+//-   placeholder    - **String** — Text for a placeholder option when no label/value is set.
+//-                    Default: 'Choose an option'.
+//-   attrs          - **Object** — Additional attributes for the <select> (e.g. { required: false }).
+//-                    Default: {}.
+//-   bindings       - **Object** — Reactive bindings from @razerspine/runtime.
+//-                    Maps keys: model -> data-model, show -> data-show, etc.
+//-                    Default: {}.
+//-
+//- Behavior summary:
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Handles placeholder logic: if no label and no selectedValue, prepends hidden option.
+//-   - Merges base class (.single-select) with any custom classes from `attrs`.
+//-
+//- Examples:
+//-   // Basic select with reactive model
+//-   +singleSelect('role', 'User Role', ['Admin', 'User'], 'text', 'value', '', '', {}, { model: 'user.role' })
+//-
+//-   // Select with object options and custom keys
+//-   +singleSelect('country', 'Country', [{id: 1, name: 'Ukraine'}], 'name', 'id')
+
+mixin singleSelect(id, label, options, labelKey='text', valueKey='value', selectedValue='', placeholder='Choose an option', attrs={}, bindings={})
+  //- Process reactive bindings for @razerspine/runtime integration
+  -  const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Prepare base select attributes
+  -  const baseAttrs = {
+  -    id: id,
+  -    name: id,
+  -    required: true
+  -  };
+
+  //- Merge: base < attrs < runtime bindings
+  -  const selectAttrs = Object.assign({}, baseAttrs, attrs || {}, runtimeAttrs);
+
+  //- Maintain consistent styling with .single-select class
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  selectAttrs.class = incomingClass ? incomingClass + ' single-select' : 'single-select';
+
+  if label
+    label.form-label(for=id data-i18n=label)= label
+
+  select&attributes(selectAttrs)
+    if !label && !selectedValue
+      option(value='', disabled, selected, hidden data-i18n=placeholder)= placeholder
+
+    each opt in options
+      - const value = typeof opt === 'string' ? opt : opt[valueKey];
+      - const textKey = typeof opt === 'string' ? opt : opt[labelKey];
+      option(
+        value=value,
+        data-opt-value=value,
+        selected=(value === selectedValue),
+        data-i18n=textKey
+      )= textKey

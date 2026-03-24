@@ -1,0 +1,16 @@
+// layout
+$container-max: 1360px;
+$columns: 12;
+$gutter: 15px;
+$border-radius: .375rem;
+
+// layout settings
+$aside-ratio: 1;
+$main-ratio: 3;
+$aside-min: 300px;
+$main-min: 320px;
+$total-ratio: $aside-ratio + $main-ratio;
+$available-width: calc(#{$container-max} - #{calc(#{$gutter} * 2)}); // when layout have gap
+
+// font path
+$font-path: '~@razerspine/ui/fonts' !default;

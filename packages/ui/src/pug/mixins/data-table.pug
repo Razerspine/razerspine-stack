@@ -1,0 +1,121 @@
+include ../helpers/_bindings.pug
+
+//- dataTable mixin
+//- Renders a flexible table from an array of objects. Columns are derived
+//- from the provided `columns` array or automatically collected from object keys.
+//-
+//- Parameters:
+//-   items       - **Array** — Array of objects to render as rows. Each object
+//-                 represents one row.
+//-                 Default: []
+//-   columns     - **Array | undefined** — Optional ordered list of keys to use
+//-                 as columns. If omitted, unique keys are collected from `items`.
+//-                 Default: auto-collected from items
+//-   options     - **Object | undefined** — Configuration options:
+//-                 - emptyText: **String** — Text shown when no rows; Default: 'No data'.
+//-                 - showIndex: **Boolean** — Render leading index column; Default: false.
+//-                 - formatters: **Object** — Map of column -> function(value) for custom rendering.
+//-                   Example: { createdAt: v => new Date(v).toLocaleDateString() }.
+//-                 - labels: **Object** — Map of column -> header label string.
+//-                   Example: { id: 'ID', user_name: 'Name' }.
+//-                 - actions: **Array** — List of action objects to render in the last column.
+//-                   Structure:
+//-                     [
+//-                       {
+//-                         label: String,              // Text of the link/button
+//-                         url: Function(item),        // Callback returning the URL string based on the row item
+//-                         class: String (optional),   // CSS classes for the link
+//-                         bindings: Function(item)    // Optional: Reactive bindings (e.g. { click: 'edit(item.id)' })
+//-                       }
+//-                     ]
+//-                   Default: []
+//-   bindings    - **Object | null** — Reactive bindings for the table element itself.
+//-                 Maps keys to data attributes via internal helper.
+//-                 Default: {}
+//-
+//- Behavior:
+//-   - Renders a table with Bootstrap-like classes (`table`).
+//-   - If `items` is empty, displays a unified row with `emptyText`.
+//-   - Actions are rendered as `<a>` tags in a separate column if `options.actions` is provided.
+//-   - Supports @razerspine/runtime bindings for the table and specific row actions.
+//-
+//- Examples:
+//-   const data = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
+//-
+//-   // 1. Basic usage with reactive table visibility
+//-   +dataTable(data, null, {}, { show: 'isTableVisible' })
+//-
+//-   // 2. Advanced usage with Actions and Reactive Click
+//-   +dataTable(data, ['id', 'name'], {
+//-     showIndex: true,
+//-     labels: { name: 'Full Name' },
+//-     actions: [
+//-       {
+//-         label: 'Delete',
+//-         class: 'btn btn--text-secondary btn--medium',
+//-         bindings: (item) => ({ click: `deleteUser(${item.id})` })
+//-       }
+//-     ]
+//-   })
+//-
+mixin dataTable(items, columns, options, bindings={})
+  - const _items = Array.isArray(items) ? items : [];
+  - const cols = Array.isArray(columns) && columns.length ? columns : Array.from(new Set(_items.reduce((acc, it) => acc.concat(Object.keys(it || {})), [])));
+
+  //- Default options
+  - const opts = Object.assign({ emptyText: 'No data', showIndex: false, actions: [], formatters: {}, labels: {} }, options || {});
+
+  //- Check if actions column is needed
+  - const hasActions = Array.isArray(opts.actions) && opts.actions.length > 0;
+
+  //- Process table-level bindings
+  - const tableAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Helper functions definition
+  - const humanize = (key) => {
+  -   if (!key && key !== 0) return '';
+  -   const s = String(key).replace(/_/g, ' ');
+  -   return s.charAt(0).toUpperCase() + s.slice(1);
+  - };
+
+  - const formatValue = (v, col) => {
+  -   if (v === null || v === undefined || v === '') return '';
+  -   if (opts.formatters && typeof opts.formatters[col] === 'function') return opts.formatters[col](v);
+  -   if (Array.isArray(v)) return v.join(', ');
+  -   if (typeof v === 'object') return JSON.stringify(v);
+  -   return String(v);
+  - };
+
+  table.table.data-table&attributes(tableAttrs)
+    if !_items.length
+      thead
+        tr
+          th(colspan=cols.length + (opts.showIndex ? 1 : 0) + (hasActions ? 1 : 0)) #{opts.emptyText}
+    else
+      thead
+        tr
+          if opts.showIndex
+            th.data-table__index #
+          each col in cols
+            - const label = (opts.labels && Object.prototype.hasOwnProperty.call(opts.labels, col)) ? opts.labels[col] : humanize(col)
+            th.data-table__header #{label}
+          if hasActions
+            th.data-table__actions Actions
+      tbody
+        each item, i in _items
+          tr
+            if opts.showIndex
+              td.data-table__index #{i + 1}
+            each col in cols
+              - const val = (item && Object.prototype.hasOwnProperty.call(item, col)) ? item[col] : '';
+              td.data-table__cell!= formatValue(val, col)
+            if hasActions
+              td.data-table__actions-cell
+                each action in opts.actions
+                  - const href = (typeof action.url === 'function') ? action.url(item) : '#';
+                  - const className = action.class || '';
+                  - const rawBindings = (typeof action.bindings === 'function') ? action.bindings(item) : (action.bindings || {});
+                  - const actionAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(rawBindings) : {};
+
+                  a(href=href class=className)&attributes(actionAttrs) #{action.label}
+                  |

@@ -1,0 +1,57 @@
+include ../helpers/_bindings.pug
+
+//- inputCheckbox mixin
+//- Renders a configurable checkbox with label and optional reactive bindings.
+//-
+//- Parameters
+//-   id        - **String** — Unique id for the <input>. Also used by <label for>.
+//-               Required; example: 'agree'.
+//-   label     - **String** — Visible label text shown next to the checkbox.
+//-               Required; example: 'I agree to terms'.
+//-   name      - **String** — Name attribute for form submission/grouping.
+//-               Optional; default: ''.
+//-   value     - **String** — Value submitted when checked.
+//-               Optional; default: 'on'.
+//-   checked   - **Boolean** — Whether the checkbox is checked by default.
+//-               Optional; default: false.
+//-   attrs     - **Object** — Additional attributes for the <input> (e.g. { disabled: true }).
+//-               Optional; default: {}.
+//-   bindings  - **Object** — Reactive bindings from @razerspine/runtime.
+//-               Maps keys: model -> data-model, click -> data-click, etc.
+//-               Optional; default: {}.
+//-
+//- Behavior summary
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Wraps input and label in a single inline control element (.check-control-label).
+//-   - Merges base class (.input-base) with any custom classes from `attrs`.
+//-
+//- Examples
+//-   // Basic checkbox with reactive model
+//-   +inputCheckbox('agree', 'I agree', 'terms', 'yes', false, {}, { model: 'form.agreed' })
+//-
+//-   // Disabled checked checkbox
+//-   +inputCheckbox('newsletter', 'Subscribe', 'news', '1', true, { disabled: true })
+
+mixin inputCheckbox(id, label, name='', value='on', checked=false, attrs={}, bindings={})
+  //- Process reactive bindings for @razerspine/runtime
+  - const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Prepare base input attributes
+  -  const baseAttrs = {
+  -    type: 'checkbox',
+  -    id: id,
+  -    name: name,
+  -    value: value,
+  -    checked: checked
+  -  };
+
+  //- Merge: base < attrs < runtime bindings
+  -  const inputAttrs = Object.assign({}, baseAttrs, attrs || {}, runtimeAttrs);
+
+  //- Maintain consistent styling with .input-base class
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  inputAttrs.class = incomingClass ? incomingClass + ' input-base' : 'input-base';
+
+  label.check-control-label(for=id)
+    input&attributes(inputAttrs)
+    span.input-text(data-i18n=label)= label

@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/runtime",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lightweight frontend runtime with DI container, router, reactive store, view bindings, and platform services.",
   "license": "ISC",
   "author": "Razerspine",

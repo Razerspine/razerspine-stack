@@ -1,0 +1,59 @@
+include ../helpers/_bindings.pug
+
+//- Form textarea mixin
+//- Renders a configurable <textarea> element with optional label and placeholder.
+//- Supports custom name attribute for form submission and reactive bindings.
+//-
+//- Parameters:
+//-   id          - **String** — Unique identifier for the <textarea> element.
+//-                 Also used by the <label> `for` attribute.
+//-                 Default: none (required).
+//-   label       - **String | null** — Visible label text. If `null` or empty,
+//-                 no label is rendered.
+//-                 Default: null.
+//-   placeholder - **String** — Placeholder text displayed inside the textarea.
+//-                 Default: ''.
+//-   name        - **String** — Name attribute for form submission.
+//-                 Default: ''.
+//-   attrs       - **Object | null** — Additional attributes to spread onto the <textarea>
+//-                 (e.g., { rows: 5, readonly: true }).
+//-                 Default: {}.
+//-   bindings    - **Object | null** — Reactive bindings from @razerspine/runtime.
+//-                 Commonly used with `model` for two-way data binding.
+//-                 Maps keys: model -> data-model, show -> data-show, etc.
+//-                 Default: {}.
+//-
+//- Behavior summary:
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Automatically merges base classes (.form-textarea) with any class from `attrs`.
+//-   - Ensures the label is correctly associated with the textarea via `for/id`.
+//-
+//- Examples:
+//-   // Textarea with reactive model binding
+//-   +formTextarea('comment', 'Comment', 'Enter here...', 'comment', {}, { model: 'post.comment' })
+//-
+//-   // Textarea with custom rows and visibility binding
+//-   +formTextarea('feedback', 'Feedback', '', 'feedback', { rows: 10 }, { show: 'isFeedbackVisible' })
+
+mixin formTextarea(id, label, placeholder='', name='', attrs={}, bindings={})
+  //- Process reactive bindings (e.g., data-model for two-way sync)
+  -  const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Prepare base attributes
+  -  const baseAttrs = {
+  -    id: id,
+  -    name: name,
+  -    placeholder: placeholder
+  -  };
+
+  //- Merge: base < attrs < runtime bindings
+  -  const textareaAttrs = Object.assign({}, baseAttrs, attrs || {}, runtimeAttrs);
+
+  //- Ensure form-textarea class is always present
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  textareaAttrs.class = incomingClass ? incomingClass + ' form-textarea' : 'form-textarea';
+
+  if label
+    label.form-label(for=id data-i18n=label)= label
+
+  textarea&attributes(textareaAttrs)

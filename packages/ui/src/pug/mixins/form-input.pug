@@ -1,0 +1,65 @@
+include ../helpers/_bindings.pug
+
+//- Form input mixin
+//- Renders a configurable <input> element with optional label and placeholder.
+//- Supports different input types, custom name, value, and placeholder text.
+//-
+//- Parameters:
+//-   type        - **String** — Input type attribute (e.g., 'text', 'email', 'password').
+//-                 Default: none (required).
+//-   id          - **String** — Unique identifier for the <input> element.
+//-                 Also used by the <label> `for` attribute.
+//-                 Default: none (required).
+//-   label       - **String | null** — Visible label text. If `null` or empty,
+//-                 no label is rendered.
+//-                 Default: null.
+//-   placeholder - **String** — Placeholder text displayed inside the input.
+//-                 Default: ''.
+//-   name        - **String** — Name attribute for form submission.
+//-                 Default: ''.
+//-   value       - **String** — Default value for the input field.
+//-                 Default: ''.
+//-   attrs       - **Object | null** — Additional attributes to spread onto the <input>
+//-                 (e.g., { required: true, min: 0 }).
+//-                 Default: {}.
+//-   bindings    - **Object | null** — Reactive bindings from @razerspine/runtime.
+//-                 Commonly used with `model` for two-way data binding.
+//-                 Maps keys: model -> data-model, show -> data-show, etc.
+//-                 Default: {}.
+//-
+//- Behavior summary:
+//-   - Uses `_mapRuntimeBindings` helper to process reactive directives.
+//-   - Automatically merges base classes (.form-control) with any class from `attrs`.
+//-   - Ensures the label is correctly associated with the input via `for/id`.
+//-
+//- Examples:
+//-   // Basic input with model binding
+//-   +formInput('text', 'user-name', 'Username', 'Enter name', 'username', '', {}, { model: 'user.name' })
+//-
+//-   // Required password input
+//-   +formInput('password', 'pass', 'Password', '', 'password', '', { required: true })
+
+mixin formInput(type, id, label, placeholder='', name='', value='', attrs={}, bindings={})
+  //- Process reactive bindings (e.g., data-model="path")
+  -  const runtimeAttrs = typeof _mapRuntimeBindings === 'function' ? _mapRuntimeBindings(bindings) : {};
+
+  //- Prepare base attributes
+  -  const baseAttrs = {
+  -    type: type,
+  -    id: id,
+  -    name: name,
+  -    value: value,
+  -    placeholder: placeholder
+  -  };
+
+  //- Merge: base < attrs < runtime bindings
+  -  const inputAttrs = Object.assign({}, baseAttrs, attrs || {}, runtimeAttrs);
+
+  //- Ensure form-control class is always present
+  -  const incomingClass = (attrs && attrs.class) ? String(attrs.class).trim() : '';
+  -  inputAttrs.class = incomingClass ? incomingClass + ' form-control' : 'form-control';
+
+  if label
+    label.form-label(for=id data-i18n=label)= label
+
+  input&attributes(inputAttrs)

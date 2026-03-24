@@ -6,6 +6,41 @@ This project follows Semantic Versioning.
 
 ---
 
+# [1.0.1] - 2026-03-23
+
+## Added
+
+- `data-click` now supports method expressions with arguments:
+  - `data-click='deleteUser(1)'`
+  - Supported types: numbers, booleans, strings
+- Added lightweight expression parser (`parseExpression`) without `eval / Function`
+- Event handlers now receive extended signature:
+  ```text
+  method(...args, event, element)
+  ```
+
+## Improved
+
+- Refactored `bindClickEvents`:
+  - improved method resolution and warnings
+- Improved `data-model`:
+  - correct handling of `radio` (checked-based)
+  - correct handling of `checkbox` (boolean)
+  - prevents incorrect value overwrites
+  
+## Fixed
+
+- Fixed `data-click` argument handling (removed need for `context["method(1)"]`)
+- Fixed incorrect `data-model` behavior for radio inputs
+- Fixed incomplete two-way binding when `bindForms` was not used
+
+## Notes
+
+- No breaking changes - existing `data-click="method"` still works
+- For full two-way binding, use `bindForms` together with `applyBindings`
+
+---
+
 # [1.0.0] - 2026-03-16
 
 🚀 **First stable release of the runtime engine.**
