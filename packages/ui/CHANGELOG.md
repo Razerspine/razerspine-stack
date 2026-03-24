@@ -1,20 +1,178 @@
 # Changelog
 
-## [1.0.0] - 2026-03-22
+## [1.0.0] - 2026-03-24
+
+### 🚀 Major Refactor & Stabilization
+
+This release introduces a complete internal refactor of the package, transforming it into a structured, production-ready
+UI distribution layer with a fully deterministic build system and improved testing strategy.
+
+---
 
 ### ⚠️ Breaking Changes
 
-- Renamed:
+- Renamed package:
+  - `@razerspine/pug-ui-kit` → `@razerspine/ui`
+
+- Renamed entry files:
   - `ui-kit.scss` → `ui.scss`
   - `ui-kit.less` → `ui.less`
-- Changed:
-  - Pug components now support optional runtime bindings via `data-*` attributes
-- New:
-  - `bindings` param in components (runtime-agnostic)
-- Changed:
-  - SCSS/LESS import paths now use `exports` field
 
-------------------------
+- SCSS/LESS imports updated:
+  - Now strictly rely on the `exports` field
+  - Deep imports outside defined exports are no longer supported
+
+- Pug components API updated:
+  - Introduced `bindings` param
+  - Components now support optional runtime bindings via `data-*` attributes
+
+---
+
+### Architecture
+
+- Introduced clear separation of concerns:
+  - `src/` — source files (SCSS, LESS, Pug)
+  - `scripts/` — build tools (dev-only)
+  - `dist/` — final distributable output
+
+- `scripts` directory:
+  - Not compiled
+  - Not included in published package
+  - Used only during build via `tsx`
+
+---
+
+### CSS Build Pipeline
+
+- Fully redesigned build pipeline:
+
+```text
+SCSS → CSS → PostCSS → Minified CSS
+```
+
+- Integrated:
+  - Autoprefixer
+  - cssnano (minification)
+- Output:
+  - `dist/css/ui.css`
+  - `dist/css/ui.min.css`
+
+---
+
+### Assets Pipeline
+
+- Implemented centralized asset distribution:
+  - `src/styles/scss` → `dist/scss`
+  - `src/styles/less` → `dist/less`
+  - `src/pug` → `dist/pug`
+- Copy behavior:
+  - Recursive
+  - Excludes `.map` files
+
+---
+
+### Build System
+
+- Introduced deterministic build pipeline:
+
+```text
+clean → build:css → build:copy → build:ts
+```
+
+- Build scripts:
+  - Executed via `tsx`
+  - No runtime dependency on compiled `dist` scripts
+
+---
+
+### Testing
+
+- Restructured testing strategy:
+  - `integration`:
+    - `base`
+    - `runtime`
+    - `static`
+  - `snapshots`
+- Added full test pipeline:
+
+```bash
+npm run test:full
+```
+
+- Updated fixtures:
+  - `with-runtime`
+  - `without-runtime`
+  - Improved coverage for real-world usage scenarios
+
+---
+
+### Snapshot Testing
+
+- Reworked snapshot system:
+  - Normalization:
+    - CSS (removes sourcemaps, whitespace)
+    - SCSS/LESS (removes comments, formatting)
+  - Coverage:
+    - Compiled CSS (`ui.css`)
+    - Entry files (`ui.scss`, `ui.less`)
+  - Structured directories:
+    - `settings`
+    - `themes`
+    - `components`
+  - Ensures:
+    - Output stability
+    - Safe refactoring of styles and tokens
+
+---
+
+### Package Exports
+
+- Stabilized public API via exports:
+  - `.`
+  - `./scss`
+  - `./scss/*`
+  - `./less`
+  - `./less/*`
+  - `./mixins/*`
+  - `./fonts/*`
+  - `./css/*`
+- Added style entry:
+  - `dist/css/ui.min.css`
+
+---
+
+### Documentation
+
+- Added dedicated documentation for all Pug mixins:
+
+```text
+docs/
+  btn.md
+  data-table.md
+  form-input.md
+  form-textarea.md
+  input-checkbox.md
+  input-radio.md
+  single-select.md
+```
+
+---
+
+### Positioning
+
+The package is now a unified UI layer that provides:
+
+- UI Kit (compiled CSS + design tokens)
+- SCSS/LESS source distribution
+- Pug component library
+
+Designed for:
+
+- Webpack templates
+- Design systems
+- Runtime-agnostic UI development
+
+--------------------------------------------
 
 # Legacy
 
@@ -128,7 +286,7 @@
   - `build` (full pipeline)
 - **Distributable CSS output**
   - Users can now import compiled CSS directly:
-    ```scss
+    ```text
     @import "@razerspine/pug-ui-kit/style/style.min.css";
     ```
 
@@ -197,7 +355,7 @@ importing the kit:
 
 #### SCSS:
 
-```scss
+```text
 @use "@razerspine/pug-ui-kit/scss/settings" with (
   $font-path: "/my-custom-path/fonts"
 );
@@ -205,7 +363,7 @@ importing the kit:
 
 #### LESS:
 
-```less
+```text
 @font-path: "/my-custom-path/fonts";
 @import "@razerspine/pug-ui-kit/less/ui-kit.less";
 ```
