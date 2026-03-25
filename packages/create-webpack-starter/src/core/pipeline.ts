@@ -8,17 +8,25 @@ export type PipelineStep<TIn, TOut = TIn> = (ctx: TIn) => Promise<TOut>;
 
 /**
  * Orchestrates sequential execution of pipeline steps with strict type safety.
- * Uses the Builder pattern to ensure that the output of one step matches the input of the next.
+ * Uses the Builder pattern combined with Function Composition to eliminate 'any'.
  */
 export class Pipeline<TInitial, TCurrent> {
-    private constructor(private readonly steps: PipelineStep<any, any>[]) {
+    /**
+     * Instead of an array of steps, we store a single executor function.
+     * It encapsulates the logic of transforming TInitial into TCurrent.
+     */
+    private constructor(
+        private readonly execute: (ctx: TInitial) => Promise<TCurrent>
+    ) {
     }
 
     /**
      * Initializes a new pipeline with a starting context type.
      */
     static create<T>(): Pipeline<T, T> {
-        return new Pipeline<T, T>([]);
+        // The initial state is an identity function that simply
+        // returns the received context without modifications.
+        return new Pipeline<T, T>(async (ctx: T) => ctx);
     }
 
     /**
@@ -26,7 +34,13 @@ export class Pipeline<TInitial, TCurrent> {
      * TypeScript ensures that TNext of the new step is compatible with the current pipeline state.
      */
     addStep<TNext>(step: PipelineStep<TCurrent, TNext>): Pipeline<TInitial, TNext> {
-        return new Pipeline<TInitial, TNext>([...this.steps, step]);
+        // We compose a new executor function that first runs the existing chain of steps,
+        // awaits their result, and then passes that result into the newly added step.
+        // NOTE: The steps are NOT executed here. They are only composed.
+        return new Pipeline<TInitial, TNext>(async (ctx: TInitial) => {
+            const currentCtx = await this.execute(ctx);
+            return step(currentCtx);
+        });
     }
 
     /**
@@ -35,12 +49,6 @@ export class Pipeline<TInitial, TCurrent> {
      * @returns The final enriched context.
      */
     async run(ctx: TInitial): Promise<TCurrent> {
-        let currentCtx: any = ctx;
-
-        for (const step of this.steps) {
-            currentCtx = await step(currentCtx);
-        }
-
-        return currentCtx;
+        return this.execute(ctx);
     }
 }
