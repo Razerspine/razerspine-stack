@@ -2,7 +2,7 @@ import path from 'path';
 import {loadTemplates} from '../templates/template-loader';
 import {resolveTemplateKey} from '../templates/template-resolver';
 import {TemplateKey} from '../templates/templates';
-import {LoadedTemplate} from '../templates/types';
+import {LoadedTemplate, TemplateFeatures} from '../templates/types';
 
 /**
  * Service responsible for:
@@ -40,11 +40,7 @@ export class TemplateService {
     /**
      * Resolves template key from feature flags.
      */
-    resolve(input: {
-        appType: 'mpa' | 'spa';
-        style: 'scss' | 'less';
-        script: 'js' | 'ts';
-    }): TemplateKey {
+    resolve(input: TemplateFeatures): TemplateKey {
         const key = resolveTemplateKey(input);
 
         if (!key || !this.templates[key]) {

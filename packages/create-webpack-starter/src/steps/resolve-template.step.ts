@@ -11,7 +11,6 @@ export const resolveTemplateStep: PipelineStep<
     TemplateResolvedContext
 > = async (ctx) => {
     const service = createTemplateService();
-
     const template = service.getByKey(ctx.templateKey);
 
     return {
