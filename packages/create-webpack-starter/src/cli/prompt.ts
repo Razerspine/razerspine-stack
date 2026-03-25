@@ -1,4 +1,5 @@
 import inquirer from 'inquirer';
+import {TemplateFeatures} from '../templates/types';
 
 /**
  * Prompts for project name if not provided.
@@ -19,11 +20,7 @@ export async function promptProjectName(): Promise<string> {
 /**
  * Prompts for missing feature flags.
  */
-export async function promptFeatures(): Promise<{
-    appType: 'mpa' | 'spa';
-    style: 'scss' | 'less';
-    script: 'js' | 'ts';
-}> {
+export async function promptFeatures(): Promise<TemplateFeatures> {
     return inquirer.prompt([
         {
             type: 'list',

@@ -1,26 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
-export type TemplateMeta = {
-    name: string;
-    description: string;
-    engines?: {
-        node?: string;
-    };
-    features?: {
-        appType?: 'mpa' | 'spa';
-        template?: 'pug';
-        style?: 'scss' | 'less';
-        script?: 'js' | 'ts';
-    };
-};
-
-export type LoadedTemplate = {
-    key: string;
-    meta: TemplateMeta;
-    path: string;
-    filesPath: string;
-};
+import {LoadedTemplate} from './types';
 
 export function loadTemplates(templatesRoot: string): Record<string, LoadedTemplate> {
     const entries = fs.readdirSync(templatesRoot, {withFileTypes: true});

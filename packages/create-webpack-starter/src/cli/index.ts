@@ -3,19 +3,8 @@ import {validateOptions} from './validate-options';
 import {validateRawArgs} from './validate-args';
 import {promptProjectName, promptFeatures} from './prompt';
 import {resolveTemplate} from './resolve-template';
-
-import {TemplateKey} from '../templates/templates';
-
-/**
- * Final CLI context passed to application core.
- */
-export type CliContext = {
-    projectName: string;
-    template: TemplateKey;
-    appType: 'mpa' | 'spa';
-    noInstall: boolean;
-    dryRun: boolean;
-};
+import {CliContext} from './types';
+import {AppType, ScriptType, StyleType} from '../templates/types';
 
 /**
  * Main CLI entry that orchestrates:
@@ -38,9 +27,9 @@ export async function getCliContext(): Promise<CliContext> {
 
     const hasAllFlags = options.appType && options.style && options.script;
 
-    let appType: 'mpa' | 'spa';
-    let style: 'scss' | 'less';
-    let script: 'js' | 'ts';
+    let appType: AppType;
+    let style: StyleType;
+    let script: ScriptType;
 
     if (hasAllFlags) {
         appType = options.appType!;

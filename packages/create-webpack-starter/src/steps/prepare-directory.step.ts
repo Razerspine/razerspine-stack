@@ -1,18 +1,19 @@
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import {PipelineStep, BasePipelineContext} from '../core/pipeline';
+import {PipelineStep} from '../core/pipeline';
+import {BasePipelineContext} from '../core/types';
 import {log} from '../utils';
 
 /**
- * Ensures target directory is ready.
- * Handles overwrite prompt if directory exists.
- *
- * This step runs BEFORE template resolution.
+ * Ensures target directory is ready for project generation.
+ * Handles overwrite confirmation if the directory already exists.
+ * * Note: This step is generic to preserve any existing context extensions
+ * (like resolved templates) while only requiring BasePipelineContext fields.
  */
-export const prepareDirectoryStep = (
+export const prepareDirectoryStep = <T extends BasePipelineContext>(
     spinner: ora.Ora
-): PipelineStep<BasePipelineContext, BasePipelineContext> => {
+): PipelineStep<T, T> => {
     return async (ctx) => {
         if (ctx.dryRun) {
             if (fs.existsSync(ctx.targetDir)) {

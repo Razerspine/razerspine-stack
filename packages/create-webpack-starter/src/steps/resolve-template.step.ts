@@ -1,11 +1,10 @@
-import {PipelineStep, BasePipelineContext, TemplateResolvedContext} from '../core/pipeline';
+import {PipelineStep} from '../core/pipeline';
+import {BasePipelineContext, TemplateResolvedContext} from '../core/types';
 import {createTemplateService} from '../core/template.service';
 
 /**
- * Resolves template and enriches pipeline context.
- *
- * Transforms:
- * BasePipelineContext → TemplateResolvedContext
+ * Resolves the requested template and enriches the pipeline context.
+ * * Output: TemplateResolvedContext (Base + template metadata)
  */
 export const resolveTemplateStep: PipelineStep<
     BasePipelineContext,

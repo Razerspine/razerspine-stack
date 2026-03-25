@@ -1,26 +1,7 @@
 import {Command} from 'commander';
+import {CliOptions, ParsedCliInput} from "./types";
 
 const pkg = require('../../package.json');
-
-/**
- * Raw CLI options parsed from command line.
- */
-export type CliOptions = {
-    style?: 'scss' | 'less';
-    script?: 'js' | 'ts';
-    appType?: 'mpa' | 'spa';
-    install?: boolean;
-    dryRun?: boolean;
-};
-
-/**
- * Result of CLI parsing.
- */
-export type ParsedCliInput = {
-    options: CliOptions;
-    projectName?: string;
-    rawArgs: string[];
-};
 
 /**
  * Parses CLI arguments using commander.

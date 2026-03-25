@@ -1,7 +1,8 @@
 import path from 'path';
-import {loadTemplates, LoadedTemplate} from '../templates/template-loader';
+import {loadTemplates} from '../templates/template-loader';
 import {resolveTemplateKey} from '../templates/template-resolver';
 import {TemplateKey} from '../templates/templates';
+import {LoadedTemplate} from '../templates/types';
 
 /**
  * Service responsible for:

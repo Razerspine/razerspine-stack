@@ -1,11 +1,11 @@
 import ora from 'ora';
-import {PipelineStep, TemplateResolvedContext} from '../core/pipeline';
+import {PipelineStep} from '../core/pipeline';
+import {TemplateResolvedContext} from '../core/types';
 import {installDeps} from '../utils';
 
 /**
- * Installs project dependencies using npm.
- *
- * Runs after template has been copied.
+ * Installs project dependencies using the default package manager.
+ * * Note: Should be executed after the template files are successfully copied.
  */
 export const installDepsStep = (
     spinner: ora.Ora

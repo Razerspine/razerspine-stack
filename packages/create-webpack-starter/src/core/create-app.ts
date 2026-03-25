@@ -1,44 +1,22 @@
 import path from 'path';
 import ora from 'ora';
-import {
-    runPipeline,
-    BasePipelineContext,
-    PipelineStep
-} from './pipeline';
+import {Pipeline} from './pipeline';
 import {
     resolveTemplateStep,
     prepareDirectoryStep,
     copyTemplateStep,
     installDepsStep
 } from '../steps';
-
 import {log} from '../utils';
-
-/**
- * Options required to create a new project.
- * This is the public API contract for programmatic usage.
- */
-export type CreateAppOptions = {
-    projectName: string;
-    templateKey: string;
-    appType: 'mpa' | 'spa';
-    noInstall?: boolean;
-    dryRun?: boolean;
-};
+import {CreateAppOptions, BasePipelineContext} from './types';
 
 /**
  * Main orchestration function for project generation.
  *
  * Responsibilities:
  * - builds initial pipeline context
- * - registers pipeline steps
- * - executes pipeline sequentially
- *
- * Can be used:
- * - from CLI (index.ts)
- * - programmatically (future use)
- *
- * @param options - project creation options
+ * - assembles pipeline using the Builder pattern
+ * - executes pipeline steps sequentially
  */
 export async function createApp(options: CreateAppOptions): Promise<void> {
     const spinner = ora();
@@ -56,31 +34,20 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
     };
 
     /**
-     * Register pipeline steps with strict stage typing.
-     *
-     * Flow:
-     * BasePipelineContext
-     *   → resolveTemplateStep
-     * TemplateResolvedContext
-     *   → prepareDirectoryStep
-     *   → copyTemplateStep
-     *   → installDepsStep
+     * Execute pipeline with strict type flow.
+     * * Type transitions:
+     * 1. .create<BasePipelineContext>() -> Starts with Base
+     * 2. .addStep(resolveTemplateStep)  -> Base yields TemplateResolved
+     * 3. .addStep(prepareDirectoryStep) -> Maintains TemplateResolved
+     * 4. .addStep(copyTemplateStep)     -> Maintains TemplateResolved
+     * 5. .addStep(installDepsStep)      -> Final Context
      */
-    const steps: PipelineStep<never, unknown>[] = [
-        resolveTemplateStep,              // Base → TemplateResolved
-        prepareDirectoryStep(spinner),    // Base → Base (safe superset)
-        copyTemplateStep(spinner),        // TemplateResolved → TemplateResolved
-        installDepsStep(spinner)          // TemplateResolved → TemplateResolved
-    ];
-
-    /**
-     * Execute pipeline.
-     *
-     * NOTE:
-     * Pipeline returns the final enriched context,
-     * but currently we don't need it outside.
-     */
-    await runPipeline<BasePipelineContext>(steps, ctx);
+    await Pipeline.create<BasePipelineContext>()
+        .addStep(resolveTemplateStep)
+        .addStep(prepareDirectoryStep(spinner))
+        .addStep(copyTemplateStep(spinner))
+        .addStep(installDepsStep(spinner))
+        .run(ctx);
 
     log.success('Done!');
 }

@@ -1,10 +1,5 @@
 import {templates, TemplateKey} from './templates';
-
-type ResolveInput = {
-    appType?: 'mpa' | 'spa';
-    style?: 'scss' | 'less';
-    script?: 'js' | 'ts';
-};
+import {ResolveInput} from './types';
 
 export function resolveTemplateKey(
     input: ResolveInput
