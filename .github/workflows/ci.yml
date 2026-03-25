@@ -7,7 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-test-and-audit:
+  quality-assurance:
+    name: QA (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -25,20 +26,23 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
-      - name: Install dependencies (workspace root)
+      - name: Install dependencies
         run: npm install
 
-      - name: Audit production dependencies
+      - name: Security audit (Production)
         run: npm audit --omit=dev --audit-level=high
 
-      - name: Build all packages
+      - name: Build monorepo packages
         run: npm run build
 
-      - name: Run Runtime Tests (Unit & E2E)
-        run: npm run test:runtime
-
-      - name: Run Build Tests (E2E)
+      - name: 'Test: @razerspine/build (E2E)'
         run: npm run test:build
 
-      - name: Run create-webpack-starter E2E tests
+      - name: 'Test: @razerspine/runtime (Unit & E2E)'
+        run: npm run test:runtime
+
+      - name: 'Test: @razerspine/ui (Integration & Snapshots)'
+        run: npm run test:ui
+
+      - name: 'Test: create-webpack-starter (CLI E2E)'
         run: npm run test:cli

@@ -34,6 +34,7 @@
     "test:cli": "npm run test:e2e -w create-webpack-starter",
     "test:runtime": "npm run test -w @razerspine/runtime",
     "test:build": "npm run test:e2e:full -w @razerspine/build",
+    "test:ui": "npm run test:full -w @razerspine/ui",
     "templates:install": "bash scripts/install-templates.sh",
     "templates:clean": "bash scripts/clean-templates.sh"
   }
