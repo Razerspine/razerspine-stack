@@ -1,5 +1,7 @@
 import {defineConfig} from 'tsup';
 
+const pkg = require('../../package.json');
+
 /**
  * Production build config for CLI package.
  *
@@ -41,5 +43,8 @@ export default defineConfig({
         return {
             js: format === 'cjs' ? '.cjs' : '.mjs'
         };
+    },
+    define: {
+        __VERSION__: JSON.stringify(pkg.version)
     }
 });

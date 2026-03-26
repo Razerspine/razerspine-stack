@@ -1,7 +1,6 @@
 import {Command} from 'commander';
 import {CliOptions, ParsedCliInput} from './types';
-
-const pkg = require('../../package.json');
+import {VERSION} from '../utils';
 
 /**
  * Parses CLI arguments using commander.
@@ -11,7 +10,7 @@ export function parseCliArgs(): ParsedCliInput {
 
     program
         .name('create-webpack-starter')
-        .version(`create-webpack-starter v${pkg.version}`, '-v, --version', 'Show CLI version')
+        .version(`create-webpack-starter v${VERSION}`, '-v, --version', 'Show CLI version')
         .argument('[project-name]', 'Project name')
         .option('--style <style>', 'Style preprocessor (scss | less)')
         .option('--script <script>', 'Script language (js | ts)')

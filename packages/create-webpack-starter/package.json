@@ -42,7 +42,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsup",
-    "dev:cli": "tsx src/index.ts",
+    "create": "tsx src/index.ts",
     "test:cleanup": "node e2e/helpers/cleanup.js",
     "test:e2e": "npm run build && npm run test:cleanup && (node e2e/basic.test.js && node e2e/partial-flags.test.js && node e2e/dry-run.test.js && node e2e/unknown-option.test.js && node e2e/style-script.test.js && node e2e/spa-basic.test.js && node e2e/invalid-values.test.js && node e2e/version.test.js && node e2e/help.test.js); npm run test:cleanup",
     "prepublishOnly": "npm run build"
