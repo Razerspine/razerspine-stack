@@ -30,8 +30,17 @@ export class Pipeline<TInitial, TCurrent> {
     }
 
     /**
-     * Adds a step to the pipeline.
-     * TypeScript ensures that TNext of the new step is compatible with the current pipeline state.
+     * Adds a new step to the pipeline.
+     *
+     * The step receives the current pipeline context (TCurrent)
+     * and returns the next context (TNext).
+     *
+     * TypeScript guarantees that:
+     * - the input of the step matches the current pipeline state
+     * - the output becomes the new pipeline state
+     *
+     * @param step - pipeline transformation function
+     * @returns new Pipeline instance with extended type flow
      */
     addStep<TNext>(step: PipelineStep<TCurrent, TNext>): Pipeline<TInitial, TNext> {
         // We compose a new executor function that first runs the existing chain of steps,
@@ -45,8 +54,9 @@ export class Pipeline<TInitial, TCurrent> {
 
     /**
      * Executes all registered steps sequentially.
-     * * @param ctx - The initial context to start the pipeline with.
-     * @returns The final enriched context.
+     *
+     * @param ctx - The initial context to start the pipeline with.
+     * @returns The final enriched context after all steps have been applied.
      */
     async run(ctx: TInitial): Promise<TCurrent> {
         return this.execute(ctx);

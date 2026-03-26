@@ -35,12 +35,25 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
 
     /**
      * Execute pipeline with strict type flow.
-     * * Type transitions:
-     * 1. .create<BasePipelineContext>() -> Starts with Base
-     * 2. .addStep(resolveTemplateStep)  -> Base yields TemplateResolved
-     * 3. .addStep(prepareDirectoryStep) -> Maintains TemplateResolved
-     * 4. .addStep(copyTemplateStep)     -> Maintains TemplateResolved
-     * 5. .addStep(installDepsStep)      -> Final Context
+     *
+     * Type transitions:
+     * 1. create<BasePipelineContext>()
+     *    → initial context
+     *
+     * 2. resolveTemplateStep
+     *    BasePipelineContext → TemplateResolvedContext
+     *
+     * 3. prepareDirectoryStep
+     *    TemplateResolvedContext → TemplateResolvedContext
+     *
+     * 4. copyTemplateStep
+     *    TemplateResolvedContext → TemplateResolvedContext
+     *
+     * 5. installDepsStep
+     *    TemplateResolvedContext → TemplateResolvedContext
+     *
+     * Final result:
+     * Promise<TemplateResolvedContext>
      */
     await Pipeline.create<BasePipelineContext>()
         .addStep(resolveTemplateStep)
