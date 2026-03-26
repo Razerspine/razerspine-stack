@@ -5,20 +5,35 @@ import {TemplateKey} from '../templates/templates';
 import {LoadedTemplate, TemplateFeatures} from '../templates/types';
 
 /**
- * Service responsible for:
- * - loading templates
- * - resolving template by features
+ * Service responsible for managing templates.
+ *
+ * Responsibilities:
+ * - loading templates from filesystem
+ * - resolving template keys based on feature flags
  * - providing access to template metadata
+ *
+ * This service acts as a boundary between:
+ * - filesystem layer (template-loader)
+ * - pure logic layer (template-resolver)
  */
 export class TemplateService {
+    /**
+     * Internal templates' registry.
+     * Key = template directory name
+     */
     private readonly templates: Record<string, LoadedTemplate>;
 
+    /**
+     * @param templatesRoot - absolute path to templates directory
+     */
     constructor(private readonly templatesRoot: string) {
         this.templates = loadTemplates(this.templatesRoot);
     }
 
     /**
      * Returns all available templates.
+     *
+     * @returns map of templateKey → LoadedTemplate
      */
     getAll(): Record<string, LoadedTemplate> {
         return this.templates;
@@ -26,6 +41,9 @@ export class TemplateService {
 
     /**
      * Returns template by key.
+     *
+     * @param key - template identifier
+     * @throws if template is not found
      */
     getByKey(key: TemplateKey): LoadedTemplate {
         const template = this.templates[key];
@@ -39,9 +57,17 @@ export class TemplateService {
 
     /**
      * Resolves template key from feature flags.
+     *
+     * Internally uses pure resolver function and validates result
+     * against loaded templates' registry.
+     *
+     * @param input - selected template features
+     * @returns resolved template key
+     *
+     * @throws if no matching template is found
      */
     resolve(input: TemplateFeatures): TemplateKey {
-        const key = resolveTemplateKey(input);
+        const key = resolveTemplateKey(this.templates, input);
 
         if (!key || !this.templates[key]) {
             throw new Error(
@@ -54,7 +80,10 @@ export class TemplateService {
 }
 
 /**
- * Factory helper (default local templates).
+ * Factory helper for creating TemplateService
+ * with default local templates' directory.
+ *
+ * Used by CLI and internal runtime.
  */
 export function createTemplateService(): TemplateService {
     const templatesRoot = path.resolve(__dirname, '../../templates');

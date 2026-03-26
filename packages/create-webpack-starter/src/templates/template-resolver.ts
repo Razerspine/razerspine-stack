@@ -1,7 +1,15 @@
-import {templates, TemplateKey} from './templates';
-import {ResolveInput} from './types';
+import {TemplateKey} from './templates';
+import {ResolveInput, LoadedTemplate} from './types';
 
+/**
+ * Resolves template key based on feature flags.
+ *
+ * @param templates - available templates map
+ * @param input - feature selection
+ * @returns matching template key or null
+ */
 export function resolveTemplateKey(
+    templates: Record<string, LoadedTemplate>,
     input: ResolveInput
 ): TemplateKey | null {
     const {appType, style, script} = input;
@@ -17,5 +25,6 @@ export function resolveTemplateKey(
             return key as TemplateKey;
         }
     }
+
     return null;
 }
