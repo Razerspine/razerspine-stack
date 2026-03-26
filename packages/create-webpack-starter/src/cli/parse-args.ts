@@ -1,5 +1,5 @@
 import {Command} from 'commander';
-import {CliOptions, ParsedCliInput} from "./types";
+import {CliOptions, ParsedCliInput} from './types';
 
 const pkg = require('../../package.json');
 

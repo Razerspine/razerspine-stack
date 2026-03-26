@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import {getCliContext} from './cli';
 import {createApp} from './core/create-app';
 import {log} from './utils';

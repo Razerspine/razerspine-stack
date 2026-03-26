@@ -2,9 +2,8 @@
   "name": "create-webpack-starter",
   "version": "1.1.4",
   "description": "Create a webpack starter with Pug, SCSS, TS and more",
-  "bin": {
-    "create-webpack-starter": "bin/index.js"
-  },
+  "author": "Razerspine",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
@@ -14,6 +13,10 @@
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
+  "type": "commonjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "bin",
     "dist",
@@ -27,11 +30,21 @@
     "LICENSE",
     "CHANGELOG.md"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "bin": {
+    "create-webpack-starter": "./dist/index.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsup",
+    "dev:cli": "tsx src/index.ts",
     "test:cleanup": "node e2e/helpers/cleanup.js",
     "test:e2e": "npm run build && npm run test:cleanup && (node e2e/basic.test.js && node e2e/partial-flags.test.js && node e2e/dry-run.test.js && node e2e/unknown-option.test.js && node e2e/style-script.test.js && node e2e/spa-basic.test.js && node e2e/invalid-values.test.js && node e2e/version.test.js && node e2e/help.test.js); npm run test:cleanup",
-    "dev": "ts-node src/index.ts",
     "prepublishOnly": "npm run build"
   },
   "engines": {
@@ -47,8 +60,6 @@
     "javascript",
     "typescript"
   ],
-  "author": "Razerspine",
-  "license": "ISC",
   "dependencies": {
     "commander": "^12.0.0",
     "fs-extra": "^11.2.0",
@@ -59,7 +70,10 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
+    "rimraf": "^6.1.3",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
