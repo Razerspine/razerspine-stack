@@ -2,20 +2,20 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {runCLI} from '../helpers/run-cli';
 import {createTempDir} from '../helpers/temp-dir';
+import {cleanupDirectory} from '../helpers/cleanup-directory';
+import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 
 describe('SPA Template Generation', () => {
     let cwd: string;
     let projectPath: string;
 
-    beforeAll(() => {
+    beforeEach(() => {
         cwd = createTempDir();
         projectPath = path.join(cwd, 'test-spa-app');
     });
 
-    afterAll(() => {
-        if (fs.existsSync(cwd)) {
-            fs.rmSync(cwd, {recursive: true, force: true});
-        }
+    afterEach(() => {
+        cleanupDirectory(cwd);
     });
 
     it('should create an SPA project with TypeScript configuration', async () => {

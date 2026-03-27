@@ -1,19 +1,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {describe, it, expect, beforeAll, afterAll} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 import {runCLI} from '../helpers/run-cli';
 import {createTempDir} from '../helpers/temp-dir';
+import {cleanupDirectory} from '../helpers/cleanup-directory';
 
 describe('Style and Script Options', () => {
     let cwd: string;
     const projectName = 'test-style-script-app';
 
-    beforeAll(() => {
+    beforeEach(() => {
         cwd = createTempDir();
     });
 
-    afterAll(() => {
-        fs.rmSync(cwd, {recursive: true, force: true});
+    afterEach(() => {
+        cleanupDirectory(cwd);
     });
 
     it('should create a project with SCSS and TypeScript', async () => {

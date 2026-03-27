@@ -1,17 +1,17 @@
-import {describe, it, beforeAll, afterAll} from 'vitest';
-import fs from 'node:fs';
+import {describe, it, beforeEach, afterEach} from 'vitest';
 import {runCLI} from '../helpers/run-cli';
 import {createTempDir} from '../helpers/temp-dir';
+import {cleanupDirectory} from '../helpers/cleanup-directory';
 
 describe('Unknown Options', () => {
     let cwd: string;
 
-    beforeAll(() => {
+    beforeEach(() => {
         cwd = createTempDir();
     });
 
-    afterAll(() => {
-        fs.rmSync(cwd, {recursive: true, force: true});
+    afterEach(() => {
+        cleanupDirectory(cwd);
     });
 
     it('should fail when using non-existent template option', async () => {

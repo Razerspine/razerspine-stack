@@ -2,6 +2,7 @@ import {describe, it} from 'vitest';
 import {runCLI} from '../helpers/run-cli';
 
 describe('CLI Version Flag', () => {
+
     it('should display version with --version', async () => {
         await runCLI(['--version'], {expectedExitCode: 0});
     });

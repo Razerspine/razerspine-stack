@@ -2,19 +2,21 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {runCLI} from '../helpers/run-cli';
 import {createTempDir} from '../helpers/temp-dir';
+import {cleanupDirectory} from '../helpers/cleanup-directory';
+import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 
 describe('Basic Template Generation', () => {
     let cwd: string;
     let projectPath: string;
 
-    beforeAll(() => {
+    beforeEach(() => {
         cwd = createTempDir();
         const projectName = 'test-basic-app';
         projectPath = path.join(cwd, projectName);
     });
 
-    afterAll(() => {
-        fs.rmSync(cwd, {recursive: true, force: true});
+    afterEach(() => {
+        cleanupDirectory(cwd);
     });
 
     it('should create an MPA project with default settings', async () => {

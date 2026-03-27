@@ -1,4 +1,5 @@
 import {runCLI} from '../helpers/run-cli';
+import {describe, it} from 'vitest';
 
 describe('Help Flag Output', () => {
     it('should exit with code 0 for valid help flags', async () => {
