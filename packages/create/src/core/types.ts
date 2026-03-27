@@ -1,4 +1,5 @@
 import {LoadedTemplate, AppType} from '../templates/types';
+import {PackageManager} from '../utils';
 
 /**
  * Options required to create a new project.
@@ -9,6 +10,7 @@ export type CreateAppOptions = {
     appType: AppType;
     noInstall?: boolean;
     dryRun?: boolean;
+    pm: PackageManager;
 };
 
 /**
@@ -21,6 +23,7 @@ export type BasePipelineContext = {
     targetDir: string;
     noInstall: boolean;
     dryRun: boolean;
+    pm: PackageManager;
 };
 
 /**

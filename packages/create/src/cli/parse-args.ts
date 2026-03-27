@@ -15,6 +15,7 @@ export function parseCliArgs(): ParsedCliInput {
         .option('--style <style>', 'Style preprocessor (scss | less)')
         .option('--script <script>', 'Script language (js | ts)')
         .option('--app-type <type>', 'Application type (mpa | spa)')
+        .option('--pm <pm>', 'Package manager (npm | yarn | pnpm | bun)', 'npm')
         .option('--no-install', 'Skip npm install')
         .option('--dry-run', 'Do not write files');
 

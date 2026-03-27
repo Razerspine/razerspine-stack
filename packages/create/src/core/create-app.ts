@@ -5,7 +5,8 @@ import {
     resolveTemplateStep,
     prepareDirectoryStep,
     copyTemplateStep,
-    installDepsStep
+    installDepsStep,
+    patchPackageStep
 } from '../steps';
 import {log} from '../utils';
 import {CreateAppOptions, BasePipelineContext} from './types';
@@ -17,6 +18,7 @@ import {CreateAppOptions, BasePipelineContext} from './types';
  * - builds initial pipeline context
  * - assembles pipeline using the Builder pattern
  * - executes pipeline steps sequentially
+ * - patches package.json with project-specific metadata
  */
 export async function createApp(options: CreateAppOptions): Promise<void> {
     const spinner = ora();
@@ -30,7 +32,8 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
         appType: options.appType,
         targetDir: path.resolve(process.cwd(), options.projectName),
         noInstall: Boolean(options.noInstall),
-        dryRun: Boolean(options.dryRun)
+        dryRun: Boolean(options.dryRun),
+        pm: options.pm
     };
 
     /**
@@ -38,19 +41,22 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
      *
      * Type transitions:
      * 1. create<BasePipelineContext>()
-     *    → initial context
+     * -> initial context
      *
      * 2. resolveTemplateStep
-     *    BasePipelineContext → TemplateResolvedContext
+     * BasePipelineContext -> TemplateResolvedContext
      *
      * 3. prepareDirectoryStep
-     *    TemplateResolvedContext → TemplateResolvedContext
+     * TemplateResolvedContext -> TemplateResolvedContext
      *
      * 4. copyTemplateStep
-     *    TemplateResolvedContext → TemplateResolvedContext
+     * TemplateResolvedContext -> TemplateResolvedContext
      *
-     * 5. installDepsStep
-     *    TemplateResolvedContext → TemplateResolvedContext
+     * 5. patchPackageStep
+     * TemplateResolvedContext -> TemplateResolvedContext
+     *
+     * 6. installDepsStep
+     * TemplateResolvedContext -> TemplateResolvedContext
      *
      * Final result:
      * Promise<TemplateResolvedContext>
@@ -59,6 +65,7 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
         .addStep(resolveTemplateStep)
         .addStep(prepareDirectoryStep(spinner))
         .addStep(copyTemplateStep(spinner))
+        .addStep(patchPackageStep(spinner))
         .addStep(installDepsStep(spinner))
         .run(ctx);
 

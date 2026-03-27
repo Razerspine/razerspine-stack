@@ -19,7 +19,8 @@ async function run() {
             templateKey: cli.template,
             appType: cli.appType,
             noInstall: cli.noInstall,
-            dryRun: cli.dryRun
+            dryRun: cli.dryRun,
+            pm: cli.pm,
         });
     } catch (err: unknown) {
         const error = err as { message?: string };

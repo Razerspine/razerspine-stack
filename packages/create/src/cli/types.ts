@@ -1,5 +1,6 @@
 import {TemplateFeatures, AppType} from '../templates/types';
 import {TemplateKey} from '../templates/templates';
+import {PackageManager} from '../utils';
 
 /**
  * Raw CLI options parsed from command line.
@@ -8,6 +9,7 @@ import {TemplateKey} from '../templates/templates';
 export type CliOptions = Partial<TemplateFeatures> & {
     install?: boolean;
     dryRun?: boolean;
+    pm: PackageManager
 };
 
 /**
@@ -19,6 +21,7 @@ export type CliContext = {
     appType: AppType;
     noInstall: boolean;
     dryRun: boolean;
+    pm: PackageManager;
 };
 
 export type ParsedCliInput = {

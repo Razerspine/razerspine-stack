@@ -5,6 +5,7 @@ export function validateOptions(options: {
     style?: string;
     script?: string;
     appType?: string;
+    pm?: string;
 }) {
     const hasStyle = Boolean(options.style);
     const hasScript = Boolean(options.script);
@@ -28,5 +29,9 @@ export function validateOptions(options: {
 
     if (options.script && !['js', 'ts'].includes(options.script)) {
         throw new Error('Invalid --script. Expected "js" or "ts"');
+    }
+
+    if (options.pm && !['npm', 'yarn', 'pnpm', 'bun'].includes(options.pm)) {
+        throw new Error('Invalid --pm. Expected "npm", "yarn", "pnpm" or "bun"');
     }
 }

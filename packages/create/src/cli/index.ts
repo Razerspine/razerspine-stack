@@ -49,6 +49,7 @@ export async function getCliContext(): Promise<CliContext> {
         template,
         appType,
         noInstall: options.install === false,
-        dryRun: Boolean(options.dryRun)
+        dryRun: Boolean(options.dryRun),
+        pm: options.pm
     };
 }
