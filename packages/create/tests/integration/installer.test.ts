@@ -70,4 +70,13 @@ describe('installDeps (Integration)', () => {
             .rejects
             .toThrow(/Failed to start bun/);
     });
+
+    it('should execute pnpm install when requested', async () => {
+        const logSpy = vi.spyOn(console, 'log');
+        mockSpawnProcess('close', 0);
+
+        await installDeps(tempDir, 'pnpm');
+
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Installing dependencies using pnpm...'));
+    });
 });
