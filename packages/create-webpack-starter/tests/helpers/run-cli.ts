@@ -140,15 +140,15 @@ export function runCLI(
         let stderr = '';
 
         child.stdout?.on('data', (chunk) => {
-            stdout += chunk.toString();
+            stdout += chunk.toString('utf-8');
         });
 
         child.stderr?.on('data', (chunk) => {
-            stderr += chunk.toString();
+            stderr += chunk.toString('utf-8');
         });
 
         const timeout = setTimeout(() => {
-            child.kill();
+            child.kill('SIGKILL');
             reject(new Error('❌ CLI execution timed out'));
         }, timeoutMs);
 
