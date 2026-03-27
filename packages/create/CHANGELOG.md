@@ -1,5 +1,155 @@
 # Changelog
 
+## [1.0.0] - 2026-03-27
+
+### 🚀 Major Release
+
+This release introduces a **fully redesigned CLI architecture**, modern build system, improved DX, and a new package
+name.
+
+---
+
+## ⚠️ Breaking Changes
+
+- **Package renamed**
+  - `create-webpack-starter` → `@razerspine/create`
+- **CLI command renamed**
+  - `create-webpack-starter` → `create`
+- **Binary path changed**
+  - now points to bundled output: `dist/index.js`
+- **Build system replaced**
+  - `tsc` → `tsup` (dual ESM + CJS output)
+- **Removed direct `package.json` imports**
+  - replaced with injected `__VERSION__` constant
+- **Templates branding updated**
+
+  - `create-webpack-starter` → `create`
+
+---
+
+## Features
+
+- Modern CLI built with:
+  - `commander`
+  - interactive prompts via `inquirer`
+- Smart template resolution based on:
+  - `appType` (mpa / spa)
+  - `style` (scss / less)
+  - `script` (js / ts)
+- Dry-run mode:
+  - `--dry-run` (no filesystem changes)
+- Skip install:
+  - `--no-install`
+- Improved error handling:
+  - graceful exit for prompt cancellation
+- Consistent CLI UX (help/version validation)
+
+---
+
+## Build System
+
+- Switched to **tsup**:
+  - ESM (`.mjs`) + CJS (`.cjs`)
+  - bundled output (single entry)
+  - fast builds
+- Added:
+  - `clean` script via `rimraf`
+- Proper `exports` configuration:
+
+  ```text
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  }
+  ```
+- Shebang preserved for CLI execution
+
+---
+
+## Testing
+
+- Migrated to **Vitest**
+- Added full **E2E test suite**
+- Implemented robust CLI test helper:
+  - runs CLI via `tsx`
+  - captures stdout/stderr
+  - validates exit codes
+  - includes timeout protection
+- Fixed cleanup issues:
+  - replaced `afterAll` with `afterEach`
+  - eliminated race conditions
+- Added global setup/teardown safety cleanup
+
+---
+
+## Architecture
+
+- Introduced `TemplateService`:
+  - template loading
+  - metadata access
+  - feature-based resolution
+- Clean separation of concerns:
+  - CLI layer
+  - core pipeline
+  - template system
+- Pipeline-based app creation flow:
+  - resolve template
+  - prepare directory
+  - copy files
+  - install dependencies
+
+---
+
+## DX Improvements
+
+- Local CLI execution:
+
+  ```bash
+  npm run create -- my-app
+  ```
+- Proper argument forwarding via `--`
+- Replaced `ts-node` with `tsx`
+- Improved error messages and validation
+- Cleaner logs with `kleur` and `ora`
+
+---
+
+## Templates
+
+- Updated footer branding:
+  - `Generated with create`
+- Cleaner template structure
+- Ignored unnecessary files during copy:
+  - `node_modules`
+  - `dist`
+
+---
+
+## Internal
+
+* Removed legacy build artifacts
+* Simplified dist output structure
+* Improved path resolution logic
+* Better cross-platform compatibility
+
+-----------------------------
+
+## 🗂 Legacy
+
+Previous versions of this package were published under:
+
+- `create-webpack-starter`
+
+They are now deprecated in favor of:
+
+```bash
+npm create @razerspine/create
+```
+
+---
+
 ## [1.1.4] - 2026-03-13
 
 ### Major Template Stabilization & Deployment Upgrade
