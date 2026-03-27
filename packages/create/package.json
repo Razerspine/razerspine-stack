@@ -1,5 +1,5 @@
 {
-  "name": "create-webpack-starter",
+  "name": "@razerspine/create",
   "version": "1.1.4",
   "description": "Create a webpack starter with Pug, SCSS, TS and more",
   "author": "Razerspine",
@@ -7,9 +7,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
-    "directory": "packages/create-webpack-starter"
+    "directory": "packages/create"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/create-webpack-starter#readme",
+  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/create#readme",
   "bugs": {
     "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
   },
@@ -37,7 +37,7 @@
     }
   },
   "bin": {
-    "create-webpack-starter": "./dist/index.js"
+    "create": "./dist/index.js"
   },
   "scripts": {
     "clean": "rimraf dist",
