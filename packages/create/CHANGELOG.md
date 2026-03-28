@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2026-03-27
+## [1.0.0] - 2026-03-28
 
 ### 🚀 Major Release
 
@@ -43,6 +43,10 @@ name.
 - Improved error handling:
   - graceful exit for prompt cancellation
 - Consistent CLI UX (help/version validation)
+- Package manager support:
+  - new `--pm` flag (`npm | yarn | pnpm | bun`)
+  - automatic detection via lock files
+  - consistent install execution across environments
 
 ---
 
@@ -99,6 +103,9 @@ name.
   - prepare directory
   - copy files
   - install dependencies
+- Added package manager abstraction layer:
+  - install command resolver
+  - script normalization
 
 ---
 
@@ -113,6 +120,28 @@ name.
 - Replaced `ts-node` with `tsx`
 - Improved error messages and validation
 - Cleaner logs with `kleur` and `ora`
+
+---
+
+## Package Manager Support
+
+- Added support for multiple package managers:
+  - `npm` (default)
+  - `yarn`
+  - `pnpm`
+  - `bun`
+- New CLI flag:
+  ```bash
+  create my-app --pm pnpm
+  ```
+- Automatic detection based on lock files:
+  - `pnpm-lock.yaml` → pnpm
+  - `yarn.lock` → yarn
+  - `bun.lockb` → bun
+  - `package-lock.json` → npm
+- Scripts normalization:
+- `npm run` → `pnpm / yarn / bun run`
+- Injected `packageManager` field into generated `package.json`
 
 ---
 
