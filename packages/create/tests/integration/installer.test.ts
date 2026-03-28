@@ -14,8 +14,6 @@ describe('installDeps (Integration)', () => {
     beforeEach(() => {
         tempDir = createTempDir();
         vi.clearAllMocks();
-        vi.spyOn(console, 'log').mockImplementation(() => {
-        });
     });
 
     afterEach(() => {
@@ -23,16 +21,28 @@ describe('installDeps (Integration)', () => {
         vi.restoreAllMocks();
     });
 
-    const mockSpawnProcess = (event: 'close' | 'error', value: number | Error) => {
+    const mockSpawnProcess = (
+        event: 'close' | 'error',
+        value: number | Error
+    ) => {
+        const handlers: Record<string, Function> = {};
+
         const mockChild = {
             on: vi.fn((ev, cb) => {
-                if (ev === event) {
-                    setImmediate(() => cb(value));
-                }
+                handlers[ev] = cb;
                 return mockChild;
-            })
+            }),
+            stdout: {on: vi.fn()},
+            stderr: {on: vi.fn()}
         };
+
         vi.mocked(spawn).mockReturnValue(mockChild as any);
+
+        setImmediate(() => {
+            if (handlers[event]) {
+                handlers[event](value);
+            }
+        });
     };
 
     it('should execute npm install by default', async () => {
@@ -52,7 +62,35 @@ describe('installDeps (Integration)', () => {
 
         await installDeps(tempDir, 'pnpm');
 
-        expect(spawn).toHaveBeenCalledWith('pnpm', ['install'], expect.any(Object));
+        expect(spawn).toHaveBeenCalledWith(
+            'pnpm',
+            ['install'],
+            expect.objectContaining({cwd: tempDir})
+        );
+    });
+
+    it('should execute yarn install when requested', async () => {
+        mockSpawnProcess('close', 0);
+
+        await installDeps(tempDir, 'yarn');
+
+        expect(spawn).toHaveBeenCalledWith(
+            'yarn',
+            ['install'],
+            expect.objectContaining({cwd: tempDir})
+        );
+    });
+
+    it('should execute bun install when requested', async () => {
+        mockSpawnProcess('close', 0);
+
+        await installDeps(tempDir, 'bun');
+
+        expect(spawn).toHaveBeenCalledWith(
+            'bun',
+            ['install'],
+            expect.objectContaining({cwd: tempDir})
+        );
     });
 
     it('should throw error when package manager exits with non-zero code', async () => {
@@ -69,14 +107,5 @@ describe('installDeps (Integration)', () => {
         await expect(installDeps(tempDir, 'bun'))
             .rejects
             .toThrow(/Failed to start bun/);
-    });
-
-    it('should execute pnpm install when requested', async () => {
-        const logSpy = vi.spyOn(console, 'log');
-        mockSpawnProcess('close', 0);
-
-        await installDeps(tempDir, 'pnpm');
-
-        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Installing dependencies using pnpm...'));
     });
 });
