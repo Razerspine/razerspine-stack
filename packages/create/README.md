@@ -1,329 +1,286 @@
-# create-webpack-starter
+# @razerspine/create
 
-[![npm version](https://img.shields.io/npm/v/create-webpack-starter.svg)](https://www.npmjs.com/package/create-webpack-starter)
+[![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
+[![Vitest](https://img.shields.io/badge/Vitest-58_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
-[![license](https://img.shields.io/npm/l/create-webpack-starter.svg)](./LICENSE)
+[![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
 
-Scaffold a modern webpack project using production-ready **SPA or MPA templates** powered by the Razerspine frontend ecosystem.
-
-Built on top of:
-
-- `@razerspine/webpack-core`
-- `@razerspine/pug-ui-kit`
-- `@razerspine/starter-core-scripts`
-
-Supports modern deployment platforms and includes a lightweight SPA runtime architecture.
-
-> ⚠️ Versions prior to **1.1.0** do not include SPA support.
+Create a modern webpack project using production-ready **SPA or MPA templates** powered by the Razerspine ecosystem.
 
 ---
 
-## 🚀 Quick Start
+## Table of Contents
+
+* [Quick Start](#quick-start)
+* [CLI Usage](#cli-usage)
+* [CLI Options](#cli-options)
+* [Package Manager Support](#package-manager-support)
+* [Project Architectures](#project-architectures)
+* [Project Structure](#project-structure)
+* [Template Resolution](#template-resolution)
+* [Testing](#testing)
+* [How It Works](#how-it-works)
+* [Changelog (1.0.0)](#changelog-100)
+* [License](#license)
+
+---
+
+## Quick Start
 
 ```bash
-npx create-webpack-starter my-app
+npx @razerspine/create my-app
 ```
 
-Starts an interactive setup where you choose:
+or using npm script locally:
 
-- Project type (**SPA** or **MPA**)
-- Style preprocessor (**SCSS** or **Less**)
-- Script language (**JavaScript** or **TypeScript**)
+```bash
+npm run create -- my-app
+```
 
 ---
 
-## ⚙️ Non-interactive Usage (CI Friendly)
+## CLI Usage
+
+### Interactive mode
 
 ```bash
-npx create-webpack-starter my-app \
+npx @razerspine/create my-app
+```
+
+Prompts:
+
+- App type (SPA / MPA)
+- Style (SCSS / Less)
+- Script (JS / TS)
+
+---
+
+### Non-interactive mode (CI-friendly)
+
+```bash
+npx @razerspine/create my-app \
   --app-type spa \
   --style scss \
   --script ts \
+  --pm pnpm \
   --no-install
 ```
 
-All feature flags must be provided together in non-interactive mode.
+> ⚠️ All feature flags must be provided together.
 
 ---
 
-## 🧩 CLI Options
+## CLI Options
 
-| Option                    | Description                        |
-| ------------------------- | ---------------------------------- |
-| `--app-type <spa \| mpa>` | Project architecture               |
-| `--style <scss \| less>`  | CSS preprocessor                   |
-| `--script <js \| ts>`     | Script language                    |
-| `--no-install`            | Skip dependency installation       |
-| `--dry-run`               | Show actions without writing files |
-| `-v`, `--version`         | Show CLI version                   |
+| Option                            | Description                  |                                               
+|-----------------------------------|------------------------------|
+| `--app-type spa \| mpa `          | Application architecture     |                                             
+| `--style scss \| less`            | CSS preprocessor             |                                    
+| `--script js \| ts`               | Script language              |                                  
+| `--pm npm \| yarn \| pnpm \| bun` | Package manager to use       |                                          
+| `--no-install`                    | Skip dependency installation |                                             
+| `--dry-run`                       | Do not write files           |                                               
+| `-v`, `--version`                 | Show CLI version             |                                             
+| `-h`, `--help`                    | Show help                    |                                               
 
 ---
 
-## 🌍 Automated Hosting Support
+## Package Manager Support
 
-Production builds automatically generate deployment configuration files based on the detected hosting environment.
-
-Supported platforms:
-
-- **Netlify**
-- **Vercel**
-- **Cloudflare Pages**
-- **GitHub Pages**
-- **Generic static hosting**
-
-Generated files:
-
-| Platform             | Generated File          |
-| -------------------- | ----------------------- |
-| Netlify / Cloudflare | `_redirects`            |
-| Vercel               | `vercel.json`           |
-| GitHub Pages         | `404.html` SPA fallback |
-| Static hosting       | `404.html` SPA fallback |
-
-Hosting detection uses environment variables automatically provided by hosting providers.
-
-Example:
+You can explicitly choose a package manager:
 
 ```bash
-NETLIFY=true npm run build
+npx @razerspine/create my-app --pm pnpm
 ```
+
+Supported:
+
+- npm (default)
+- pnpm
+- yarn
+- bun
+
+### Features
+
+- Auto script adaptation:
+  - `npm run build` → `pnpm build` / `yarn build`
+- Adds `packageManager` field to `package.json`
+- Fallback to `npm` if not specified
 
 ---
 
-## 🏗 Project Architectures
+## Project Architectures
 
 ### SPA (Single Page Application)
 
-SPA templates include a **lightweight runtime architecture** powered by
-`@razerspine/starter-core-scripts`.
+Powered by:
 
-#### Core features
+- `@razerspine/runtime`
 
-- Dependency Injection container
-- SPA Router
-- Route Guards (`canActivate`)
+Includes:
+
+- DI container
+- Router
+- Route guards
+- Reactive state
 - Component lifecycle
-- Declarative navigation
-- Proxy-based reactive state
-
-#### Application Bootstrap
-
-```ts
-bootstrapApplication({
-  providers: [
-    provideRouter(routes),
-    { provide: ThemeService, useValue: themeService },
-    { provide: ConsoleLogger, useValue: logger }
-  ]
-});
-```
-
-#### Component Example
-
-```ts
-export class HomePage extends BaseComponent<HomeState> {
-
-  private logger = inject(ConsoleLogger);
-
-  protected onInit() {
-    this.logger.success('Home Page initialized!');
-  }
-
-}
-```
-
-#### Router Guards
-
-Guards control navigation before routes activate.
-
-```ts
-const routes: Route[] = [
-  { path: '/', component: HomePage },
-  { path: '/dashboard', component: DashboardPage, canActivate: [authGuard] }
-];
-```
-
-Guard example:
-
-```ts
-const authGuard: CanActivateFn = () => {
-  const isLoggedIn = checkAuth();
-  return isLoggedIn ? true : '/login';
-};
-```
-
-Guard return values:
-
-| Return    | Result           |
-| --------- | ---------------- |
-| `true`    | allow navigation |
-| `false`   | block navigation |
-| `string`  | redirect         |
-| `Promise` | async guard      |
 
 ---
 
-## SPA Lifecycle
-
-```text
-Route change
-  ↓
-run route guards
-  ↓
-destroy() previous page
-  ↓
-instantiate new page
-  ↓
-mount() or render()
-  ↓
-bind events
-  ↓
-onInit()
-```
-
-Lifecycle cleanup is handled automatically.
-
----
-
-## MPA (Multi Page Application)
-
-MPA templates provide a classic multi-page architecture.
+### MPA (Multi Page Application)
 
 Features:
 
-- Multi-entry webpack setup
-- Independent page scripts
-- Reactive state via `createStore`
-- Optional event helpers
+* Multi-entry webpack setup
+* Independent pages
+* Lightweight architecture
 
-Best suited for:
+Best for:
 
-- marketing sites
-- landing pages
-- traditional websites
+* landing pages
+* marketing sites
+* classic websites
 
 ---
 
-## 📁 Generated Project Structure
+## Project Structure
 
-Example SPA structure:
+Example:
 
 ```text
 src/
   app/
-    app.ts
-    routes.ts
-    app.pug
-
   pages/
-    home/
-    not-found/
-
   shared/
-    layout/
-    mixins/
-
   assets/
-    images/
-    icons/
-    i18n/
-
   styles/
-    main.scss
-
-  types/
 ```
 
-Generated projects are:
+Projects are:
 
-- fully standalone
-- independent of the CLI
+- standalone
 - production-ready
-- safe to deploy immediately
+- deployable out of the box
 
 ---
 
-## 📦 Template Resolution
+## Template Resolution
 
-Templates are resolved automatically from selected flags.
+Templates are resolved automatically:
 
-| Type | Style | Script | Template          |
-| ---- | ----- | ------ | ----------------- |
-| SPA  | SCSS  | TS     | `spa-pug-scss-ts` |
-| SPA  | SCSS  | JS     | `spa-pug-scss-js` |
-| SPA  | Less  | TS     | `spa-pug-less-ts` |
-| SPA  | Less  | JS     | `spa-pug-less-js` |
-| MPA  | SCSS  | TS     | `mpa-pug-scss-ts` |
-| MPA  | SCSS  | JS     | `mpa-pug-scss-js` |
-| MPA  | Less  | TS     | `mpa-pug-less-ts` |
-| MPA  | Less  | JS     | `mpa-pug-less-js` |
-
-Users never choose templates directly.
-
-The CLI resolves the correct one automatically.
+| Type | Style | Script | Template        |
+|------|-------|--------|-----------------|
+| SPA  | SCSS  | TS     | spa-pug-scss-ts |
+| SPA  | SCSS  | JS     | spa-pug-scss-js |
+| SPA  | Less  | TS     | spa-pug-less-ts |
+| SPA  | Less  | JS     | spa-pug-less-js |
+| MPA  | SCSS  | TS     | mpa-pug-scss-ts |
+| MPA  | SCSS  | JS     | mpa-pug-scss-js |
+| MPA  | Less  | TS     | mpa-pug-less-ts |
+| MPA  | Less  | JS     | mpa-pug-less-js |
 
 ---
 
-## 🎁 What You Get
+## Testing
 
-- Production-grade webpack configuration
-- Pug template system
-- SCSS or Less support
-- JavaScript or TypeScript support
-- SPA Router
-- Route Guards
-- Dependency Injection container
-- Reactive View Engine
-- Clean scalable architecture
-- Production deployment automation
+Includes:
 
----
+- ✅ E2E tests (CLI behavior)
+- ✅ Integration tests (pipeline, installer)
+- ✅ Unit tests (utils, steps, CLI)
 
-## 📚 Documentation
+Highlights:
 
-Detailed documentation is available in the `/docs` directory:
-
-- [Getting Started](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/getting-started.md)
-- [Templates](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/templates.md)
-- [SPA Examples](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/spa-examples.md)
-- [MPA Examples](http://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/mpa-examples.md)
-- [webpack-core](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/webpack-core.md)
-- [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/faq.md)
-- [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create-webpack-starter/docs/testing.md)
+- Real CLI execution via `tsx`
+- Temp directories per test
+- Automatic cleanup
+- Exit code validation
+- Timeout protection
 
 ---
 
-## 🧪 Testing
+## How It Works
 
-The project includes end-to-end tests verifying:
+Pipeline-based architecture:
 
-- scaffolding
-- CLI flags
-- dry-run behavior
-- template resolution
-- filesystem output
-
-Tests simulate real `npx` usage.
-
----
-
-## 📋 Requirements
-
-- **Node.js ≥ 20**
-- npm / pnpm / yarn
+```text
+resolve template
+  ↓
+prepare directory
+  ↓
+copy files
+  ↓
+patch package.json
+  ↓
+install dependencies
+```
 
 ---
 
-## 🛠 How It Works
+## Changelog (1.0.0)
 
-1. CLI validates feature flags
-2. Template is resolved internally
-3. Files are copied
-4. Dependencies are installed
-5. Project is ready to run
+### Major Release
+
+- Full CLI rewrite
+- New package: `@razerspine/create`
+- New command: `create`
 
 ---
 
-## 📄 License
+### ⚠️ Breaking Changes
+
+- `create-webpack-starter` → `create`
+- New binary: `dist/index.js`
+- Switched to `tsup`
+- Removed direct package.json imports
+
+---
+
+### Features
+
+- Interactive CLI (inquirer)
+- Smart template resolution
+- Dry-run mode
+- Improved validation
+
+---
+
+### Package Manager Support
+
+- Added `--pm` flag
+- Supports: npm, pnpm, yarn, bun
+- Script auto-adaptation
+- Injects `packageManager` field
+
+---
+
+### Testing
+
+- Vitest migration
+- Full E2E coverage
+- Fixed cleanup race conditions
+
+---
+
+### Architecture
+
+- Pipeline-based system
+- Clean separation:
+  - CLI
+  - core
+  - steps
+  - utils
+
+---
+
+### DX Improvements
+
+- `tsx` instead of `ts-node`
+- Better logs (ora + kleur)
+- Improved CLI UX
+
+---
+
+## License
 
 ISC License
