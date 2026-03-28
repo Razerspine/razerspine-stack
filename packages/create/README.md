@@ -11,17 +11,17 @@ Create a modern webpack project using production-ready **SPA or MPA templates** 
 
 ## Table of Contents
 
-* [Quick Start](#quick-start)
-* [CLI Usage](#cli-usage)
-* [CLI Options](#cli-options)
-* [Package Manager Support](#package-manager-support)
-* [Project Architectures](#project-architectures)
-* [Project Structure](#project-structure)
-* [Template Resolution](#template-resolution)
-* [Testing](#testing)
-* [How It Works](#how-it-works)
-* [Changelog (1.0.0)](#changelog-100)
-* [License](#license)
+- [Quick Start](#quick-start)
+- [CLI Usage](#cli-usage)
+- [CLI Options](#cli-options)
+- [Package Manager Support](#package-manager-support)
+- [Project Architectures](#project-architectures)
+- [Project Structure](#project-structure)
+- [Template Resolution](#template-resolution)
+- [Testing](#testing)
+- [How It Works](#how-it-works)
+- [Changelog (1.0.0)](#changelog-100)
+- [License](#license)
 
 ---
 
@@ -131,15 +131,15 @@ Includes:
 
 Features:
 
-* Multi-entry webpack setup
-* Independent pages
-* Lightweight architecture
+- Multi-entry webpack setup
+- Independent pages
+- Lightweight architecture
 
 Best for:
 
-* landing pages
-* marketing sites
-* classic websites
+- landing pages
+- marketing sites
+- classic websites
 
 ---
 
