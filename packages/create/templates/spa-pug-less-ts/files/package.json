@@ -27,14 +27,14 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3",
     "webpack-merge": "^5.10.0",
-    "@razerspine/webpack-core": "^1.10.0",
+    "@razerspine/build": "^1.0.0",
     "less": "^4.5.1",
     "less-loader": "^12.3.0",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.5.1",
-    "@razerspine/starter-core-scripts": "^0.5.1"
+    "@razerspine/ui": "^1.0.0",
+    "@razerspine/runtime": "^1.0.1"
   }
 }

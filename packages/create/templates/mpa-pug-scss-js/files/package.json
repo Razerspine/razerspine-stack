@@ -15,7 +15,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
-    "@razerspine/webpack-core": "^1.10.0",
+    "@razerspine/build": "^1.0.0",
     "@types/node": "^25.1.0",
     "autoprefixer": "^10.4.23",
     "babel-loader": "^10.0.0",
@@ -35,8 +35,8 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "@razerspine/pug-ui-kit": "^1.5.1",
-    "@razerspine/starter-core-scripts": "^0.5.1",
+    "@razerspine/ui": "^1.0.0",
+    "@razerspine/runtime": "^1.0.1",
     "core-js": "^3.48.0"
   }
 }
