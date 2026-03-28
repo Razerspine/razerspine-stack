@@ -1,4 +1,4 @@
-import {ConsoleLogger} from '@razerspine/starter-core-scripts';
+import {ConsoleLogger} from '@razerspine/runtime';
 
 (function () {
   const logger = new ConsoleLogger();

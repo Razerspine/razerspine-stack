@@ -3,7 +3,7 @@ import {
   createStore,
   applyBindings,
   ConsoleLogger,
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 export class HomePage {
   logger = new ConsoleLogger();

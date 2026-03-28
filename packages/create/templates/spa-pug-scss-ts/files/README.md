@@ -102,7 +102,7 @@ pages/
 
 Each page:
 
-- Pages extend `BaseComponent` from `@razerspine/starter-core-scripts`
+- Pages extend `BaseComponent` from `@razerspine/runtime`
 - renders its own template
 - loads its own styles
 
@@ -151,7 +151,7 @@ styles/main.scss
 Example:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss/ui" as *;
 ```
 
 ---
@@ -169,7 +169,7 @@ Example:
 ```ts
 import {HomePage} from '@pages/home/home.page';
 import {NotFoundPage} from '@pages/not-found/not-found.page';
-import {Route} from '@razerspine/starter-core-scripts';
+import {Route} from '@razerspine/runtime';
 
 export const routes: Route[] = [
   {
@@ -208,7 +208,7 @@ Pages and UI blocks extend this class to gain:
 ### Example Page Component
 
 ```ts
-import {BaseComponent} from '@razerspine/starter-core-scripts';
+import {BaseComponent} from '@razerspine/runtime';
 import template from './home.pug';
 
 interface HomeState {
@@ -306,7 +306,7 @@ protected onDestroy()
 This starter uses lightweight runtime utilities from:
 
 ```text
-@razerspine/starter-core-scripts
+@razerspine/runtime
 ```
 
 Included services:
@@ -376,7 +376,7 @@ Generated apps contain no runtime dependency on the CLI.
 Uses:
 
 ```text
-@razerspine/pug-ui-kit
+@razerspine/ui
 ```
 
 for styling, layout utilities and design tokens.
@@ -388,7 +388,7 @@ for styling, layout utilities and design tokens.
 This template integrates:
 
 ```text
-@razerspine/pug-ui-kit
+@razerspine/ui
 ```
 
 Features:

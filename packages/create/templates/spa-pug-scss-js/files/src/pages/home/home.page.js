@@ -5,7 +5,7 @@ import {
   BaseComponent,
   ConsoleLogger,
   inject,
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 function getPackageMeta(data) {
   const parts = data?.name.split('-');

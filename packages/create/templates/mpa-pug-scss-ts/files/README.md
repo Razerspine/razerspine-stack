@@ -15,7 +15,7 @@ This template provides a clean **page-driven architecture** using:
 * **SCSS or LESS** for styling
 * **JavaScript or TypeScript** for scripting
 * **Webpack 5** build pipeline
-* **@razerspine/pug-ui-kit** UI system
+* **@razerspine/ui** UI system
 
 ---
 
@@ -143,12 +143,12 @@ page template
 
 ---
 
-# 🎨 UI System — pug-ui-kit
+# 🎨 UI System 
 
 This template integrates:
 
 ```
-@razerspine/pug-ui-kit
+@razerspine/ui
 ```
 
 Features:
@@ -169,14 +169,14 @@ src/styles/main.scss
 Example import:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss/ui" as *;
 ```
 
 Optional bundled fonts:
 
 ```scss
-@use "@razerspine/pug-ui-kit/scss/fonts";
-@use "@razerspine/pug-ui-kit/scss/ui-kit" as *;
+@use "@razerspine/ui/scss/fonts";
+@use "@razerspine/ui/scss/ui" as *;
 ```
 
 ---
@@ -188,7 +188,7 @@ Webpack alias is configured automatically.
 Example usage:
 
 ```pug
-include ~pug-ui-kit/btn.pug
+include ~pug-mixins/btn.pug
 
 +btn('Save', 'primary')
 ```
@@ -200,7 +200,7 @@ include ~pug-ui-kit/btn.pug
 This template includes lightweight runtime utilities from:
 
 ```
-@razerspine/starter-core-scripts
+@razerspine/runtime
 ```
 
 Available services:
@@ -213,7 +213,7 @@ Available services:
 Example:
 
 ```ts
-import {ConsoleLogger} from '@razerspine/starter-core-scripts';
+import {ConsoleLogger} from '@razerspine/runtime';
 
 const logger = new ConsoleLogger();
 logger.success('Application started');
@@ -279,7 +279,7 @@ Generated apps have **no runtime dependency on the CLI**.
 Powered by:
 
 ```
-@razerspine/pug-ui-kit
+@razerspine/ui
 ```
 
 ---

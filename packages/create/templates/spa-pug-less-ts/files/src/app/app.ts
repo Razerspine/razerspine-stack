@@ -4,7 +4,7 @@ import {
   ThemeService,
   bootstrapApplication,
   provideRouter,
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 const logger = new ConsoleLogger();
 const themeService = new ThemeService();

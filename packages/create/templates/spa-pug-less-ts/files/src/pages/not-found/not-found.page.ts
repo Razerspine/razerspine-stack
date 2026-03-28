@@ -4,7 +4,7 @@ import {
   BaseComponent,
   ConsoleLogger,
   inject,
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 export class NotFoundPage extends BaseComponent<any> {
   private logger = inject(ConsoleLogger);

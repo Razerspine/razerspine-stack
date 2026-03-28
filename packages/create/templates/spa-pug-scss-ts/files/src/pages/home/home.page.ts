@@ -5,7 +5,7 @@ import {
   BaseComponent,
   ConsoleLogger,
   inject,
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 type PackageType = {
   name: string;

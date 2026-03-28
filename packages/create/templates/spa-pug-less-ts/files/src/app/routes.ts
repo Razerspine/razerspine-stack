@@ -1,6 +1,6 @@
 import {HomePage} from '@pages/home/home.page';
 import {NotFoundPage} from '@pages/not-found/not-found.page';
-import {Route} from '@razerspine/starter-core-scripts';
+import {Route} from '@razerspine/runtime';
 
 export const routes: Route[] = [
   {

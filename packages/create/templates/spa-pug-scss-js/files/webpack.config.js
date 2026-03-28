@@ -3,8 +3,8 @@ const {
   createBaseConfig,
   createDevConfig,
   createProdConfig
-} = require('@razerspine/webpack-core');
-const uiKit = require('@razerspine/pug-ui-kit');
+} = require('@razerspine/build');
+const uiKit = require('@razerspine/ui');
 
 module.exports = (env = {}, argv = {}) => {
   const mode = argv?.mode || env?.mode || process.env.NODE_ENV || 'development';
@@ -25,7 +25,7 @@ module.exports = (env = {}, argv = {}) => {
         '@styles': path.resolve(process.cwd(), 'src/styles'),
         '@images': path.resolve(process.cwd(), 'src/assets/images'),
         '@icons': path.resolve(process.cwd(), 'src/assets/icons'),
-        'pug-ui-kit': uiKit.paths.mixins
+        'pug-mixins': uiKit.paths.mixins
       }
     }
   });
