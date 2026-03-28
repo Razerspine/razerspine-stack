@@ -1,14 +1,11 @@
 import '@pages/home/style.scss';
 import template from '@pages/home/home.pug';
 import pkg from '../../../package.json';
-import {
-  BaseComponent,
-  ConsoleLogger,
-  inject,
-} from '@razerspine/runtime';
+import {BaseComponent, ConsoleLogger, inject} from '@razerspine/runtime';
 
 function getPackageMeta(data) {
-  const parts = data?.name.split('-');
+  const parts = data?.templateMeta.split('-');
+
   return {
     appType: parts?.includes('spa') ? 'SPA' : 'MPA',
     script: parts?.includes('ts') ? 'TypeScript' : 'JavaScript',

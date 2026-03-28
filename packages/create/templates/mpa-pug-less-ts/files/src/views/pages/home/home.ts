@@ -1,12 +1,8 @@
 import pkg from '../../../../package.json';
-import {
-  createStore,
-  applyBindings,
-  ConsoleLogger,
-} from '@razerspine/runtime';
+import {createStore, applyBindings, ConsoleLogger} from '@razerspine/runtime';
 
 type PackageType = {
-  name: string;
+  templateMeta: string;
   version: string;
   description?: string;
   [key: string]: any;
@@ -44,7 +40,8 @@ export class HomePage {
   }
 
   private getPackageMeta(data: PackageType): HomeState {
-    const parts = data?.name.split('-');
+    const parts = data?.templateMeta.split('-');
+
     return {
       appType: parts?.includes('spa') ? 'SPA' : 'MPA',
       script: parts?.includes('ts') ? 'TypeScript' : 'JavaScript',
