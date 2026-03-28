@@ -57,4 +57,14 @@ describe('patchPackageJson (Unit)', () => {
 
         expect(updatedPkg.scripts.start).toBe('bun run serve');
     });
+
+    it('should replace npm run inside complex commands', async () => {
+        await patchPackageJson(tempDir, 'app', 'pnpm');
+
+        const updatedPkg = JSON.parse(await fs.readFile(pkgPath, 'utf-8'));
+
+        expect(updatedPkg.scripts.build).toContain('pnpm clean');
+        expect(updatedPkg.scripts.build).toContain('pnpm compile');
+        expect(updatedPkg.scripts.build).not.toContain('npm run');
+    });
 });
