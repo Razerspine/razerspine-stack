@@ -6,44 +6,56 @@
 
 No.
 
-This tool focuses on:
+`@razerspine/create` is not trying to replace tools like Vite or framework CLIs.
+
+It is designed for:
 
 - Pug-based workflows
-- webpack control and customization
-- CMS integrations
-- static and hybrid projects
+- full control over webpack via `@razerspine/build`
 - architecture-driven SPA / MPA setups
+- CMS integrations and static/hybrid projects
 
-It is not a zero-config frontend framework generator.
+This is a **low-level, flexible scaffolding tool**, not a zero-config framework generator.
 
 ---
 
 ## What is the difference between SPA and MPA?
 
-### SPA
+### SPA (Single Page Application)
+
 - Single HTML entry
 - Client-side routing
 - App bootstrap (`app.ts` / `app.js`)
-- Router configuration
-- Best for applications and dashboards
+- Powered by `@razerspine/runtime`
+- Best for:
+  - dashboards
+  - web applications
+  - complex UI flows
 
-### MPA
+---
+
+### MPA (Multi Page Application)
+
 - Multiple HTML outputs
 - Independent pages
-- No client-side router
-- Best for marketing sites and SEO-driven projects
+- No client-side router required
+- Lightweight runtime usage (optional)
+- Best for:
+  - marketing sites
+  - landing pages
+  - SEO-focused projects
 
 ---
 
 ## Why `--app-type` instead of auto-detection?
 
-Explicit architecture selection makes:
+Explicit architecture selection ensures:
 
-- CLI behavior predictable
-- CI configuration safer
-- Future expansion easier (SSR, hybrid modes, etc.)
+- predictable CLI behavior
+- safer CI/CD pipelines
+- better scalability (SSR, hybrid, future modes)
 
-Architecture is a first-class dimension.
+Architecture is treated as a **first-class concern**, not an implicit guess.
 
 ---
 
@@ -51,22 +63,46 @@ Architecture is a first-class dimension.
 
 Yes.
 
-Generated projects are fully editable.
-No hidden abstractions.
-No framework lock-in.
+Projects generated with `@razerspine/create` are:
+
+- fully editable
+- not locked to any framework
+- built on top of `@razerspine/build`
+
+You have **full control over your build system**.
 
 ---
 
 ## Why Pug?
 
-Pug is widely used in:
+Pug is especially useful for:
 
-- CMS theming
+- CMS-driven projects
 - static site generation
 - component-based markup systems
-- large layout-driven projects
+- layout-heavy applications
 
-It allows clean template composition and reusable layout logic.
+It enables:
+
+- clean template composition
+- reusable layout logic
+- better readability for complex structures
+
+---
+
+## What is `@razerspine/runtime`?
+
+`@razerspine/runtime` is a lightweight frontend runtime used in SPA templates.
+
+It provides:
+
+- dependency injection (DI)
+- router
+- reactive state/store
+- component lifecycle
+- view bindings
+
+It is **not a framework**, but a minimal runtime layer for structured apps.
 
 ---
 
@@ -74,9 +110,13 @@ It allows clean template composition and reusable layout logic.
 
 Yes.
 
-But this starter is optimized for template-driven workflows.
-If your primary goal is SPA framework development,
-consider Vite or framework CLIs instead.
+Since the build system is based on `@razerspine/build` (webpack), you can:
+
+- integrate React / Vue / other frameworks
+- extend loaders and plugins
+- customize the pipeline
+
+However, this starter is optimized for **template-driven architecture**, not framework-first development.
 
 ---
 
@@ -84,8 +124,22 @@ consider Vite or framework CLIs instead.
 
 No.
 
-Templates are copied into your project.
-After generation, your project has no dependency on the CLI.
+Templates are:
+
+- copied into your project
+- fully independent after generation
+
+There is **no runtime dependency on the CLI**.
+
+---
+
+## What packages are included in generated projects?
+
+Depending on template, you will get:
+
+- `@razerspine/build` — webpack abstraction layer
+- `@razerspine/runtime` — SPA runtime (for SPA templates)
+- `@razerspine/ui` — Pug UI components
 
 ---
 

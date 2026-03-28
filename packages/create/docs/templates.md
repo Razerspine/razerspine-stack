@@ -1,10 +1,10 @@
 # Templates
 
-`create-webpack-starter` ships with production-ready SPA and MPA templates built on top of:
+`create` ships with production-ready SPA and MPA templates built on top of:
 
-- `@razerspine/webpack-core`
-- `@razerspine/pug-ui-kit`
-- `@razerspine/starter-core-scripts`
+- `@razerspine/build`
+- `@razerspine/ui`
+- `@razerspine/runtime`
 
 Templates are resolved automatically based on three dimensions:
 
@@ -38,63 +38,60 @@ Template keys are considered **internal implementation details**.
 1. CLI validates feature flags
 2. CLI derives internal template key
 3. Template files are copied
-4. Dependencies are installed
-5. Project becomes fully standalone
+4. `package.json` is patched:
+   - project name injected
+   - scripts normalized for selected package manager
+   - `packageManager` field added
+5. Dependencies are installed (unless `--no-install`)
 
-In non-interactive mode, all feature flags must be provided.
+The result is a **fully standalone project**
 
 ---
 
-## SPA Templates (v0.4.0 Architecture)
+## SPA Templates (Runtime Architecture)
 
-SPA templates are powered by:
+SPA templates are powered by `@razerspine/runtime`
 
-- `Router` (Singleton pattern)
-- `BaseComponent` lifecycle
-- Reactive Proxy store
-- Automatic mount → render → bind → update orchestration
+### Core Feature
+
+- Router (client-side navigation)
+- Component-based architecture
+- Lifecycle hooks (`onInit`, `onDestroy`)
+- Reactive Proxy-based state
+- Automatic DOM bindings
+- Dependency Injection (optional)
 
 ### Enty Point
 
 ```ts
-new Router(routes);
+bootstrapApplication({
+  providers: [
+    provideRouter(routes)
+  ]
+});
 ```
 
-**The Router**:
+### Router Example
 
-- Handles navigation
-- Updates browser history
-- Manages component lifecycle
-- Automatically calls:
-- `mount()` (if available)
-- `render()` (fallback)
-- `destroy()` (on route change)
+```ts
+const routes = [
+  {path: '/', component: HomePage},
+  {path: '/dashboard', component: DashboardPage}
+];
+```
 
 ### SPA Lifecycle Flow
 
 ```text
 Route change
-  ↓
-destroy() previous component
-  ↓
-new Component(root)
-  ↓
-mount()
-  ↓
-render()
-  ↓
-initEventListeners()
-  ↓
-update()
-  ↓
-onInit()
+  → destroy previous component
+  → create new component
+  → mount()
+  → render()
+  → bind events
+  → applyBindings()
+  → onInit()
 ```
-
-**Memory safety is guaranteed via**:
-
-- `cleanupCallbacks` registry
-- automatic `Proxy` disconnect
-- delegated event binding
 
 ### SPA Project Structure
 
@@ -121,19 +118,6 @@ src/
   types/
 ```
 
-**Each page**:
-
-- Extends `BaseComponent`
-- Implements render()
-- Optionally overrides `onInit()` and `onDestroy()`
-
-Architecture improvements:
-
-- feature-based pages
-- shared UI layer
-- centralized bootstrap
-- clear separation of application logic and UI
-
 ### SPA Capabilities
 
 - Client-side navigation
@@ -152,36 +136,32 @@ SPA templates are optimized for application-like behavior.
 
 ---
 
-## MPA Templates (Reactive, No Router)
+## MPA Templates (Lightweight Reactive)
 
-**MPA templates use**:
+MPA templates use a simplified reactive layer from `@razerspine/runtime`.
 
-- `createStore`
-- `applyBindings`
-- `bindClickEvents`
-- `bindForms`
-- Class-based state management
-- No Router
+### Core Features
 
-Each page is independently rendered by webpack multi-entry.
+- No router
+- Multi-entry webpack configuration
+- Independent pages
+- Reactive store (Proxy-based)
+- Manual lifecycle control
 
-### MPA Initialization Pattern
+### Initialization Pattern
 
 ```ts
-const { state } = createStore(initialState, () => update());
+const {state} = createStore(initialState, () => update());
 applyBindings(document.body, state);
 ```
 
-**Lifecycle**:
+### Lifecycle
 
 ```text
 DOMContentLoaded
-  ↓
-new PageClass()
-  ↓
-createStore()
-  ↓
-update()
+  → new Page()
+  → createStore()
+  → update()
 ```
 
 ### MPA Project Structure
@@ -196,18 +176,18 @@ src/
         style.scss
 ```
 
-**Each page**:
+### MPA Characteristics
 
-- Manually initializes reactivity
-- Calls `applyBindings`
-- Uses Proxy-based store
-- Has no navigation system
+- Each page is independent
+- No shared router
+- Explicit initialization
+- Ideal for SEO-heavy projects
 
-**MPA is optimized for**:
+Best suited for:
 
-- Traditional multi-page websites
-- SEO-heavy projects
-- Independent entry points
+- marketing websites
+- landing pages
+- static content-driven sites
 
 ---
 
@@ -215,30 +195,61 @@ src/
 
 Templates are:
 
-- Copied (not referenced)
-- Fully standalone
-- Production-ready
-- Memory-safe
-- Extendable
-- Not coupled to CLI runtime
+- copied (not referenced)
+- fully standalone
+- production-ready
+- framework-independent
+- easily extendable
+
+After generation, your project:
+
+- does NOT depend on the CLI
+- does NOT include hidden runtime layers
+- is safe for long-term maintenance
 
 ---
 
-## Shared Runtime Packages
+## Shared Packages
 
 Generated projects depend on:
 
-- `@razerspine/webpack-core`
-- `@razerspine/pug-ui-kit`
-- `@razerspine/starter-core-scripts`
+- `@razerspine/build` - webpack configuration and build system
+- `@razerspine/runtime` - reactive engine and SPA runtime
+- `@razerspine/ui` - UI components and styles
 
-These are installed as normal semver dependencies.
+Installed as standard dependencies.
+
+---
+
+## Package Manager Integration
+
+Templates are automatically adapted to the selected package manager:
+
+- `npm`
+- `pnpm`
+- `yarn`
+- `bun`
+
+### What gets updated:
+
+- `packageManager` field:
+  ```json
+  {
+    "packageManager": "pnpm@latest"  
+  }
+  ```
+- script prefixes:
+  - `npm run build` → `pnpm build`
+  - `npm run dev` → `yarn dev`
+  - etc.
+
+This ensures consistent DX across ecosystems.
 
 ---
 
 ## Aliases
 
-**Available out of the box**:
+Available out of the box:
 
 ```text
 @views
@@ -249,7 +260,7 @@ These are installed as normal semver dependencies.
 @icons
 ```
 
-**Configured via webpack and ready for**:
+Configured via webpack and supported in:
 
 - Pug
 - TypeScript / JavaScript

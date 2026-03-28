@@ -8,7 +8,7 @@ This document demonstrates real usage patterns for SPA templates powered by:
 - Dependency Injection
 - Proxy-based reactivity
 
-All runtime features are provided by `@razerspine/starter-core-scripts`.
+All runtime features are provided by `@razerspine/runtime`.
 
 ---
 
@@ -17,7 +17,7 @@ All runtime features are provided by `@razerspine/starter-core-scripts`.
 ### routes.ts
 
 ```ts
-import {Route} from '@razerspine/starter-core-scripts';
+import {Route} from '@razerspine/runtime';
 import {HomePage} from '@pages/home/home';
 
 export const routes: Route[] = [
@@ -28,7 +28,7 @@ export const routes: Route[] = [
 ### app.ts
 
 ```ts
-import {bootstrapApplication, provideRouter} from '@razerspine/starter-core-scripts';
+import {bootstrapApplication, provideRouter} from '@razerspine/runtime';
 import {routes} from './routes';
 
 bootstrapApplication({
@@ -49,7 +49,7 @@ The runtime will:
 ## Basic Component
 
 ```ts
-import {BaseComponent} from '@razerspine/starter-core-scripts';
+import {BaseComponent} from '@razerspine/runtime';
 import template from './home.pug';
 
 interface State {
@@ -85,8 +85,7 @@ export class HomePage extends BaseComponent<State> {
 ## Dependency Injection Example
 
 ```ts
-import {inject} from '@razerspine/starter-core-scripts';
-import {ConsoleLogger} from '@/services/logger';
+import {inject,  ConsoleLogger} from '@razerspine/runtime';
 
 export class HomePage extends BaseComponent<State> {
 

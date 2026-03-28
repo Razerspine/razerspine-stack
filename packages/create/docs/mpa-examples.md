@@ -1,4 +1,4 @@
-# MPA Examples (starter-core-scripts v0.4.0)
+# MPA Examples
 
 MPA templates use the same reactive engine as SPA, but without Router and BaseComponent.
 
@@ -27,7 +27,7 @@ import {
   applyBindings,
   bindClickEvents,
   bindForms
-} from '@razerspine/starter-core-scripts';
+} from '@razerspine/runtime';
 
 interface HomeState {
   title: string;

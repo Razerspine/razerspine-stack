@@ -1,109 +1,265 @@
 # Testing
 
-This project uses **end-to-end (E2E) tests** to validate real CLI behavior.
+This project uses a **multi-layer** testing strategy built on top of **Vitest**.
 
 Since this is a CLI tool, correctness is defined by:
 
 - filesystem side effects
-- argument validation
+- argument parsing and validation
 - template resolution
-- real process execution
+- pipeline execution
+- real process behavior
+
+---
+
+## Test Stack
+
+- **Vitest** - test runner
+- **tsx** - runtime for executing CLI in E2E tests
+- Node.js APIs (`fs`, `child_process`) - mocked where needed
 
 ---
 
 ## Test Structure
 
 ```text
-e2e/
-├── basic.test.js
-├── spa-basic.test.js
-├── style-script.test.js
-├── partial-flags.test.js
-├── invalid-values.test.js
-├── dry-run.test.js
-├── unknown-option.test.js
-├── version.test.js
-├── help.test.js
-├── constans/
-│ └── temp-prefix.js
+tests/
+├── e2e/
+│   ├── basic.test.ts
+│   ├── spa-basic.test.ts
+│   ├── style-script.test.ts
+│   ├── partial-flags.test.ts
+│   ├── invalid-values.test.ts
+│   ├── dry-run.test.ts
+│   ├── unknown-option.test.ts
+│   ├── version.test.ts
+│   ├── help.test.ts
+│   ├── pm-flag.test.ts
+│
+├── integration/
+│   ├── create-app.test.ts
+│   ├── installer.test.ts
+│
+├── unit/
+│   ├── cli/
+│   │   ├── parse-args.test.ts
+│   │
+│   ├── core/
+│   │   ├── pipeline.test.ts
+│   │
+│   ├── steps/
+│   │   ├── copy-template-step.test.ts
+│   │   ├── install-deps-step.test.ts
+│   │   ├── patch-package-step.test.ts
+│   │   ├── prepare-directory-step.test.ts
+│   │   ├── resolve-template-step.test.ts
+│   │
+│   ├── utils/
+│   │   ├── copier.test.ts
+│   │   ├── detect-pm.test.ts
+│   │   ├── patch-package.test.ts
+│
 ├── helpers/
-│ ├── run-cli.js
-│ ├── temp-dir.js
-│ └── cleanup.js
-└── package.json
+│   ├── run-cli.ts
+│   ├── temp-dir.ts
+│   ├── cleanup-directory.ts
+│   ├── cleanup.ts
+│   ├── temp-prefix.ts
+│   ├── global-setup.ts
 ```
 
 ---
 
-## What Is Tested
+## Test Levels
 
-### Core Behavior
+### E2E (End-to-End)
 
-- Basic project creation (MPA)
-- SPA project creation
-- Feature-based resolution
-- `--app-type` validation
-- `--style` + `--script` validation
-- Partial flag rejection
-- Invalid value rejection
-- Unknown option handling
-- `--dry-run` behavior
+E2E tests validate **real CLI behavior**.
 
----
+CLI is executed via:
 
-## Validation Rules
+```ts
+spawn(tsx, ['src/index.ts', ...args])
+```
 
-- `--app-type`, `--style`, and `--script` must be provided together in non-interactive mode
-- Partial flags cause CLI exit
-- Invalid values cause CLI exit
-- Unknown flags cause CLI exit
+#### What is covered:
 
----
+- project generation (SPA / MPA)
+- template resolution
+- CLI flags (`--app-type`, `--style`, `--script`)
+- `--pm` (package manager support)
+- `--dry-run`
+- `--no-install`
+- invalid flags and error handling
+- help/version commands
 
-## Testing Principles
+#### Key principle:
 
-- CLI is invoked exactly like a user would (`node dist/index.js`)
-- No internal imports are used
-- Tests run in isolated temporary directories
-- Working directory controls project creation location
-- Real filesystem effects are verified
+> Tests simulate real user behavior — no internal imports.
+
+### Integration Tests
+
+Integration tests validate interaction between modules.
+
+#### Examples:
+
+- `createApp` pipeline execution
+- dependency installation (installDeps)
+- interaction between steps
+
+#### What is mocked:
+
+- `child_process.spawn`
+- logging (optional)
+
+#### What is real:
+
+- function orchestration
+- control flow
+- error handling
+
+### Unit Tests
+
+Unit tests validate **isolated logic**.
+
+#### Covered areas:
+
+- CLI parsing (`parseCliArgs`)
+- pipeline mechanics
+- individual steps
+- utilities:
+  - `patchPackageJson`
+  - `detectPackageManager`
+  - file copying
+
+#### Benefits:
+
+- fast execution
+- deterministic results
+- precise failure isolation
+
+### Package Manager Testing
+
+The CLI supports:
+
+- npm
+- pnpm
+- yarn
+- bun
+
+#### Covered in tests:
+
+- correct command execution (`spawn`)
+- script prefix transformation:
+  - `npm run build` → `pnpm build`
+- `packageManager` field injection
+- fallback behavior (default → npm)
+- invalid `--pm` handling
+
+### CLI Validation Rules
+
+- `--app-type`, `--style`, `--script` must be provided together in non-interactive mode
+- partial flags → error
+- invalid values → error
+- unknown flags → error
+
+These are verified via E2E tests.
 
 ---
 
 ## Temporary Directories
 
-All test directories use prefix: `create-webpack-starter-*`
+Tests run in isolated directories created via helpers.
 
+### Example prefix:
 
-Cleanup scripts remove stale directories from `/tmp`
-before and after test execution.
+```text
+/tmp/test-create-*
+```
+
+### Behavior:
+
+- created before each test
+- removed after each test
+- global cleanup runs before and after test suite
+
+This prevents:
+- test collisions
+- leftover files
+- flaky behavior
+
+---
+
+## CLI Test Helper
+
+Custom helper:
+
+```ts
+runCLI(args, options)
+```
+
+### Features:
+
+- runs CLI via `tsx`
+- captures `stdout` / `stderr`
+- validates exit codes
+- supports timeout protection
+- allows custom working directory
 
 ---
 
 ## Running Tests
 
+### All tests
+
+```bash
+npm run test
+```
+
+### E2E only
+
 ```bash
 npm run test:e2e
 ```
 
-**This command**:
+### Unit only
 
-- Cleans temporary directories
-- Builds the CLI
-- Runs all E2E tests
-- Cleans again after completion
+```bash
+npm run test:unit
+```
+
+### Integration only
+
+```bash
+npm run test:integration
+```
 
 ---
 
-## Why E2E Only?
+## Why Not E2E Only?
 
-CLI correctness is behavioral.
+Earlier versions relied on E2E tests only.
 
-**Unit tests cannot guarantee**:
+Now the project uses **layered testing**:
 
-- real template copying
-- actual filesystem output
-- process exit codes
-- argument parsing correctness
+| Type        | Purpose                |
+|-------------|------------------------|
+| Unit        | 	fast logic validation |
+| Integration | 	module interaction    |
+| E2E         | 	real CLI behavior     |
 
-E2E ensures stability across Node.js versions and real-world usage.
+### Result:
+
+- faster feedback loop
+- better error isolation
+- higher confidence in releases
+
+---
+
+## Testing Philosophy
+
+- Test behavior, not implementation
+- Prefer real execution (E2E) where it matters
+- Mock only external dependencies
+- Keep tests deterministic
+- Ensure cleanup is always executed
