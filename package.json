@@ -29,9 +29,9 @@
   },
   "scripts": {
     "build": "npm run build -ws",
-    "dev:cli": "npm run dev -w create-webpack-starter",
-    "build:cli": "npm run build -w create-webpack-starter",
-    "test:cli": "npm run test:e2e -w create-webpack-starter",
+    "dev:cli": "npm run dev -w @razerspine/create",
+    "build:cli": "npm run build -w @razerspine/create",
+    "test:cli": "npm run test -w @razerspine/create",
     "test:runtime": "npm run test -w @razerspine/runtime",
     "test:build": "npm run test:e2e:full -w @razerspine/build",
     "test:ui": "npm run test:full -w @razerspine/ui",
