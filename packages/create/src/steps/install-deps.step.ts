@@ -4,7 +4,7 @@ import {TemplateResolvedContext} from '../core/types';
 import {installDeps} from '../utils';
 
 /**
- * Installs project dependencies using the default package manager.
+ * Installs project dependencies using the selected or detected package manager.
  * * Note: Should be executed after the template files are successfully copied.
  */
 export const installDepsStep = (
@@ -22,7 +22,10 @@ export const installDepsStep = (
         }
 
         spinner.start('Installing dependencies...');
-        await installDeps(ctx.targetDir);
+
+        // Pass ctx.pm as the override if the user explicitly selected a package manager via CLI
+        await installDeps(ctx.targetDir, ctx.pm);
+
         spinner.succeed('Dependencies installed');
 
         return ctx;
