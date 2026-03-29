@@ -136,6 +136,10 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
   ```bash
   create my-app --pm pnpm
   ```
+- Hybrid Intelligent Detection:
+  - User-Agent Priority: Automatically detects the package manager used to run the CLI (e.g., if you use `pnpm dlx` or
+    `bunx`, the CLI will default to that manager).
+  - Context-Aware Lock-file Search: Scans the target project directory for existing lock files to ensure consistency.
 - Automatic detection based on lock files:
   - `pnpm-lock.yaml` → pnpm
   - `yarn.lock` → yarn
