@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, afterEach} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {detectPackageManager} from '../../../src/utils/installer';
@@ -10,10 +10,17 @@ describe('detectPackageManager (Unit)', () => {
 
     beforeEach(() => {
         tempDir = createTempDir();
+        vi.stubEnv('npm_config_user_agent', '');
     });
 
     afterEach(() => {
         cleanupDirectory(tempDir);
+        vi.unstubAllEnvs();
+    });
+
+    it('should detect pnpm via user agent', () => {
+        vi.stubEnv('npm_config_user_agent', 'pnpm/9.0.0 npm/? node/v20.0.0 linux x64');
+        expect(detectPackageManager(tempDir)).toBe('pnpm');
     });
 
     it('should return "pnpm" if pnpm-lock.yaml exists', () => {
@@ -28,6 +35,11 @@ describe('detectPackageManager (Unit)', () => {
 
     it('should return "bun" if bun.lockb exists', () => {
         fs.writeFileSync(path.join(tempDir, 'bun.lockb'), '');
+        expect(detectPackageManager(tempDir)).toBe('bun');
+    });
+
+    it('should return "bun" if bun.lock exists', () => {
+        fs.writeFileSync(path.join(tempDir, 'bun.lock'), '');
         expect(detectPackageManager(tempDir)).toBe('bun');
     });
 

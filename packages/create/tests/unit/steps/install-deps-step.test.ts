@@ -19,11 +19,19 @@ describe('installDepsStep', () => {
     } as any;
 
     it('should install dependencies if conditions are met', async () => {
-        const ctx = {targetDir: '/path', noInstall: false, dryRun: false} as any;
+        const ctx = {
+            targetDir: '/path',
+            pm: 'npm',
+            noInstall: false,
+            dryRun: false
+        } as any;
+
         await installDepsStep(mockSpinner)(ctx);
 
         expect(mockSpinner.start).toHaveBeenCalledWith('Installing dependencies...');
-        expect(installDeps).toHaveBeenCalledWith('/path');
+
+        expect(installDeps).toHaveBeenCalledWith('/path', 'npm');
+
         expect(mockSpinner.succeed).toHaveBeenCalled();
     });
 

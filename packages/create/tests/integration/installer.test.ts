@@ -1,5 +1,7 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
 import {spawn} from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import {installDeps} from '../../src/utils';
 import {createTempDir} from '../helpers/temp-dir';
 import {cleanupDirectory} from '../helpers/cleanup-directory';
@@ -14,11 +16,13 @@ describe('installDeps (Integration)', () => {
     beforeEach(() => {
         tempDir = createTempDir();
         vi.clearAllMocks();
+        vi.stubEnv('npm_config_user_agent', '');
     });
 
     afterEach(() => {
         cleanupDirectory(tempDir);
         vi.restoreAllMocks();
+        vi.unstubAllEnvs();
     });
 
     const mockSpawnProcess = (
@@ -32,8 +36,12 @@ describe('installDeps (Integration)', () => {
                 handlers[ev] = cb;
                 return mockChild;
             }),
-            stdout: {on: vi.fn()},
-            stderr: {on: vi.fn()}
+            stdout: {
+                on: vi.fn()
+            },
+            stderr: {
+                on: vi.fn()
+            }
         };
 
         vi.mocked(spawn).mockReturnValue(mockChild as any);
@@ -57,7 +65,37 @@ describe('installDeps (Integration)', () => {
         );
     });
 
-    it('should execute pnpm install when requested', async () => {
+    it('should automatically detect package manager from lock file if no override provided', async () => {
+        mockSpawnProcess('close', 0);
+
+        fs.writeFileSync(path.join(tempDir, 'pnpm-lock.yaml'), '');
+
+        await installDeps(tempDir);
+
+        expect(spawn).toHaveBeenCalledWith(
+            'pnpm',
+            ['install'],
+            expect.objectContaining({cwd: tempDir})
+        );
+    });
+
+    it('should prioritize user agent detection if no override provided', async () => {
+        mockSpawnProcess('close', 0);
+
+        vi.stubEnv('npm_config_user_agent', 'bun/1.0.0');
+
+        fs.writeFileSync(path.join(tempDir, 'pnpm-lock.yaml'), '');
+
+        await installDeps(tempDir);
+
+        expect(spawn).toHaveBeenCalledWith(
+            'bun',
+            ['install'],
+            expect.objectContaining({cwd: tempDir})
+        );
+    });
+
+    it('should execute pnpm install when requested explicitly', async () => {
         mockSpawnProcess('close', 0);
 
         await installDeps(tempDir, 'pnpm');
@@ -69,7 +107,7 @@ describe('installDeps (Integration)', () => {
         );
     });
 
-    it('should execute yarn install when requested', async () => {
+    it('should execute yarn install when requested explicitly', async () => {
         mockSpawnProcess('close', 0);
 
         await installDeps(tempDir, 'yarn');
@@ -81,7 +119,7 @@ describe('installDeps (Integration)', () => {
         );
     });
 
-    it('should execute bun install when requested', async () => {
+    it('should execute bun install when requested explicitly', async () => {
         mockSpawnProcess('close', 0);
 
         await installDeps(tempDir, 'bun');

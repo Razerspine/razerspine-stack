@@ -1,7 +1,7 @@
 # @razerspine/create
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
-[![Vitest](https://img.shields.io/badge/Vitest-58_passed-success?logo=vitest)]()
+[![Vitest](https://img.shields.io/badge/Vitest-62_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
 
