@@ -1,4 +1,4 @@
-# Webpack SPA Starter
+# Razerspine SPA Template
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript)
@@ -7,7 +7,7 @@
 ![Architecture](https://img.shields.io/badge/Architecture-SPA-111827)
 ![License](https://img.shields.io/badge/license-ISC-green)
 
-Production-ready **Single Page Application starter** powered by **Webpack 5**.
+Production-ready **Single Page Application** powered by **Webpack 5**.
 
 This template provides a clean architecture with a minimal runtime layer, page-based routing, modular styling and Pug
 templating.
@@ -174,7 +174,7 @@ export const routes = [
   {
     path: '/',
     component: HomePage,
-    title: 'Webpack SPA Starter',
+    title: 'Razerspine SPA Template',
   },
   {
     path: '/404',
@@ -195,7 +195,7 @@ Router mounts components inside:
 
 ## 🧩 Component Model
 
-This starter uses a lightweight **component architecture** powered by `BaseComponent`.
+This application uses a lightweight **component architecture** powered by `BaseComponent`.
 
 Pages and UI blocks extend this class to gain:
 
@@ -215,7 +215,7 @@ export class HomePage extends BaseComponent {
 
   constructor(container: HTMLElement) {
     super(container, {
-      title: 'Webpack SPA Starter',
+      title: 'Razerspine SPA Template',
       count: 0
     });
   }
@@ -298,7 +298,7 @@ onDestroy()
 
 ## ⚙ Runtime Services
 
-This starter uses lightweight runtime utilities from:
+This application uses lightweight runtime utilities from:
 
 ```text
 @razerspine/runtime
@@ -350,7 +350,7 @@ import {HomePage} from '@pages/home/home.page';
 
 ## 🏗 Architecture Principles
 
-This starter follows several key principles:
+This application follows several key principles:
 
 ### Framework-agnostic
 

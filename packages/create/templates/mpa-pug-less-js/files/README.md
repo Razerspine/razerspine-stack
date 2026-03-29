@@ -1,4 +1,4 @@
-# Webpack MPA Starter
+# Razerspine MPA Template
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
 ![Script](https://img.shields.io/badge/Script-JavaScript%20%7C%20TypeScript-3178C6)
@@ -7,7 +7,7 @@
 ![Architecture](https://img.shields.io/badge/Architecture-MPA-111827)
 ![License](https://img.shields.io/badge/license-ISC-green)
 
-Production-ready **Multi Page Application starter** powered by **Webpack 5**.
+Production-ready **Multi Page Application** powered by **Webpack 5**.
 
 This template provides a clean **page-driven architecture** using:
 
@@ -259,7 +259,7 @@ import {HomePage} from '@views/pages/home/home';
 
 # 🏗 Architecture Principles
 
-This starter follows several key principles.
+This application follows several key principles.
 
 ### Framework-agnostic
 

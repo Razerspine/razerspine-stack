@@ -2,7 +2,7 @@
   "name": "webpack-template-mpa-pug-less-js",
   "private": true,
   "version": "0.0.5",
-  "description": "Webpack starter template MPA: Pug + Less + JavaScript",
+  "description": "Razerspine Template MPA: Pug + Less + JavaScript",
   "templateMeta": "mpa-pug-less-js",
   "scripts": {
     "dev": "webpack serve --mode=development",

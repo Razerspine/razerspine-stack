@@ -116,7 +116,7 @@ Since the build system is based on `@razerspine/build` (webpack), you can:
 - extend loaders and plugins
 - customize the pipeline
 
-However, this starter is optimized for **template-driven architecture**, not framework-first development.
+However, this application is optimized for **template-driven architecture**, not framework-first development.
 
 ---
 

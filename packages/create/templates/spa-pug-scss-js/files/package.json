@@ -2,7 +2,7 @@
   "name": "webpack-template-spa-pug-scss-js",
   "private": true,
   "version": "0.0.5",
-  "description": "Webpack starter template SPA: Pug + SCSS + JavaScript",
+  "description": "Razerspine Template SPA: Pug + SCSS + JavaScript",
   "templateMeta": "spa-pug-scss-js",
   "scripts": {
     "dev": "webpack serve --mode=development",

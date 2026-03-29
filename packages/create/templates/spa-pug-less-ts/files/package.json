@@ -2,7 +2,7 @@
   "name": "webpack-template-spa-pug-less-ts",
   "private": true,
   "version": "0.0.5",
-  "description": "Webpack starter template SPA: Pug + Less + TypeScript",
+  "description": "Razerspine Template SPA: Pug + Less + TypeScript",
   "templateMeta": "spa-pug-less-ts",
   "scripts": {
     "dev": "webpack serve --mode=development",

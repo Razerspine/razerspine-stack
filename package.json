@@ -5,7 +5,6 @@
   "description": "Modular frontend ecosystem with a CLI generator, build system, UI layer, and reactive runtime for scalable SPA & MPA applications.",
   "keywords": [
     "webpack",
-    "starter",
     "pug",
     "scss",
     "less",

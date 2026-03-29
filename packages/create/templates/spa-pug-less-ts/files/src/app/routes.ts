@@ -6,7 +6,7 @@ export const routes: Route[] = [
   {
     path: '/',
     component: HomePage,
-    title: 'Webpack SPA Starter',
+    title: 'Razerspine SPA Template',
   },
   {
     path: '/404',
