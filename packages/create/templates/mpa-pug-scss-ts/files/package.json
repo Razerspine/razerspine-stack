@@ -2,7 +2,7 @@
   "name": "webpack-template-mpa-pug-scss-ts",
   "private": true,
   "version": "0.0.5",
-  "description": "Razerspine Template MPA: Pug + SCSS + TypeScript",
+  "description": "Razerspine Stack MPA: Pug + SCSS + TypeScript",
   "templateMeta": "mpa-pug-scss-ts",
   "scripts": {
     "dev": "webpack serve --mode=development",
