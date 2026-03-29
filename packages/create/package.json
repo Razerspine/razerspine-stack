@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/create",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "CLI to scaffold production-ready SPA & MPA applications with a modular build system, Pug templates, and a lightweight reactive runtime.",
   "author": "Razerspine",
   "license": "ISC",
@@ -37,7 +37,7 @@
     }
   },
   "bin": {
-    "create": "./dist/index.js"
+    "create": "./bin/create.js"
   },
   "scripts": {
     "clean": "rimraf dist",
