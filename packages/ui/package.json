@@ -6,12 +6,12 @@
   "author": "Razerspine",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "url": "https://github.com/Razerspine/razerspine-stack",
     "directory": "packages/ui"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/ui",
+  "homepage": "https://github.com/Razerspine/razerspine-stack/tree/main/packages/ui",
   "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+    "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
   "engines": {
     "node": ">=18"

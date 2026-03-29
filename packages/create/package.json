@@ -6,12 +6,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
+    "url": "git+https://github.com/Razerspine/razerspine-stack.git",
     "directory": "packages/create"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/tree/main/packages/create#readme",
+  "homepage": "https://github.com/Razerspine/razerspine-stack/tree/main/packages/create#readme",
   "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+    "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
   "type": "commonjs",
   "main": "./dist/index.cjs",

@@ -402,4 +402,4 @@ ISC
 
 ---
 
-Generated with **create-webpack-starter**
+Generated with **create**

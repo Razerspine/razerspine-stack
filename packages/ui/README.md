@@ -213,13 +213,13 @@ Full documentation for all mixins is available in:
 docs/
 ```
 
-- [Button](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/btn.md)
-- [Data Table](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/data-table.md)
-- [Form Input](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/form-input.md)
-- [Textarea](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/form-textarea.md)
-- [Checkbox](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/input-checkbox.md)
-- [Radio](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/input-radio.md)
-- [Single Select](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/ui/docs/single-select.md)
+- [Button](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/btn.md)
+- [Data Table](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/data-table.md)
+- [Form Input](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/form-input.md)
+- [Textarea](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/form-textarea.md)
+- [Checkbox](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/input-checkbox.md)
+- [Radio](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/input-radio.md)
+- [Single Select](https://github.com/Razerspine/razerspine-stack/blob/main/packages/ui/docs/single-select.md)
 
 ---
 

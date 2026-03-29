@@ -146,4 +146,4 @@ Depending on template, you will get:
 ## Where to report issues?
 
 GitHub:
-https://github.com/Razerspine/webpack-starter-monorepo/issues
+https://github.com/Razerspine/razerspine-stack/issues

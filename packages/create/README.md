@@ -286,14 +286,14 @@ install dependencies
 
 Detailed documentation is available in the `/docs` directory:
 
-- [Getting Started](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/getting-started.md)
-- [Templates](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/templates.md)
-- [SPA Examples](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/spa-examples.md)
-- [MPA Examples](http://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/mpa-examples.md)
-- [Build System](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/build-system.md)
-- [Runtime Engine](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/runtime-engine.md)
-- [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/faq.md)
-- [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/testing.md)
+- [Getting Started](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/getting-started.md)
+- [Templates](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/templates.md)
+- [SPA Examples](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/spa-examples.md)
+- [MPA Examples](http://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/mpa-examples.md)
+- [Build System](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/build-system.md)
+- [Runtime Engine](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/runtime-engine.md)
+- [FAQ](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/faq.md)
+- [Testing](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/testing.md)
 
 ---
 

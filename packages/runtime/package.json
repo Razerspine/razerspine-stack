@@ -6,12 +6,12 @@
   "author": "Razerspine",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo",
+    "url": "https://github.com/Razerspine/razerspine-stack",
     "directory": "packages/runtime"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/runtime#readme",
+  "homepage": "https://github.com/Razerspine/razerspine-stack/blob/main/packages/runtime#readme",
   "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+    "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
   "keywords": [
     "spa",
