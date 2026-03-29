@@ -21,6 +21,7 @@ Create a modern webpack project using production-ready **SPA or MPA templates** 
 - [Testing](#testing)
 - [How It Works](#how-it-works)
 - [Changelog (1.0.0)](#changelog-100)
+- [Documentation](#documentation)
 - [License](#license)
 
 ---
@@ -278,6 +279,21 @@ install dependencies
 - `tsx` instead of `ts-node`
 - Better logs (ora + kleur)
 - Improved CLI UX
+
+---
+
+## Documentation
+
+Detailed documentation is available in the `/docs` directory:
+
+- [Getting Started](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/getting-started.md)
+- [Templates](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/templates.md)
+- [SPA Examples](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/spa-examples.md)
+- [MPA Examples](http://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/mpa-examples.md)
+- [Build System](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/build-system.md)
+- [Runtime Engine](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/runtime-engine.md)
+- [FAQ](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/faq.md)
+- [Testing](https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/create/docs/testing.md)
 
 ---
 
