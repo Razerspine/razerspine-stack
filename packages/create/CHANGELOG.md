@@ -6,6 +6,7 @@
 
 This release introduces a **fully redesigned CLI architecture**, modern build system, improved DX, and a new package
 name.
+This is a ground-up rewrite focused on performance, type-safety, and smart automation.
 
 ---
 
@@ -40,13 +41,14 @@ name.
   - `--dry-run` (no filesystem changes)
 - Skip install:
   - `--no-install`
+- Smart Package Manager Support:
+  - New `--pm` flag (`npm | yarn | pnpm | bun`).
+  - Hybrid detection: Prioritizes `User-Agent` (detects if run via pnpm dlx, bunx, etc.), then falls back to lock-file
+    inspection in the target directory.
+  - Supports `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, and the latest `bun.lock` (Bun 1.2+).
 - Improved error handling:
   - graceful exit for prompt cancellation
 - Consistent CLI UX (help/version validation)
-- Package manager support:
-  - new `--pm` flag (`npm | yarn | pnpm | bun`)
-  - automatic detection via lock files
-  - consistent install execution across environments
 
 ---
 
@@ -158,10 +160,10 @@ name.
 
 ## Internal
 
-* Removed legacy build artifacts
-* Simplified dist output structure
-* Improved path resolution logic
-* Better cross-platform compatibility
+- Removed legacy build artifacts
+- Simplified dist output structure
+- Improved path resolution logic
+- Better cross-platform compatibility
 
 -----------------------------
 
