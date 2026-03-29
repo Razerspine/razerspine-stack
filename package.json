@@ -1,8 +1,8 @@
 {
-  "name": "webpack-starter-monorepo",
+  "name": "razerspine-stack",
   "version": "1.0.0",
   "private": true,
-  "description": "Monorepo for create-webpack-starter CLI and official Pug-based webpack starter templates.",
+  "description": "Modular frontend ecosystem with a CLI generator, build system, UI layer, and reactive runtime for scalable SPA & MPA applications.",
   "keywords": [
     "webpack",
     "starter",
@@ -18,9 +18,9 @@
   "author": "Razerspine",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+    "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo#readme",
+  "homepage": "https://github.com/Razerspine/razerspine-stack#readme",
   "workspaces": [
     "packages/*"
   ],
