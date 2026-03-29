@@ -401,28 +401,6 @@ Features:
 
 ---
 
-## 🔒 Dependency Overrides
-
-This template includes explicit `overrides` for:
-
-- `glob`
-- `minimatch`
-
-These overrides mitigate a known **ReDoS advisory** caused by older `minimatch` versions pulled via:
-
-```text
-pug-plugin → js-beautify → glob
-```
-
-The override:
-
-- affects **build-time tooling only**
-- does **not affect runtime bundles**
-- is **safe and tested**
-- will be removed once upstream dependencies update.
-
---- 
-
 ## 📄 License
 
 ISC
