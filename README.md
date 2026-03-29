@@ -1,21 +1,48 @@
-# webpack-starter-monorepo
+# Razerspine Stack
 
-Monorepo for the `@razerspine/create` CLI and official webpack ecosystem.
+> A modular frontend ecosystem combining a CLI generator, build system, UI layer, and reactive runtime for building scalable SPA & MPA applications without heavy frameworks.
 
-This repository contains everything required to generate **production-ready frontend projects** using:
+---
 
-- **Pug**
-- **SCSS or Less**
-- **JavaScript or TypeScript**
-- **SPA or MPA architectures**
+## ✨ Why Razerspine Stack?
 
-It provides a complete ecosystem including:
+Razerspine Stack is designed for developers who want:
 
-- CLI project generator
-- shared runtime engine
-- build system
-- UI toolkit
-- official templates
+- 🧩 **Full control over architecture** — no hidden abstractions
+- ⚡ **Modern developer experience** — fast builds, clean DX
+- 🏗 **Scalable structure** — SPA & MPA support out of the box
+- 🧠 **Lightweight runtime** — DI, router, reactive state without frameworks
+- 🎯 **Production-first approach** — no experimental magic, only stable patterns
+
+---
+
+## 📦 What’s Included
+
+- 🛠 **CLI Generator (`@razerspine/create`)**  
+  Scaffolds production-ready projects with flexible architecture
+
+- ⚙️ **Build System (`@razerspine/build`)**  
+  Modular webpack configuration with smart defaults
+
+- 🎨 **UI Layer (`@razerspine/ui`)**  
+  Pug-based UI toolkit and reusable components
+
+- 🧠 **Runtime (`@razerspine/runtime`)**  
+  Lightweight reactive engine with:
+  - Dependency Injection
+  - SPA Router
+  - Component lifecycle
+  - Reactive state
+
+---
+
+## 🚀 Quick Start
+
+```bash
+npx @razerspine/create my-app
+cd my-app
+npm run dev
+```
 
 ---
 
