@@ -1,7 +1,7 @@
 {
   "name": "@razerspine/create",
   "version": "1.0.0",
-  "description": "Create a webpack starter with Pug, SCSS, TS and more",
+  "description": "CLI to scaffold production-ready SPA & MPA applications with a modular build system, Pug templates, and a lightweight reactive runtime.",
   "author": "Razerspine",
   "license": "ISC",
   "repository": {
@@ -53,13 +53,21 @@
     "node": ">=18"
   },
   "keywords": [
-    "webpack",
+    "frontend",
+    "frontend-stack",
     "cli",
+    "scaffolding",
+    "webpack",
     "pug",
-    "scss",
-    "less",
+    "spa",
+    "mpa",
+    "typescript",
     "javascript",
-    "typescript"
+    "build-system",
+    "runtime",
+    "reactive",
+    "dependency-injection",
+    "router"
   ],
   "dependencies": {
     "commander": "^12.0.0",
