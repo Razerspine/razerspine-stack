@@ -1,5 +1,13 @@
 # Razerspine Stack
 
+[![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
+[![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
+[![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
+
+[![build](https://img.shields.io/badge/build-@razerspine/build-blue)](https://www.npmjs.com/package/@razerspine/build)
+[![runtime](https://img.shields.io/badge/runtime-@razerspine/runtime-green)](https://www.npmjs.com/package/@razerspine/runtime)
+[![ui](https://img.shields.io/badge/ui-@razerspine/ui-purple)](https://www.npmjs.com/package/@razerspine/ui)
+
 > A modular frontend ecosystem combining a CLI generator, build system, UI layer, and reactive runtime for building scalable SPA & MPA applications without heavy frameworks.
 
 ---
