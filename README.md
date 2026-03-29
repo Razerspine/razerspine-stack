@@ -1,6 +1,6 @@
 # webpack-starter-monorepo
 
-Monorepo for the [@razerspine/create CLI]() and official webpack ecosystem.
+Monorepo for the `@razerspine/create` CLI and official webpack ecosystem.
 
 This repository contains everything required to generate **production-ready frontend projects** using:
 
