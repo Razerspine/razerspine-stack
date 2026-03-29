@@ -1,0 +1,43 @@
+{
+  "name": "webpack-template-mpa-pug-scss-js",
+  "private": true,
+  "version": "0.0.5",
+  "description": "Razerspine Stack MPA: Pug + SCSS + JavaScript",
+  "templateMeta": "mpa-pug-scss-js",
+  "scripts": {
+    "dev": "webpack serve --mode=development",
+    "build": "webpack --mode=production",
+    "preview": "npm run build && http-server dist --port 4321 -o",
+    "test:build:netlify": "NETLIFY=true npm run build",
+    "test:build:vercel": "VERCEL=true npm run build",
+    "test:build:github": "GITHUB_ACTIONS=true npm run build",
+    "test:build:cloudflare": "CF_PAGES=true npm run build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@razerspine/build": "^1.0.0",
+    "@types/node": "^25.1.0",
+    "autoprefixer": "^10.4.23",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^6.10.0",
+    "dotenv": "^16.4.5",
+    "http-server": "^14.1.1",
+    "parse5": "^7.1.2",
+    "postcss": "^8.5.6",
+    "postcss-loader": "^8.2.0",
+    "prettier": "^3.2.5",
+    "pug-plugin": "^6.1.0",
+    "sass": "1.72.0",
+    "sass-loader": "^14.1.1",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.3",
+    "webpack-merge": "^5.10.0"
+  },
+  "dependencies": {
+    "@razerspine/ui": "^1.0.0",
+    "@razerspine/runtime": "^1.0.1",
+    "core-js": "^3.48.0"
+  }
+}

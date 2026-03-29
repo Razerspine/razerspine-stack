@@ -17,12 +17,12 @@
   "author": "Razerspine",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Razerspine/webpack-starter-monorepo.git",
+    "url": "git+https://github.com/Razerspine/razerspine-stack.git",
     "directory": "packages/build"
   },
-  "homepage": "https://github.com/Razerspine/webpack-starter-monorepo/blob/main/packages/build#readme",
+  "homepage": "https://github.com/Razerspine/razerspine-stack/blob/main/packages/build#readme",
   "bugs": {
-    "url": "https://github.com/Razerspine/webpack-starter-monorepo/issues"
+    "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
   "type": "commonjs",
   "main": "dist/index.js",

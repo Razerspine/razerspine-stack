@@ -1,15 +1,73 @@
-# webpack-starter-monorepo
+# Razerspine Stack
 
-Monorepo for the `create-webpack-starter` CLI and the official webpack starter templates.
+[![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
+[![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
+[![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
 
-This repository contains everything required to generate **production-ready webpack projects** using:
+[![build](https://img.shields.io/badge/build-@razerspine/build-blue)](https://www.npmjs.com/package/@razerspine/build)
+[![runtime](https://img.shields.io/badge/runtime-@razerspine/runtime-green)](https://www.npmjs.com/package/@razerspine/runtime)
+[![ui](https://img.shields.io/badge/ui-@razerspine/ui-purple)](https://www.npmjs.com/package/@razerspine/ui)
 
-* **Pug**
-* **SCSS or Less**
-* **JavaScript or TypeScript**
-* **SPA or MPA architectures**
+> A modular frontend ecosystem combining a CLI generator, build system, UI layer, and reactive runtime for building scalable SPA & MPA applications without heavy frameworks.
 
-It provides a structured ecosystem consisting of a project generator, shared runtime packages, and official starter templates.
+---
+
+## ✨ Why Razerspine Stack?
+
+Razerspine Stack is designed for developers who want:
+
+- 🧩 **Full control over architecture** — no hidden abstractions
+- ⚡ **Modern developer experience** — fast builds, clean DX
+- 🏗 **Scalable structure** — SPA & MPA support out of the box
+- 🧠 **Lightweight runtime** — DI, router, reactive state without frameworks
+- 🎯 **Production-first approach** — no experimental magic, only stable patterns
+
+---
+
+## 📦 What’s Included
+
+- 🛠 **CLI Generator (`@razerspine/create`)**  
+  Scaffolds production-ready projects with flexible architecture
+
+- ⚙️ **Build System (`@razerspine/build`)**  
+  Modular webpack configuration with smart defaults
+
+- 🎨 **UI Layer (`@razerspine/ui`)**  
+  Pug-based UI toolkit and reusable components
+
+- 🧠 **Runtime (`@razerspine/runtime`)**  
+  Lightweight reactive engine with:
+  - Dependency Injection
+  - SPA Router
+  - Component lifecycle
+  - Reactive state
+
+---
+
+## 🚀 Quick Start
+
+```bash
+npx @razerspine/create my-app
+cd my-app
+npm run dev
+```
+
+---
+
+## Table of Contents
+- [Packages](#packages)
+- [Templates](#templates)
+- [Application Types](#application-types)
+- [Shared Packages](#shared-packages)
+- [Package Manager Support](#package-manager-support)
+- [Automated Hosting Support](#automated-hosting-support)
+- [Architecture](#architecture)
+- [Philosophy](#philosophy)
+- [Development](#development)
+- [Testing](#testing)
+- [Template Development](#template-development)
+- [Release Process](#release-process)
+- [Status](#status)
 
 ---
 
@@ -17,24 +75,33 @@ It provides a structured ecosystem consisting of a project generator, shared run
 
 ```text
 packages/
-├─ create-webpack-starter      # CLI — npx create-webpack-starter
-├─ webpack-core                # Shared webpack configuration & loaders
-├─ pug-ui-kit                  # Optional Pug UI helpers
-└─ starter-core-scripts        # Runtime utilities (router, DI, view bindings)
+├─ create        # CLI → npx @razerspine/create
+├─ build         # Webpack configuration system
+├─ ui            # Pug UI kit
+├─ runtime       # SPA/MPA runtime engine
 ```
 
-Each package has a clearly defined responsibility and is versioned independently.
+### Overview
 
-Generated projects depend on **published npm packages**, not on this monorepo.
+- `@razerspine/create` → project generator (CLI)
+- `@razerspine/build` → webpack abstraction layer
+- `@razerspine/ui` → UI mixins and assets
+- `@razerspine/runtime` → reactive runtime (DI, Router, View Engine)
+
+All packages are:
+
+- independently versioned
+- published to npm
+- used by generated projects
 
 ---
 
 ## Templates
 
-Starter templates live inside the CLI package.
+Templates live inside the CLI package:
 
 ```text
-packages/create-webpack-starter/templates/
+packages/create/templates/
 ├─ mpa-pug-less-js
 ├─ mpa-pug-less-ts
 ├─ mpa-pug-scss-js
@@ -42,85 +109,104 @@ packages/create-webpack-starter/templates/
 ├─ spa-pug-less-js
 ├─ spa-pug-less-ts
 ├─ spa-pug-scss-js
-└─ spa-pug-scss-ts
+├─ spa-pug-scss-ts
 ```
 
-Templates are **internal CLI assets** and are not published to npm.
+Templates are:
 
-When a project is generated, the CLI:
+- **internal CLI assets**
+- **not published to npm**
+- **copied during project creation**
 
-1. selects a template
-2. copies the template files
-3. installs dependencies
-4. prepares a fully standalone project
+
+### Generation Flow
+
+1. Resolve template from flags
+2. Copy template files
+3. Patch `package.json`
+4. Install dependencies (optional)
+5. Return a **fully standalone project**
 
 ---
 
 ## Application Types
 
-Templates support two architectural modes.
-
-### MPA — Multi Page Application
-
-Characteristics:
+### MPA (Multi Page Application)
 
 - multiple HTML entry points
-- server-friendly structure
-- SEO-friendly output
+- SEO-friendly
 - independent page scripts
+- no client-side router
 
-Best suited for:
+Best for:
 
-- marketing websites
-- documentation sites
-- static content projects
+- marketing sites
+- landing pages
+- static content
 
----
-
-### SPA — Single Page Application
-
-Characteristics:
+### SPA (Single Page Application)
 
 - single HTML entry
 - client-side routing
 - component lifecycle
-- application-like behavior
+- reactive UI
 
-SPA templates include a lightweight runtime powered by:
+Powered by `@razerspine/runtime`
 
-- dependency injection
+Includes:
+
+- Dependency Injection
 - Router
-- `BaseComponent` lifecycle
+- BaseComponent lifecycle
 - reactive state bindings
 
 ---
 
-## Shared Runtime Packages
+## Shared Packages
 
-Templates rely on several shared runtime packages:
+Generated projects depend on:
 
-- `@razerspine/webpack-core`
-- `@razerspine/pug-ui-kit`
-- `@razerspine/starter-core-scripts`
+- `@razerspine/build`
+- `@razerspine/runtime`
+- `@razerspine/ui`
 
-These packages provide:
+These provide:
 
 - webpack configuration
 - build tooling
-- runtime services
-- UI utilities
+- runtime architecture
+- UI helpers
 
-They are versioned and published independently.
+Projects always use **published npm versions** (never monorepo links).
 
-Generated projects always depend on **stable npm releases**, never on monorepo workspaces.
+---
+
+## Package Manager Support
+
+The CLI supports multiple package managers:
+
+- `npm` (default)
+- `pnpm`
+- `yarn`
+- `bun`
+
+Example:
+
+```bash
+npx @razerspine/create my-app --pm pnpm
+```
+
+Features:
+
+- automatic script adaptation
+- correct `packageManager` field
+- install command abstraction
 
 ---
 
 ## Automated Hosting Support
 
-Production builds automatically generate configuration for common static hosting platforms.
-
-Supported environments:
+Production builds automatically generate routing configs for:
 
 - Netlify
 - Cloudflare Pages
@@ -128,75 +214,73 @@ Supported environments:
 - GitHub Pages
 - generic static hosting
 
-Depending on the environment, the build may generate:
+| Platform             | Generated File      |
+|----------------------|---------------------|
+| Netlify / Cloudflare | `_redirects`        |
+| Vercel               | `vercel.json`       |
+| GitHub Pages	        | `404.html` fallback |
 
-| Platform             | Generated File          |
-|----------------------|-------------------------|
-| Netlify / Cloudflare | `_redirects`            |
-| Vercel               | `vercel.json`           |
-| GitHub Pages         | `404.html` SPA fallback |
+No manual setup required.
 
-Hosting detection is based on environment variables automatically provided by hosting providers.
+---
 
-This allows **zero-configuration deployment for SPA routing**.
+## Architecture
+
+High-level flow:
+
+```text
+CLI
+↓
+Templates
+↓
+Generated Project
+↓
+Shared Packages (runtime / build / ui)
+↓
+Webpack Build
+↓
+Static Hosting
+```
+
+Key idea:
+
+> CLI is a generator, not part of runtime.
 
 ---
 
 ## Philosophy
 
-This project follows a **strict separation of responsibilities**.
+### Separation of Responsibilities
 
-## CLI responsibilities
+#### CLI
 
-The CLI handles:
-
-- user interaction (prompts and flags)
-- template selection
-- file copying
+- user interaction
+- template resolution
+- file generation
 - dependency installation
 
-The CLI **never participates in runtime execution**.
-
----
-
-## Template responsibilities
-
-Templates define:
+#### Templates
 
 - project structure
+- source code
+- configuration
 - dependencies
-- webpack configuration
-- application source code
 
-Templates are designed to produce **fully standalone projects**.
+#### Shared Packages
 
-After generation, the project belongs entirely to the user.
+- runtime logic
+- build system
+- UI layer
 
-No runtime dependency on the CLI exists.
 
----
+### Standalone Output
 
-## High-Level Architecture
+Generated projects are:
 
-This monorepo separates responsibilities across layers:
-
-```
-CLI
-  ↓
-Templates
-  ↓
-Generated Project
-  ↓
-Runtime Packages
-  ↓
-Webpack Build
-  ↓
-Static Hosting
-```
-
-The CLI simply generates projects.
-
-All runtime behavior lives in **published packages**, not inside the generator.
+- fully independent
+- framework-free
+- not coupled to CLI
+- production-ready
 
 ---
 
@@ -204,153 +288,89 @@ All runtime behavior lives in **published packages**, not inside the generator.
 
 This repository uses **npm workspaces**.
 
----
-
-## Install all dependencies
+### Install dependencies
 
 ```bash
 npm install
 ```
 
----
-
-## Build all packages
+### Build all packages
 
 ```bash
 npm run build
 ```
 
----
-
-## Local CLI testing
+### Run CLI locally
 
 ```bash
-npm run dev:cli
+npm run create -- my-app
 ```
 
 ---
 
-## CLI end-to-end tests
+## Testing
+
+The project uses a **multi-layer testing** strategy:
+
+- unit tests
+- integration tests
+- E2E tests
+
+### Run all tests
 
 ```bash
-npm run test:e2e
+npm run test
 ```
 
----
-
-## End-user usage
-
-End users should generate projects with:
+### CLI tests
 
 ```bash
-npx create-webpack-starter
+npm run test:cli
 ```
+
+### What is tested
+
+- CLI behavior
+- template generation
+- filesystem output
+- package manager support
+- runtime/build correctness
 
 ---
 
-# Dependency Installation Model
+## Template Development
 
-This monorepo uses **npm workspaces**.
+Templates are internal and must remain clean.
 
-When running `npm install` from the repository root:
-
-- npm builds a unified dependency graph
-- most dependencies are hoisted to the root `node_modules`
-- individual packages may not contain their own `node_modules`
-
-This behavior is expected.
-
-Example:
-
-```
-root/
-├─ node_modules/
-├─ packages/
-│  └─ create-webpack-starter/
-│     └─ (no node_modules)
-```
-
-Node.js resolves dependencies by walking up the directory tree.
-
----
-
-## Template Development Utilities
-
-During template development it may be useful to:
-
-- install dependencies inside templates
-- test template builds
-- clean development artifacts
-
-The monorepo provides helper scripts for this workflow.
-
----
-
-## Install dependencies in all templates
-
-Installs dependencies in:
-
-```
-packages/create-webpack-starter/templates/*/files
-```
-
-Run:
+### Install template dependencies (dev only)
 
 ```bash
 npm run templates:install
 ```
 
----
-
-## Clean template artifacts
-
-Templates must never ship with:
-
-- `node_modules`
-- `dist`
-- `package-lock.json`
-- build caches
-
-Clean all templates:
+### Clean templates
 
 ```bash
 npm run templates:clean
 ```
 
----
+Removes:
 
-## Important
-
-Template directories are **not npm workspaces**.
-
-They are:
-
-- development sources for the CLI
-- copied into generated projects
-- installed only after project generation
-
-Templates must always remain:
-
-- clean
-- dependency-free
-- free of build artifacts
-
-The CLI is responsible for running `npm install` in generated projects.
+- `node_modules`
+- `dist`
+- `lock files`
 
 ---
 
 ## Release Process
 
-Publishing is performed via GitHub Actions.
+Publishing is:
 
-The release pipeline includes:
+- manual
+- CI-validated
+- OIDC-secured (no tokens)
 
-- full build
-- end-to-end tests
-- version existence guard
-- npm publishing via OIDC + 2FA
-
-For details see:
+See:
 
 - `docs/release.md`
 - `docs/release-checklist.md`
@@ -359,4 +379,26 @@ For details see:
 
 ## Status
 
-This monorepo is actively maintained and serves as the **source of truth for all official webpack starter templates**.
+This monorepo is actively maintained and serves as the source of truth for:
+
+- CLI generator
+- official templates
+- runtime architecture
+- webpack build system
+
+---
+
+## Summary
+
+This project provides:
+
+- a **modern CLI generator**
+- a **structured frontend architecture**
+- a **lightweight runtime (no frameworks)**
+- a **production-ready build system**
+
+All designed for:
+
+- flexibility
+- control
+- long-term maintainability

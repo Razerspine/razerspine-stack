@@ -1,0 +1,27 @@
+import '@pages/not-found/style.less';
+import template from '@pages/not-found/not-found.pug';
+import {
+  BaseComponent,
+  ConsoleLogger,
+  inject,
+} from '@razerspine/runtime';
+
+export class NotFoundPage extends BaseComponent<any> {
+  private logger = inject(ConsoleLogger);
+
+  constructor(container: HTMLElement) {
+    super(container, {});
+  }
+
+  public render() {
+    this.container.innerHTML = template();
+  }
+
+  protected onInit() {
+    this.logger.success('404 Page initialized!');
+  }
+
+  protected onDestroy() {
+    this.logger.info('404 Page destroyed!');
+  }
+}
