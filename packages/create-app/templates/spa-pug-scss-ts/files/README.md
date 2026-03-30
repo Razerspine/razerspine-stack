@@ -1,4 +1,4 @@
-# Razerspine SPA Template
+# SPA Template
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
 ![TypeScript](https://img.shields.io/badge/Script-TypeScript-3178C6?logo=typescript)
@@ -150,7 +150,7 @@ styles/main.scss
 
 Example:
 
-```scss
+```text
 @use "@razerspine/ui/scss/ui" as *;
 ```
 
@@ -175,7 +175,7 @@ export const routes: Route[] = [
   {
     path: '/',
     component: HomePage,
-    title: 'Razerspine SPA Template',
+    title: 'SPA Template',
   },
   {
     path: '/404',
@@ -220,7 +220,7 @@ export class HomePage extends BaseComponent<HomeState> {
 
   constructor(container: HTMLElement) {
     super(container, {
-      title: 'Razerspine SPA Template',
+      title: 'SPA Template',
       count: 0
     });
   }
@@ -407,4 +407,4 @@ ISC
 
 ---
 
-Generated with **create**
+Generated with **create-app**

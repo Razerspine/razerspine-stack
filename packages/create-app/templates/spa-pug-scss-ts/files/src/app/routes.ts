@@ -6,7 +6,7 @@ export const routes: Route[] = [
   {
     path: '/',
     component: HomePage,
-    title: 'Razerspine SPA Template',
+    title: 'SPA Template',
   },
   {
     path: '/404',

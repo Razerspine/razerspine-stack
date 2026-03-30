@@ -1,4 +1,4 @@
-# Razerspine MPA Template
+# MPA Template
 
 ![Webpack](https://img.shields.io/badge/Webpack-5-blue?logo=webpack)
 ![Script](https://img.shields.io/badge/Script-JavaScript%20%7C%20TypeScript-3178C6)
@@ -49,7 +49,7 @@ npm run preview
 
 # 📦 Project Structure
 
-```
+```text
 src/
   assets/
     i18n/
@@ -74,7 +74,7 @@ src/
 
 Pages are located in:
 
-```
+```text
 src/views/pages/
 ```
 
@@ -82,7 +82,7 @@ Each page is a self-contained module.
 
 Example:
 
-```
+```text
 views/pages/
   home/
     home.pug
@@ -92,7 +92,7 @@ views/pages/
 
 Webpack automatically generates:
 
-```
+```text
 home.html
 home.js
 home.css
@@ -110,13 +110,13 @@ Each page can include:
 
 Layouts are located in:
 
-```
+```text
 src/views/layout/
 ```
 
 Example structure:
 
-```
+```text
 layout/
   _base.pug
   _header.pug
@@ -133,7 +133,7 @@ extends @views/layout/simple.pug
 
 Architecture flow:
 
-```
+```text
 _base layout
    ↓
 layout variant
@@ -147,7 +147,7 @@ page template
 
 This template integrates:
 
-```
+```text
 @razerspine/ui
 ```
 
@@ -162,19 +162,19 @@ Features:
 
 Main style entry:
 
-```
+```text
 src/styles/main.scss
 ```
 
 Example import:
 
-```scss
+```text
 @use "@razerspine/ui/scss/ui" as *;
 ```
 
 Optional bundled fonts:
 
-```scss
+```text
 @use "@razerspine/ui/scss/fonts";
 @use "@razerspine/ui/scss/ui" as *;
 ```
@@ -199,7 +199,7 @@ include ~pug-mixins/btn.pug
 
 This template includes lightweight runtime utilities from:
 
-```
+```text
 @razerspine/runtime
 ```
 
@@ -241,7 +241,7 @@ Example usage in markup:
 
 Preconfigured aliases:
 
-```
+```text
 @views
 @styles
 @scripts
@@ -278,7 +278,7 @@ Generated apps have **no runtime dependency on the CLI**.
 
 Powered by:
 
-```
+```text
 @razerspine/ui
 ```
 
@@ -290,4 +290,4 @@ ISC
 
 ---
 
-Generated with **create**
+Generated with **create-app**
