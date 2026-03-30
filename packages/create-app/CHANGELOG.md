@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.1] - 2026-03-30
+
+### Fixed
+
+- **Template Dependencies**: Added `html-webpack-plugin` to `devDependencies` in all templates (`spa-pug-scss-ts`, etc.). This
+resolves the `MODULE_NOT_FOUND` error when running `npm run dev` in a newly generated project, caused by the peer dependency
+requirements of `@razerspine/build`.
+
+---
+
 ## [1.0.0] - 2026-03-30
 
 ### 🚀 Major Release
