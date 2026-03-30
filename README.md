@@ -75,7 +75,7 @@ npm run dev
 
 ```text
 packages/
-├─ create        # CLI → npx @razerspine/create-app
+├─ create-app    # CLI → npx @razerspine/create-app
 ├─ build         # Webpack configuration system
 ├─ ui            # Pug UI kit
 ├─ runtime       # SPA/MPA runtime engine
@@ -101,7 +101,7 @@ All packages are:
 Templates live inside the CLI package:
 
 ```text
-packages/create/templates/
+packages/create-app/templates/
 ├─ mpa-pug-less-js
 ├─ mpa-pug-less-ts
 ├─ mpa-pug-scss-js
@@ -303,7 +303,7 @@ npm run build
 ### Run CLI locally
 
 ```bash
-npm run create -- my-app
+npm run create-app -- my-app
 ```
 
 ---
