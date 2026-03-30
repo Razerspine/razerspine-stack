@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2026-03-28
+## [1.0.0] - 2026-03-30
 
 ### 🚀 Major Release
 
@@ -23,8 +23,7 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
 - **Removed direct `package.json` imports**
   - replaced with injected `__VERSION__` constant
 - **Templates branding updated**
-
-  - `create-webpack-starter` → `create`
+  - `create-webpack-starter` → `create-app`
 
 ---
 
@@ -116,7 +115,7 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
 - Local CLI execution:
 
   ```bash
-  npm run create -- my-app
+  npm run create-app -- my-app
   ```
 - Proper argument forwarding via `--`
 - Replaced `ts-node` with `tsx`
@@ -134,7 +133,7 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
   - `bun`
 - New CLI flag:
   ```bash
-  create my-app --pm pnpm
+  create-app my-app --pm pnpm
   ```
 - Hybrid Intelligent Detection:
   - User-Agent Priority: Automatically detects the package manager used to run the CLI (e.g., if you use `pnpm dlx` or
@@ -153,12 +152,15 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
 
 ## Templates
 
-- Updated footer branding:
-  - `Generated with create`
-- Cleaner template structure
-- Ignored unnecessary files during copy:
-  - `node_modules`
-  - `dist`
+- Cleaner Structure: Optimized internal template organization.
+- Ecosystem Migration: All templates now point to the new published packages:
+  - `@razerspine/build`
+  - `@razerspine/runtime`
+  - `@razerspine/ui`
+- Smart Filtering: Enhanced the template copying engine. It now ignores:
+  - Directories: `node_modules`, `dist`
+  - Files: `package-lock.json`
+- Metadata: Improved `template.json` validation for each scaffold.
 
 ---
 
