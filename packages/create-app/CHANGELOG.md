@@ -17,7 +17,7 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
 - **CLI command renamed**
   - `create-webpack-starter` → `create-app`
 - **Binary path changed**
-  - now points to bundled output: `dist/index.js`
+  - now points to bundled output: `dist/index.cjs`
 - **Build system replaced**
   - `tsc` → `tsup` (dual ESM + CJS output)
 - **Removed direct `package.json` imports**

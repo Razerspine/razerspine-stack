@@ -35,7 +35,7 @@ npx @razerspine/create-app my-app
 or using npm script locally:
 
 ```bash
-npm run create -- my-app
+npm run create-app -- my-app
 ```
 
 ---
@@ -230,10 +230,10 @@ install dependencies
 
 ### ⚠️ Breaking Changes
 
-- `create-webpack-starter` → `create`
-- New binary: `dist/index.js`
+- `create-webpack-starter` → `create-app`
+- New binary: `dist/index.cjs`
 - Switched to `tsup`
-- Removed direct package.json imports
+- Removed direct `package.json` imports
 
 ---
 
@@ -286,14 +286,14 @@ install dependencies
 
 Detailed documentation is available in the `/docs` directory:
 
-- [Getting Started](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/getting-started.md)
-- [Templates](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/templates.md)
-- [SPA Examples](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/spa-examples.md)
-- [MPA Examples](http://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/mpa-examples.md)
-- [Build System](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/build-system.md)
-- [Runtime Engine](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/runtime-engine.md)
-- [FAQ](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/faq.md)
-- [Testing](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create/docs/testing.md)
+- [Getting Started](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/getting-started.md)
+- [Templates](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/templates.md)
+- [SPA Examples](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/spa-examples.md)
+- [MPA Examples](http://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/mpa-examples.md)
+- [Build System](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/build-system.md)
+- [Runtime Engine](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/runtime-engine.md)
+- [FAQ](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/faq.md)
+- [Testing](https://github.com/Razerspine/razerspine-stack/blob/main/packages/create-app/docs/testing.md)
 
 ---
 
