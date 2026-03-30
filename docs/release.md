@@ -52,7 +52,7 @@ CI must pass across all packages:
 - `@razerspine/build`
 - `@razerspine/runtime`
 - `@razerspine/ui`
-- `@razerspine/create`
+- `@razerspine/create-app`
 
 CI validates:
 
@@ -131,7 +131,7 @@ When releasing packages, **dependency order matters**.
 2. `@razerspine/build`
 3. `@razerspine/ui`
 4. Update template dependency versions
-5. `@razerspine/create`
+5. `@razerspine/create-app`
 
 ### Why this order?
 

@@ -28,9 +28,9 @@
   },
   "scripts": {
     "build": "npm run build -ws",
-    "dev:cli": "npm run dev -w @razerspine/create",
-    "build:cli": "npm run build -w @razerspine/create",
-    "test:cli": "npm run test -w @razerspine/create",
+    "dev:cli": "npm run dev -w @razerspine/create-app",
+    "build:cli": "npm run build -w @razerspine/create-app",
+    "test:cli": "npm run test -w @razerspine/create-app",
     "test:runtime": "npm run test -w @razerspine/runtime",
     "test:build": "npm run test:e2e:full -w @razerspine/build",
     "test:ui": "npm run test:full -w @razerspine/ui",

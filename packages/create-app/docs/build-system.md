@@ -1,6 +1,6 @@
 # Build System
 
-`@razerspihne/build` is the **core build engine** used by all templates generated via `@razerspine/create`.
+`@razerspihne/build` is the **core build engine** used by all templates generated via `@razerspine/create-app`.
 
 It provides a **modern**, **modular**, and **production-ready** **Webpack configuration**
 with a focus on **stability**, **flexibility**, and **template-driven architecture**.

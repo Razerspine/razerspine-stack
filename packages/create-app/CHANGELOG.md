@@ -13,9 +13,9 @@ This is a ground-up rewrite focused on performance, type-safety, and smart autom
 ## ⚠️ Breaking Changes
 
 - **Package renamed**
-  - `create-webpack-starter` → `@razerspine/create`
+  - `create-webpack-starter` → `@razerspine/create-app`
 - **CLI command renamed**
-  - `create-webpack-starter` → `create`
+  - `create-webpack-starter` → `create-app`
 - **Binary path changed**
   - now points to bundled output: `dist/index.js`
 - **Build system replaced**
@@ -180,7 +180,7 @@ Previous versions of this package were published under:
 They are now deprecated in favor of:
 
 ```bash
-npm create @razerspine/create
+npm create @razerspine/create-app
 ```
 
 ---

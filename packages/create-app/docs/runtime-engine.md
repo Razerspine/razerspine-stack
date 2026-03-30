@@ -329,7 +329,7 @@ Used together with:
 
 - `@razerspine/build` → build system
 - `@razerspine/ui` → UI components
-- `@razerspine/create` → project scaffolding
+- `@razerspine/create-app` → project scaffolding
 
 ---
 

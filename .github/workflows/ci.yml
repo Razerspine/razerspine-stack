@@ -44,5 +44,5 @@ jobs:
       - name: 'Test: @razerspine/ui (Integration & Snapshots)'
         run: npm run test:ui
 
-      - name: 'Test: @razerspine/create (Unit & Integration & E2E)'
+      - name: 'Test: @razerspine/create-app (Unit & Integration & E2E)'
         run: npm run test:cli

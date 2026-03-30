@@ -1,8 +1,8 @@
 # Razerspine Stack
 
 [![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
-[![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
-[![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/@razerspine/create-app.svg)](https://www.npmjs.com/package/@razerspine/create-app)
+[![license](https://img.shields.io/npm/l/@razerspine/create-app.svg)](./LICENSE)
 
 [![build](https://img.shields.io/badge/build-@razerspine/build-blue)](https://www.npmjs.com/package/@razerspine/build)
 [![runtime](https://img.shields.io/badge/runtime-@razerspine/runtime-green)](https://www.npmjs.com/package/@razerspine/runtime)
@@ -26,7 +26,7 @@ Razerspine Stack is designed for developers who want:
 
 ## 📦 What’s Included
 
-- 🛠 **CLI Generator (`@razerspine/create`)**  
+- 🛠 **CLI Generator (`@razerspine/create-app`)**  
   Scaffolds production-ready projects with flexible architecture
 
 - ⚙️ **Build System (`@razerspine/build`)**  
@@ -47,7 +47,7 @@ Razerspine Stack is designed for developers who want:
 ## 🚀 Quick Start
 
 ```bash
-npx @razerspine/create my-app
+npx @razerspine/create-app my-app
 cd my-app
 npm run dev
 ```
@@ -75,7 +75,7 @@ npm run dev
 
 ```text
 packages/
-├─ create        # CLI → npx @razerspine/create
+├─ create        # CLI → npx @razerspine/create-app
 ├─ build         # Webpack configuration system
 ├─ ui            # Pug UI kit
 ├─ runtime       # SPA/MPA runtime engine
@@ -83,7 +83,7 @@ packages/
 
 ### Overview
 
-- `@razerspine/create` → project generator (CLI)
+- `@razerspine/create-app` → project generator (CLI)
 - `@razerspine/build` → webpack abstraction layer
 - `@razerspine/ui` → UI mixins and assets
 - `@razerspine/runtime` → reactive runtime (DI, Router, View Engine)
@@ -193,7 +193,7 @@ The CLI supports multiple package managers:
 Example:
 
 ```bash
-npx @razerspine/create my-app --pm pnpm
+npx @razerspine/create-app my-app --pm pnpm
 ```
 
 Features:

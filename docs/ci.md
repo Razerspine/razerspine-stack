@@ -72,7 +72,7 @@ This includes:
 - `@razerspine/build`
 - `@razerspine/runtime`
 - `@razerspine/ui`
-- `@razerspine/create`
+- `@razerspine/create-app`
 
 ### 4. Test Suites
 

@@ -74,7 +74,7 @@ If multiple packages are updated, publish in this order:
 2. `@razerspine/build`
 3. `@razerspine/ui`
 4. Update template dependency versions
-5. `@razerspine/create`
+5. `@razerspine/create-app`
 
 ---
 
@@ -112,7 +112,7 @@ npm publish --access public
 - [ ] Version is correct
 - [ ] Install test works:
   ```bash
-  npx @razerspine/create my-app
+  npx @razerspine/create-app my-app
   ```
 - [ ] Generated project runs:
   ```bash
@@ -125,7 +125,7 @@ npm publish --access public
 
 ## 9. CLI-Specific Checks
 
-If releasing `@razerspine/create`:
+If releasing `@razerspine/create-app`:
 
 - [ ] Templates use correct package versions:
   - `@razerspine/runtime`

@@ -1,9 +1,9 @@
-# @razerspine/create
+# @razerspine/create-app
 
-[![npm version](https://img.shields.io/npm/v/@razerspine/create.svg)](https://www.npmjs.com/package/@razerspine/create)
+[![npm version](https://img.shields.io/npm/v/@razerspine/create-app.svg)](https://www.npmjs.com/package/@razerspine/create-app)
 [![Vitest](https://img.shields.io/badge/Vitest-62_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
-[![license](https://img.shields.io/npm/l/@razerspine/create.svg)](./LICENSE)
+[![license](https://img.shields.io/npm/l/@razerspine/create-app.svg)](./LICENSE)
 
 Create a modern webpack project using production-ready **SPA or MPA templates** powered by the Razerspine ecosystem.
 
@@ -29,7 +29,7 @@ Create a modern webpack project using production-ready **SPA or MPA templates** 
 ## Quick Start
 
 ```bash
-npx @razerspine/create my-app
+npx @razerspine/create-app my-app
 ```
 
 or using npm script locally:
@@ -45,7 +45,7 @@ npm run create -- my-app
 ### Interactive mode
 
 ```bash
-npx @razerspine/create my-app
+npx @razerspine/create-app my-app
 ```
 
 Prompts:
@@ -59,7 +59,7 @@ Prompts:
 ### Non-interactive mode (CI-friendly)
 
 ```bash
-npx @razerspine/create my-app \
+npx @razerspine/create-app my-app \
   --app-type spa \
   --style scss \
   --script ts \
@@ -91,7 +91,7 @@ npx @razerspine/create my-app \
 You can explicitly choose a package manager:
 
 ```bash
-npx @razerspine/create my-app --pm pnpm
+npx @razerspine/create-app my-app --pm pnpm
 ```
 
 Supported:
@@ -223,7 +223,7 @@ install dependencies
 ### Major Release
 
 - Full CLI rewrite
-- New package: `@razerspine/create`
+- New package: `@razerspine/create-app`
 - New command: `create`
 
 ---

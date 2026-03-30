@@ -9,7 +9,7 @@
 flowchart TD
 
 subgraph L1 ["Generator Layer"]
-    CLI["@razerspine/create (CLI)"]
+    CLI["@razerspine/create-app (CLI)"]
     RESOLVER["Template Resolver<br/>(appType + style + script)"]
     PATCH["patchPackageJson<br/>(scripts + pm adaptation)"]
 end
@@ -64,7 +64,7 @@ CLI -.->|"no runtime dependency"| PROJECT
 
 This repository is a **monorepo for a frontend ecosystem**:
 
-- CLI generator → `@razerspine/create`
+- CLI generator → `@razerspine/create-app`
 - Build system → `@razerspine/build`
 - Runtime engine → `@razerspine/runtime`
 - UI layer → `@razerspine/ui`
@@ -102,7 +102,7 @@ No auto-detection magic:
 
 ---
 
-## CLI Architecture (`@razerspine/create`)
+## CLI Architecture (`@razerspine/create-app`)
 
 ### Responsibilities
 
@@ -326,7 +326,7 @@ Auto-generated configs:
 
 | Package               | Purpose        |
 |-----------------------|----------------|
-| `@razerspine/create`  | CLI            |
+| `@razerspine/create-app`  | CLI            |
 | `@razerspine/build`   | build system   |
 | `@razerspine/runtime` | runtime engine |
 | `@razerspine/ui`      | UI kit         |

@@ -1,15 +1,15 @@
 {
-  "name": "@razerspine/create",
-  "version": "1.0.3",
+  "name": "@razerspine/create-app",
+  "version": "1.0.0",
   "description": "CLI to scaffold production-ready SPA & MPA applications with a modular build system, Pug templates, and a lightweight reactive runtime.",
   "author": "Razerspine",
   "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Razerspine/razerspine-stack.git",
-    "directory": "packages/create"
+    "directory": "packages/create-app"
   },
-  "homepage": "https://github.com/Razerspine/razerspine-stack/tree/main/packages/create#readme",
+  "homepage": "https://github.com/Razerspine/razerspine-stack/tree/main/packages/create-app#readme",
   "bugs": {
     "url": "https://github.com/Razerspine/razerspine-stack/issues"
   },
@@ -37,12 +37,12 @@
     }
   },
   "bin": {
-    "create": "./bin/create.js"
+    "create-app": "./bin/create-app.js"
   },
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsup",
-    "create": "tsx src/index.ts",
+    "create-app": "tsx src/index.ts",
     "test": "vitest run",
     "test:e2e": "vitest run tests/e2e",
     "test:unit": "vitest run tests/unit",

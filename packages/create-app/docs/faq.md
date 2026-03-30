@@ -6,7 +6,7 @@
 
 No.
 
-`@razerspine/create` is not trying to replace tools like Vite or framework CLIs.
+`@razerspine/create-app` is not trying to replace tools like Vite or framework CLIs.
 
 It is designed for:
 
@@ -63,7 +63,7 @@ Architecture is treated as a **first-class concern**, not an implicit guess.
 
 Yes.
 
-Projects generated with `@razerspine/create` are:
+Projects generated with `@razerspine/create-app` are:
 
 - fully editable
 - not locked to any framework
