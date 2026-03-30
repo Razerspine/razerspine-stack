@@ -1,8 +1,8 @@
-import path from 'path';
 import {loadTemplates} from '../templates/template-loader';
 import {resolveTemplateKey} from '../templates/template-resolver';
 import {TemplateKey} from '../templates/templates';
 import {LoadedTemplate, TemplateFeatures} from '../templates/types';
+import {getTemplatesPath} from '../utils';
 
 /**
  * Service responsible for managing templates.
@@ -86,6 +86,6 @@ export class TemplateService {
  * Used by CLI and internal runtime.
  */
 export function createTemplateService(): TemplateService {
-    const templatesRoot = path.resolve(__dirname, '../../templates');
+    const templatesRoot = getTemplatesPath();
     return new TemplateService(templatesRoot);
 }

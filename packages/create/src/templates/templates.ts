@@ -1,8 +1,9 @@
 import path from 'path';
 import {loadTemplates} from './template-loader';
 import {LoadedTemplate} from './types';
+import {getTemplatesPath} from '../utils';
 
-const templatesRoot = path.resolve(__dirname, '../../templates');
+const templatesRoot = getTemplatesPath();
 
 /**
  * Loaded templates' registry.
