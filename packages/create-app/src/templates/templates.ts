@@ -1,4 +1,3 @@
-import path from 'path';
 import {loadTemplates} from './template-loader';
 import {LoadedTemplate} from './types';
 import {getTemplatesPath} from '../utils';

@@ -59,7 +59,7 @@ npm run test:cli
 Optional manual smoke test:
 
 ```bash
-npm run create -- my-test-app --app-type spa --style scss --script ts
+npm run create-app -- my-test-app --app-type spa --style scss --script ts
 cd my-test-app
 npm run dev
 ```
@@ -92,7 +92,7 @@ Examples:
 cd packages/runtime
 cd packages/build
 cd packages/ui
-cd packages/create
+cd packages/create-app
 ```
 
 ### Step 2: Publish

@@ -9,8 +9,8 @@ export function parseCliArgs(): ParsedCliInput {
     const program = new Command();
 
     program
-        .name('create')
-        .version(`create v${VERSION}`, '-v, --version', 'Show CLI version')
+        .name('create-app')
+        .version(`create-app v${VERSION}`, '-v, --version', 'Show CLI version')
         .argument('[project-name]', 'Project name')
         .option('--style <style>', 'Style preprocessor (scss | less)')
         .option('--script <script>', 'Script language (js | ts)')

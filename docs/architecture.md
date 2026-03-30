@@ -324,12 +324,12 @@ Auto-generated configs:
 
 ## Package Types
 
-| Package               | Purpose        |
-|-----------------------|----------------|
-| `@razerspine/create-app`  | CLI            |
-| `@razerspine/build`   | build system   |
-| `@razerspine/runtime` | runtime engine |
-| `@razerspine/ui`      | UI kit         |
+| Package                  | Purpose        |
+|--------------------------|----------------|
+| `@razerspine/create-app` | CLI            |
+| `@razerspine/build`      | build system   |
+| `@razerspine/runtime`    | runtime engine |
+| `@razerspine/ui`         | UI kit         |
 
 ---
 
@@ -370,7 +370,7 @@ Uses npm workspaces:
 Think of the system as:
 
 ```text
-create → templates → build → runtime → UI
+create-app → templates → build → runtime → UI
 ```
 
 ---

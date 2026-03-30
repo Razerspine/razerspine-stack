@@ -112,7 +112,7 @@ All E2E tests create projects in OS temporary directories.
 Prefix:
 
 ```text
-create-*
+create-app-*
 ```
 
 Utilities:
