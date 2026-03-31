@@ -1,7 +1,7 @@
 # @razerspine/runtime
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/runtime.svg)](https://www.npmjs.com/package/@razerspine/runtime)
-[![Vitest](https://img.shields.io/badge/Vitest-120_passed-success?logo=vitest)](#)
+[![Vitest](https://img.shields.io/badge/Vitest-120_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/runtime.svg)](./LICENSE)
 
@@ -458,8 +458,9 @@ import {
 
 ## Requirements
 
-- Modern browsers (ES6+, Proxy support, WeakMap support, Fetch API)
-- Recommended: **TypeScript >= 5**
+- **Node.js**: `^20.10.0` or higher (LTS recommended)
+- **TypeScript**: `^5.0.0`
+- **Browsers**: Modern evergreen browsers (Chrome, Firefox, Safari, Edge)
 
 ---
 

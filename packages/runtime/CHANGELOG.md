@@ -6,9 +6,22 @@ This project follows Semantic Versioning.
 
 ---
 
-# [1.0.1] - 2026-03-23
+## [1.0.2] - 2026-03-31
 
-## Added
+### Changed
+
+- Updated repository links in `package.json` following the monorepo renaming.
+- Bumped minimum Node.js requirement to `^20.10.0` (LTS recommended).
+
+### Fixed
+
+- Corrected typos and grammatical errors in `README.md`
+
+---
+
+## [1.0.1] - 2026-03-23
+
+### Added
 
 - `data-click` now supports method expressions with arguments:
   - `data-click='deleteUser(1)'`
@@ -19,7 +32,7 @@ This project follows Semantic Versioning.
   method(...args, event, element)
   ```
 
-## Improved
+### Improved
 
 - Refactored `bindClickEvents`:
   - improved method resolution and warnings
@@ -28,20 +41,20 @@ This project follows Semantic Versioning.
   - correct handling of `checkbox` (boolean)
   - prevents incorrect value overwrites
   
-## Fixed
+### Fixed
 
 - Fixed `data-click` argument handling (removed need for `context["method(1)"]`)
 - Fixed incorrect `data-model` behavior for radio inputs
 - Fixed incomplete two-way binding when `bindForms` was not used
 
-## Notes
+### Notes
 
 - No breaking changes - existing `data-click="method"` still works
 - For full two-way binding, use `bindForms` together with `applyBindings`
 
 ---
 
-# [1.0.0] - 2026-03-16
+## [1.0.0] - 2026-03-16
 
 🚀 **First stable release of the runtime engine.**
 
@@ -55,7 +68,7 @@ The package will be renamed from:
 
 ---
 
-## Runtime Architecture
+### Runtime Architecture
 
 This release introduces a **completely redesigned modular runtime architecture**.
 
@@ -65,7 +78,7 @@ making the runtime easier to maintain, test, and extend.
 The previous structure mixed multiple responsibilities in large files.
 The new architecture introduces **domain-driven module separation**.
 
-### New Module Structure
+#### New Module Structure
 
 ```text
 src/
@@ -101,9 +114,9 @@ src/
 ---
 
 
-### Module Responsibilities
+#### Module Responsibilities
 
-#### core
+##### core
 Contains the **Dependency Injection container** and DI related types.
 
 Responsible for:
@@ -113,7 +126,7 @@ Responsible for:
 
 ---
 
-#### router
+##### router
 SPA navigation engine.
 
 Features:
@@ -124,7 +137,7 @@ Features:
 
 ---
 
-#### reactivity
+##### reactivity
 Reactive state system based on **Proxy**.
 
 Provides:
@@ -141,7 +154,7 @@ Features:
 
 ---
 
-#### view
+##### view
 Component system and DOM rendering engine.
 
 Contains:
@@ -185,7 +198,7 @@ This greatly improves:
 
 ---
 
-#### http
+##### http
 HTTP utilities and API abstraction.
 
 Includes:
@@ -196,7 +209,7 @@ Includes:
 
 ---
 
-#### platform
+##### platform
 Platform-level services for common application concerns.
 
 Includes:
@@ -208,7 +221,7 @@ These services are designed to be used via the DI container.
 
 ---
 
-#### utils
+##### utils
 Shared utility helpers used across the runtime.
 
 Examples:
@@ -218,7 +231,7 @@ Examples:
 
 ---
 
-### Benefits of the New Architecture
+#### Benefits of the New Architecture
 
 The refactor introduces several important improvements:
 
@@ -239,9 +252,9 @@ with clear boundaries between:
 
 ---
 
-## Added
+### Added
 
-### Runtime Architecture
+#### Runtime Architecture
 
 - **Complete runtime architecture redesign**
 - Clear separation of modules:
@@ -267,7 +280,7 @@ with clear boundaries between:
 
 ---
 
-### Router
+#### Router
 
 - SPA router with:
   - route configuration
@@ -292,7 +305,7 @@ router.onNavigationError
 
 ---
 
-### Component System
+#### Component System
 
 - **BaseComponent**
   - lifecycle hooks
@@ -322,7 +335,7 @@ mount() -> async
 
 ---
 
-### Reactive system
+#### Reactive system
 
 - **Proxy-based reactive store**
 
@@ -345,7 +358,7 @@ Performance improvements:
 
 ---
 
-### View Engine
+#### View Engine
 
 Declarative template bindings:
 
@@ -374,7 +387,7 @@ Performance improvements:
 
 ---
 
-### Bootstrap system
+#### Bootstrap system
 
 - configurable application entrypoint
 
@@ -395,7 +408,7 @@ Features:
 
 ---
 
-### Error Handling
+#### Error Handling
 
 Runtime safety improvements:
 
@@ -406,7 +419,7 @@ Runtime safety improvements:
 
 ---
 
-### Testing
+#### Testing
 
 Full testing suite introduced.
 
@@ -442,9 +455,9 @@ Total:
 
 ---
 
-## Changed
+### Changed
 
-### Performance
+#### Performance
 
 Significant runtime optimizations:
 
@@ -455,7 +468,7 @@ Significant runtime optimizations:
 
 ---
 
-### Bootstrap Refactor
+#### Bootstrap Refactor
 
 Internal bootstrap logic split into utilities:
 
@@ -478,7 +491,7 @@ Improves:
 
 ---
 
-### Router Initialization
+#### Router Initialization
 
 Router no longer auto-starts in constructor.
 
@@ -492,7 +505,7 @@ Handled automatically by `bootstrapApplication`.
 
 ---
 
-### Codebase Improvements
+#### Codebase Improvements
 
 - improved TypeScript typing
 - stricter generics
@@ -502,9 +515,9 @@ Handled automatically by `bootstrapApplication`.
 
 ---
 
-## Breaking Changes
+### Breaking Changes
 
-### Strict DI
+#### Strict DI
 
 Services are **no longer auto-instantiated**.
 
@@ -526,7 +539,7 @@ providers: [{ provide: MyService }]
 
 ---
 
-### Router Lifecycle
+#### Router Lifecycle
 
 Router constructor no longer triggers navigation.
 
@@ -540,7 +553,7 @@ Handled automatically by bootstrap.
 
 ---
 
-### Component Lifecycle
+#### Component Lifecycle
 
 `BaseComponent.mount()` is now async.
 
