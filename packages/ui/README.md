@@ -42,7 +42,7 @@ npm install @razerspine/ui
 
 Best for simple setups without preprocessors.
 
-```scss
+```text
 @import "@razerspine/ui/css/ui.min.css";
 ```
 
@@ -54,13 +54,13 @@ Best for simple setups without preprocessors.
 
 ### Use SCSS
 
-```scss
+```text
 @use "@razerspine/ui/scss" as *;
 ```
 
 Override variables:
 
-```scss
+```text
 @use "@razerspine/ui/scss/settings" with (
   $font-path: "/my-fonts"
 );
@@ -72,13 +72,13 @@ Override variables:
 
 ### Use LESS
 
-```less
+```text
 @import "@razerspine/ui/less";
 ```
 
 Override variables:
 
-```less
+```text
 @font-path: "/my-fonts";
 @import "@razerspine/ui/less";
 ```
@@ -99,13 +99,13 @@ The UI layer includes:
 
 SCSS:
 
-```scss
+```text
 @use "@razerspine/ui/scss" as *;
 ```
 
 LESS:
 
-```less
+```text
 @import "@razerspine/ui/less";
 ```
 
@@ -119,14 +119,14 @@ Fonts are **optional and not auto-included**.
 
 SCSS:
 
-```scss
+```text
 @use "@razerspine/ui/scss/fonts";
 @use "@razerspine/ui/scss" as *;
 ```
 
 LESS:
 
-```less
+```text
 @import "@razerspine/ui/less/fonts";
 @import "@razerspine/ui/less";
 ```
@@ -135,7 +135,7 @@ LESS:
 
 SCSS:
 
-```scss
+```text
 @use "@razerspine/ui/scss" with (
   $font-family: "Inter", system-ui, sans-serif
 );
@@ -143,7 +143,7 @@ SCSS:
 
 LESS:
 
-```less
+```text
 @font-family: "Inter", system-ui, sans-serif;
 @import "@razerspine/ui/less";
 ```
@@ -166,7 +166,7 @@ scss/
 
 Example:
 
-```scss
+```text
 @use "@razerspine/ui/scss/settings" as *;
 @use "@razerspine/ui/scss/components";
 ```

@@ -1,5 +1,17 @@
 # Changelog
 
+# [1.0.1] - 2026-03-31
+
+### Changed
+
+- Updated repository links in `package.json` following the monorepo renaming.
+
+### Fixed
+
+- Corrected typos and grammatical errors in `README.md`.
+
+---
+
 ## [1.0.0] - 2026-03-24
 
 ### 🚀 Major Refactor & Stabilization

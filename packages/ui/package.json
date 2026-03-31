@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI kit with SCSS/LESS sources, compiled CSS, and Pug components for modern frontend projects",
   "license": "ISC",
   "author": "Razerspine",
