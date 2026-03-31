@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.0.1] - 2026-03-31
+
+### Changed
+
+- Updated repository links in `package.json` following the monorepo renaming.
+
+### Fixed
+
+- Fix and update `README.md`.
+
+
+---
+
 ## [1.0.0] - 2026-03-20
 
 ### 🚨 Breaking Changes

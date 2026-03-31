@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/build",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scalable Webpack build system for Pug, HTML, and React applications with smart hosting support",
   "keywords": [
     "webpack",

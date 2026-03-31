@@ -1,7 +1,7 @@
 # @razerspine/build
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/build.svg)](https://www.npmjs.com/package/@razerspine/build)
-[![Vitest](https://img.shields.io/badge/Vitest-92_passed-success?logo=vitest)](#)
+[![Vitest](https://img.shields.io/badge/Vitest-92_passed-success?logo=vitest)]()
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/build.svg)](./LICENSE)
 
@@ -222,8 +222,8 @@ configurations in-memory.
 
 ## ⚠️ Requirements
 
-- **Node.js**: v20.0.0 or higher
-- **Webpack**: v5.0.0 or higher
+- **Node.js**: `^20.0.0` (Recommended: latest LTS)
+- **Webpack**: `^5.0.0`
 
 ---
 
