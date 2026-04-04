@@ -43,6 +43,45 @@ export type ConfigOptionType = {
          * @default 'src/views/app.pug' (SPA) or 'src/views/pages' (MPA)
          */
         entry?: string;
+        /**
+         * Global data passed to all templates at compile time.
+         *
+         * Currently supported by `templates.type: 'pug'` only.
+         * These values are available in every `.pug` file as local variables.
+         *
+         * Supports two formats:
+         * - `object` — static data (requires webpack restart to reflect changes)
+         * - `string` — path to a JSON or JS file (supports HMR via webpack watch)
+         *
+         * @example Object-based:
+         * ```ts
+         * templates: {
+         *   type: 'pug',
+         *   entry: 'src/views/pages',
+         *   data: {
+         *     siteName: 'My App',
+         *     version: process.env.npm_package_version,
+         *   }
+         * }
+         * ```
+         *
+         * @example File-based (HMR-friendly):
+         * ```ts
+         * templates: {
+         *   type: 'pug',
+         *   entry: 'src/views/pages',
+         *   data: './src/data/site.json',
+         * }
+         * ```
+         *
+         * Usage in template:
+         * ```pug
+         * title= siteName
+         * ```
+         *
+         * @see https://webdiscus.github.io/html-bundler-docs/plugin-options-data
+         */
+        data?: Record<string, unknown> | string;
     };
     /**
      * Custom Webpack module rules control.

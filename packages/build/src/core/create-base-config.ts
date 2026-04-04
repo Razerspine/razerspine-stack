@@ -104,6 +104,7 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
                 entry: normalized.templates.entry,
                 mode: normalized.mode,
                 appType: normalized.appType,
+                data: normalized.templates.data,
             })
         );
     }
@@ -121,6 +122,7 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
                 entry: normalized.templates.entry,
                 mode: normalized.mode,
                 appType: normalized.appType,
+                data: normalized.templates.data as Record<string, unknown> | undefined,
             })
         );
     }

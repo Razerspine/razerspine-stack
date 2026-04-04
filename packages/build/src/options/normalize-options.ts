@@ -17,6 +17,12 @@ export interface NormalizedCoreOptions {
     templates: {
         type: TemplatesType;
         entry?: string;
+        /**
+         * Global data passed to all templates at compile time.
+         * Currently used by PugTemplatesPlugin as a top-level `data` option of html-bundler-plugin.
+         * Supports object (static) or string path to a JSON/JS file (HMR-friendly).
+         */
+        data?: Record<string, unknown> | string;
     };
     resolve: NonNullable<Configuration['resolve']>;
 }
@@ -52,6 +58,7 @@ export function normalizeOptions(
             entry: templatesEntry
                 ? path.resolve(process.cwd(), templatesEntry)
                 : undefined,
+            data: options.templates?.data,
         },
         resolve: {
             alias: options.resolve?.alias ?? {},
