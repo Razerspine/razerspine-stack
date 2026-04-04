@@ -123,6 +123,118 @@ $display-map: (d-none: none, d-block: block, d-inline: inline, d-inline-block: i
   justify-content: space-between;
 }
 
+/* FLEX DIRECTION (extend existing) */
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+/* FLEX WRAP */
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+
+/* ALIGN ITEMS */
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.items-stretch {
+  align-items: stretch;
+}
+
+.items-baseline {
+  align-items: baseline;
+}
+
+/* JUSTIFY CONTENT */
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+/* GAP (uses existing $space-map scale) */
+@each $s in $scales {
+  .gap-#{$s} {
+    gap: helpers-space($s);
+  }
+
+  .gap-x-#{$s} {
+    column-gap: helpers-space($s);
+  }
+
+  .gap-y-#{$s} {
+    row-gap: helpers-space($s);
+  }
+}
+
+/* FLEX GROW / SHRINK / BASIS */
+.flex-1 {
+  flex: 1 1 0;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
+.flex-none {
+  flex: none;
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.grow-0 {
+  flex-grow: 0;
+}
+
+.shrink {
+  flex-shrink: 1;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
 /* GRID helpers */
 .grid {
   display: grid;

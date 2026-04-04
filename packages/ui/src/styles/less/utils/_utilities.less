@@ -32,7 +32,6 @@
 }
 
 .get-space(@s) when not (@s = 0) and not (@s = 1) and not (@s = 2) and not (@s = 3) and not (@s = 4) {
-  // fallback
   @space-value: 0rem;
 }
 
@@ -42,64 +41,86 @@
    x -> left & right
    y -> top & bottom
    ------------------------- */
+.generate-mp-with-value(@s, @val) {
+  .m-@{s} {
+    margin: @val;
+  }
+  .m-t-@{s} {
+    margin-top: @val;
+  }
+  .m-r-@{s} {
+    margin-right: @val;
+  }
+  .m-b-@{s} {
+    margin-bottom: @val;
+  }
+  .m-l-@{s} {
+    margin-left: @val;
+  }
+  .m-x-@{s} {
+    margin-left: @val;
+    margin-right: @val;
+  }
+  .m-y-@{s} {
+    margin-top: @val;
+    margin-bottom: @val;
+  }
+
+  .p-@{s} {
+    padding: @val;
+  }
+  .p-t-@{s} {
+    padding-top: @val;
+  }
+  .p-r-@{s} {
+    padding-right: @val;
+  }
+  .p-b-@{s} {
+    padding-bottom: @val;
+  }
+  .p-l-@{s} {
+    padding-left: @val;
+  }
+  .p-x-@{s} {
+    padding-left: @val;
+    padding-right: @val;
+  }
+  .p-y-@{s} {
+    padding-top: @val;
+    padding-bottom: @val;
+  }
+}
 
 .generate-mp-scales(@s) when (@s >= 0) {
   .get-space(@s);
-
-  /* margin */
-  .m-@{s} {
-    margin: @space-value;
-  }
-  .m-t-@{s} {
-    margin-top: @space-value;
-  }
-  .m-r-@{s} {
-    margin-right: @space-value;
-  }
-  .m-b-@{s} {
-    margin-bottom: @space-value;
-  }
-  .m-l-@{s} {
-    margin-left: @space-value;
-  }
-  .m-x-@{s} {
-    margin-left: @space-value;
-    margin-right: @space-value;
-  }
-  .m-y-@{s} {
-    margin-top: @space-value;
-    margin-bottom: @space-value;
-  }
-
-  /* padding */
-  .p-@{s} {
-    padding: @space-value;
-  }
-  .p-t-@{s} {
-    padding-top: @space-value;
-  }
-  .p-r-@{s} {
-    padding-right: @space-value;
-  }
-  .p-b-@{s} {
-    padding-bottom: @space-value;
-  }
-  .p-l-@{s} {
-    padding-left: @space-value;
-  }
-  .p-x-@{s} {
-    padding-left: @space-value;
-    padding-right: @space-value;
-  }
-  .p-y-@{s} {
-    padding-top: @space-value;
-    padding-bottom: @space-value;
-  }
-
+  .generate-mp-with-value(@s, @space-value);
   .generate-mp-scales(@s - 1);
 }
 
-.generate-mp-scales(4); // generates 4..0
+.generate-mp-scales(4);
+
+/* -------------------------
+   Generate gap utilities
+   ------------------------- */
+.generate-gap-with-value(@s, @val) {
+  .gap-@{s} {
+    gap: @val;
+  }
+  .gap-x-@{s} {
+    column-gap: @val;
+  }
+  .gap-y-@{s} {
+    row-gap: @val;
+  }
+}
+
+.generate-gap-scales(@s) when (@s >= 0) {
+  .get-space(@s);
+  .generate-gap-with-value(@s, @space-value);
+  .generate-gap-scales(@s - 1);
+}
+
+.generate-gap-scales(4);
 
 /* -------------------------
    DISPLAY utilities
@@ -166,7 +187,7 @@
 }
 
 /* -------------------------
-   FLEX helpers
+   FLEX helpers (shorthand)
    ------------------------- */
 .flex {
   display: flex;
@@ -190,6 +211,103 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* FLEX DIRECTION */
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+/* FLEX WRAP */
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+
+/* ALIGN ITEMS */
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.items-stretch {
+  align-items: stretch;
+}
+
+.items-baseline {
+  align-items: baseline;
+}
+
+/* JUSTIFY CONTENT */
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+/* FLEX GROW / SHRINK / BASIS */
+.flex-1 {
+  flex: 1 1 0;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
+.flex-none {
+  flex: none;
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.grow-0 {
+  flex-grow: 0;
+}
+
+.shrink {
+  flex-shrink: 1;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
 }
 
 /* -------------------------
@@ -266,7 +384,7 @@
 }
 
 /* -------------------------
-   TEXT COLORS (CSS variables kept)
+   TEXT COLORS
    ------------------------- */
 .brand-50 {
   color: var(--brand-50);
