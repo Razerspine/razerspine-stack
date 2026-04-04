@@ -6,16 +6,19 @@ vi.mock('../../../src/hosting/detect-hosting');
 vi.mock('../../../src/hosting/get-redirects', () => ({
     getRedirects: (type: string) => `redirects-content-for-${type}`,
 }));
-vi.mock('../../../src/hosting/get-vercel-config', () => ({
-    getVercelConfig: (type: string) => `vercel-json-for-${type}`,
-}));
 
 describe('HostingRoutingPlugin', () => {
     let mockCompiler: any;
     let mockCompilation: any;
+    let mockLogger: any;
 
     beforeEach(() => {
         vi.clearAllMocks();
+
+        mockLogger = {
+            info: vi.fn(),
+            warn: vi.fn(),
+        };
 
         mockCompilation = {
             hooks: {
@@ -25,11 +28,10 @@ describe('HostingRoutingPlugin', () => {
             },
             emitAsset: vi.fn(),
             getAsset: vi.fn(),
-            getInfrastructureLogger: vi.fn().mockReturnValue({info: vi.fn()}),
         };
 
         mockCompiler = {
-            getInfrastructureLogger: vi.fn().mockReturnValue({info: vi.fn()}),
+            getInfrastructureLogger: vi.fn().mockReturnValue(mockLogger),
             hooks: {
                 thisCompilation: {
                     tap: vi.fn((name, callback) => callback(mockCompilation)),
@@ -50,20 +52,22 @@ describe('HostingRoutingPlugin', () => {
         );
     });
 
-    it('should generate vercel.json for Vercel on MPA', () => {
+    it('should NOT generate vercel.json but log info for Vercel', () => {
         vi.mocked(detectHostingModule.detectHosting).mockReturnValue('vercel');
 
         const plugin = new HostingRoutingPlugin({appType: 'mpa'});
         plugin.apply(mockCompiler);
 
-        expect(mockCompilation.emitAsset).toHaveBeenCalledWith(
+        expect(mockCompilation.emitAsset).not.toHaveBeenCalledWith(
             'vercel.json',
-            expect.objectContaining({_value: 'vercel-json-for-mpa'})
+            expect.anything()
         );
+
+        expect(mockLogger.info).toHaveBeenCalled();
     });
 
-    it('should create 404.html fallback for GitHub Pages in SPA mode', () => {
-        vi.mocked(detectHostingModule.detectHosting).mockReturnValue('github');
+    it('should create 404.html fallback for static hosting in SPA mode', () => {
+        vi.mocked(detectHostingModule.detectHosting).mockReturnValue('static');
 
         const mockIndexHtml = `<html>SPA Content</html>`;
         mockCompilation.getAsset.mockReturnValue({
@@ -79,16 +83,19 @@ describe('HostingRoutingPlugin', () => {
         );
     });
 
-    it('should not create 404.html for MPA on GitHub Pages', () => {
-        vi.mocked(detectHostingModule.detectHosting).mockReturnValue('github');
+    it('should not create 404.html for MPA on static hosting', () => {
+        vi.mocked(detectHostingModule.detectHosting).mockReturnValue('static');
 
         const plugin = new HostingRoutingPlugin({appType: 'mpa'});
         plugin.apply(mockCompiler);
 
-        expect(mockCompilation.emitAsset).not.toHaveBeenCalledWith('404.html', expect.anything());
+        expect(mockCompilation.emitAsset).not.toHaveBeenCalledWith(
+            '404.html',
+            expect.anything()
+        );
     });
 
-    it('should not emit anything if hosting is unknown and app is MPA', () => {
+    it('should not emit anything if hosting is static and app is MPA', () => {
         vi.mocked(detectHostingModule.detectHosting).mockReturnValue('static');
 
         const plugin = new HostingRoutingPlugin({appType: 'mpa'});

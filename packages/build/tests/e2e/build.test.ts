@@ -110,7 +110,7 @@ describe('E2E: Webpack Build Matrix', () => {
     });
 
     // --- 3. HOSTING / VERCEL TESTS ---
-    it('should generate vercel.json for MPA', async () => {
+    it('should NOT generate vercel.json for MPA on Vercel', async () => {
         vi.stubEnv('VERCEL', '1');
         const fixtureRelPath = 'mpa/js-scss';
 
@@ -124,10 +124,10 @@ describe('E2E: Webpack Build Matrix', () => {
             }
         });
 
-        expect(fs.existsSync(path.join(outDir, 'vercel.json'))).toBe(true);
+        expect(fs.existsSync(path.join(outDir, 'vercel.json'))).toBe(false);
     });
 
-    it('should generate vercel.json with rewrites for SPA', async () => {
+    it('should NOT generate vercel.json for SPA on Vercel but still create SPA fallback', async () => {
         vi.stubEnv('VERCEL', '1');
         const fixtureRelPath = 'spa/ts-less';
 
@@ -141,10 +141,8 @@ describe('E2E: Webpack Build Matrix', () => {
             }
         });
 
-        const vercelJson = JSON.parse(fs.readFileSync(path.join(outDir, 'vercel.json'), 'utf-8'));
-        // Check for modern Vercel SPA rewrite rule
-        expect(vercelJson.rewrites).toBeDefined();
-        expect(vercelJson.rewrites[0].destination).toBe('/index.html');
+        expect(fs.existsSync(path.join(outDir, 'vercel.json'))).toBe(false);
+        expect(fs.existsSync(path.join(outDir, '404.html'))).toBe(true);
     });
 
     // --- 4. VALIDATION TESTS ---

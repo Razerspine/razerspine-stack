@@ -22,11 +22,6 @@ describe('detectHosting', () => {
         expect(detectHosting()).toBe('cloudflare');
     });
 
-    it('should detect github actions', () => {
-        vi.stubEnv('GITHUB_ACTIONS', 'true');
-        expect(detectHosting()).toBe('github');
-    });
-
     it('should return static by default', () => {
         expect(detectHosting()).toBe('static');
     });
