@@ -1,5 +1,42 @@
 # Changelog
 
+# [1.0.2] - 2026-04-04
+
+### Added
+
+- **Flex utilities** — extended `.flex-*` utility classes in both SCSS and LESS:
+  - Direction: `.flex-row-reverse`, `.flex-col-reverse`
+  - Wrap: `.flex-wrap`, `.flex-nowrap`, `.flex-wrap-reverse`
+  - Align items: `.items-start`, `.items-center`, `.items-end`, `.items-stretch`, `.items-baseline`
+  - Justify content: `.justify-start`, `.justify-center`, `.justify-end`, `.justify-between`, `.justify-around`, `.justify-evenly`
+  - Gap: `.gap-{0-4}`, `.gap-x-{0-4}`, `.gap-y-{0-4}` (uses existing space scale)
+  - Grow / shrink: `.flex-1`, `.flex-auto`, `.flex-none`, `.grow`, `.grow-0`, `.shrink`, `.shrink-0`
+
+- **LESS validation script** — `scripts/check-less.ts` compiles `ui.less` via `lessc` and exits with code `1` on error.
+  Run via `npm run check:less`. Intended for manual use and CI pipelines; not part of the main build.
+
+### Changed
+
+- **SCSS theme variables** — all design tokens in `themes/` and `settings/` now use the `!default` flag,
+  enabling full override via `@use ... with (...)`:
+  - Light theme: brand palette, neutral palette, status colors, shadow, icon color, surface tokens
+  - Dark theme: background, text, border, shadow, icon color tokens
+  - Settings: `$container-max`, `$columns`, `$gutter`, `$border-radius`, `$aside-ratio`, `$main-ratio`,
+    `$aside-min`, `$main-min`, `$font-path`, `$font-family`, `$base-font-size`, `$breakpoints`
+
+### Fixed
+
+- **LESS `svg-encode` mixin** — eliminated `NameError: Recursive variable definition for @svg`.
+  Refactored `_helpers.less` to use intermediate variables `@svg-1..@svg-4` with result exposed
+  as `@svg-encoded`. Updated `_icons.less` to use `@svg-raw` as input and `@svg-encoded` as output.
+
+- **LESS margin/padding generation** — eliminated IDE `Cannot find variable 'space-value'` warning.
+  Refactored `_utilities.less`: extracted `.generate-mp-with-value(@s, @val)` and
+  `.generate-gap-with-value(@s, @val)` mixins that receive the resolved value as an explicit parameter,
+  making variable scope visible to static analysis tools.
+
+---
+
 # [1.0.1] - 2026-03-31
 
 ### Changed
