@@ -113,4 +113,56 @@ describe('HtmlTemplatesPlugin', () => {
 
         spy.mockRestore();
     });
+
+    it('should pass data via templateParameters function and merge correctly', () => {
+        (fs.existsSync as any).mockReturnValue(true);
+        (fs.statSync as any).mockReturnValue({
+            isFile: () => true
+        });
+
+        let pluginOptions: any;
+
+        const spy = vi.spyOn(require('html-webpack-plugin').prototype, 'apply')
+            .mockImplementation(function (this: any) {
+                pluginOptions = this.userOptions || this.options;
+            });
+
+        const plugin = new HtmlTemplatesPlugin({
+            entry: 'index.html',
+            mode: 'development',
+            appType: 'spa',
+            data: {
+                siteName: 'My App',
+                version: '1.0.0'
+            }
+        });
+
+        const compiler: any = {
+            hooks: {}
+        };
+        plugin.apply(compiler);
+
+        expect(spy).toHaveBeenCalled();
+
+        expect(pluginOptions.templateParameters).toBeTypeOf('function');
+
+        const mockCompilation = {
+            options: 'mockWebpackConfig'
+        };
+        const result = pluginOptions.templateParameters(mockCompilation, 'mockAssets', 'mockTags', 'mockOptions');
+
+        expect(result).toEqual({
+            compilation: mockCompilation,
+            webpackConfig: 'mockWebpackConfig',
+            htmlWebpackPlugin: {
+                tags: 'mockTags',
+                files: 'mockAssets',
+                options: 'mockOptions',
+            },
+            siteName: 'My App',
+            version: '1.0.0'
+        });
+
+        spy.mockRestore();
+    });
 });
