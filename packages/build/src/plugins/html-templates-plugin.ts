@@ -93,12 +93,18 @@ export class HtmlTemplatesPlugin {
      * Using a lazy require instead of a top-level import ensures that projects
      * using `templates.type: 'pug'` are not forced to install `html-webpack-plugin`.
      *
+     * Handles both native CJS (returns constructor directly) and ESM-interop
+     * scenarios (returns `{ default: constructor }`) — the latter occurs in
+     * vitest's module system when the mock uses `{ default: MockClass }`.
+     *
      * @throws {Error} If `html-webpack-plugin` is not installed in the consumer project.
      */
     private resolveHtmlPlugin() {
         try {
             // eslint-disable-next-line @typescript-eslint/no-require-imports
-            return require('html-webpack-plugin');
+            const mod = require('html-webpack-plugin');
+            // Unwrap ESM default export if present (e.g. vitest mock environment)
+            return mod?.default ?? mod;
         } catch {
             throw new Error(
                 '[build] Missing peer dependency: `html-webpack-plugin`.\n' +
