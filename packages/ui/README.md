@@ -1,7 +1,7 @@
 # @razerspine/ui
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/ui.svg)](https://www.npmjs.com/package/@razerspine/ui)
-[![Vitest](https://img.shields.io/badge/Vitest-89_passed-success?logo=vitest)]()
+[![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/ui.svg)](./LICENSE)
 
@@ -82,11 +82,12 @@ Override variables before importing:
 @import "@razerspine/ui/less";
 ```
 
-Override variables before importing:
+Override variables after importing (LESS lazy evaluation — last declaration wins):
 
 ```text
-@font-path: "/my-fonts";
 @import "@razerspine/ui/less";
+
+@font-path: "/my-fonts";
 ```
 
 ---
@@ -136,8 +137,7 @@ LESS:
 
 ## Customization
 
-All SCSS design tokens use the `!default` flag — override any variable via `@use ... with (...)` without modifying
-package sources.
+All SCSS design tokens use the `!default` flag — override any variable via `@use ... with (...)` without modifying package sources.
 
 ### Override theme tokens
 
@@ -156,7 +156,7 @@ package sources.
 
 ```text
 @use "@razerspine/ui/scss/settings" with (
-  $font-family: "Inter", system-ui, sans-serif,
+  $font-family: ("Inter", system-ui, sans-serif), // parentheses required — comma is a with() param separator
   $base-font-size: 16px,
   $container-max: 1280px,
   $breakpoints: (
@@ -169,6 +169,9 @@ package sources.
 
 @use "@razerspine/ui/scss" as *;
 ```
+
+> ⚠ `$font-family` requires parentheses around the value. Without them, SCSS treats the comma as
+> a parameter separator inside `with (...)` and throws a parse error.
 
 ### Available overridable variables
 
@@ -192,14 +195,19 @@ package sources.
 
 ### LESS overrides
 
-In LESS, declare variables before the import — they take precedence due to LESS lazy evaluation:
+In LESS, declare overrides **after** the import. LESS uses lazy evaluation — variables are resolved
+at the point of use, so the last declaration in scope wins:
 
 ```text
+@import "@razerspine/ui/less";
+
 @brand-500: #7c3aed;
 @font-family: "Inter", system-ui, sans-serif;
 @container-max: 1280px;
-@import "@razerspine/ui/less";
 ```
+
+> ⚠ This is the opposite of SCSS — in SCSS overrides go **before** the import via `@use ... with (...)`,
+> in LESS they go **after**.
 
 ---
 
@@ -229,7 +237,7 @@ SCSS:
 
 ```text
 @use "@razerspine/ui/scss" with (
-  $font-family: "Inter", system-ui, sans-serif
+  $font-family: ("Inter", system-ui, sans-serif)
 );
 ```
 
@@ -274,8 +282,7 @@ Examples:
 @use "@razerspine/ui/scss/themes";
 ```
 
-> ⚠ When using partial imports, you must include dependencies manually. For example, `components` requires `settings`
-> and `themes` to be loaded first.
+> ⚠ When using partial imports, you must include dependencies manually. For example, `components` requires `settings` and `themes` to be loaded first.
 
 ---
 
