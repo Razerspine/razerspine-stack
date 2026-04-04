@@ -1,3 +1,4 @@
+@use '../utils/icons' as *;
 // --- Dark Theme Tokens ---
 
 $dark-bg-color: #09090b !default;
@@ -14,6 +15,11 @@ $dark-error: #f87171 !default;
 
 $dark-border-subtle: #27272a !default;
 $dark-border-strong: #3f3f46 !default;
+
+$dark-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4) !default;
+$dark-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5) !default;
+$dark-shadow-outline: 0 0 12px rgba(0, 0, 0, 0.5) !default;
+$dark-icon-color: #f4f4f5 !default;
 
 // --- Dark Theme Implementation ---
 
@@ -34,11 +40,12 @@ html[data-theme="dark"] {
   --border-strong: #{$dark-border-strong};
   --border-interactive: var(--brand-500);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-outline: 0 0 12px rgba(0, 0, 0, 0.5);
+  --shadow-sm: #{$dark-shadow-sm};
+  --shadow-md: #{$dark-shadow-md};
+  --shadow-outline: #{$dark-shadow-outline};
 
-  --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f4f4f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  --checkbox-icon: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
-  --radio-icon: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+  --icon-color: #{$dark-icon-color};
+  --select-arrow: #{icon-select-arrow($dark-icon-color)};
+  --checkbox-icon: #{icon-checkbox($dark-icon-color)};
+  --radio-icon: #{icon-radio($dark-icon-color)};
 }

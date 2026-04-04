@@ -30,3 +30,10 @@
 .suf(@k) when not (isnumber(@k)) {
   @suf-value: @k;
 }
+
+.svg-encode(@svg) {
+  @svg: replace(@svg, "#", "%23");
+  @svg: replace(@svg, "<", "%3c");
+  @svg: replace(@svg, ">", "%3e");
+  @svg: replace(@svg, '"', "'");
+}

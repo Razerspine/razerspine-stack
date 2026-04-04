@@ -1,16 +1,16 @@
 // layout
-$container-max: 1360px;
-$columns: 12;
-$gutter: 15px;
-$border-radius: .375rem;
+$container-max: 1360px !default;
+$columns: 12 !default;
+$gutter: 15px !default;
+$border-radius: .375rem !default;
 
 // layout settings
-$aside-ratio: 1;
-$main-ratio: 3;
-$aside-min: 300px;
-$main-min: 320px;
-$total-ratio: $aside-ratio + $main-ratio;
-$available-width: calc(#{$container-max} - #{calc(#{$gutter} * 2)}); // when layout have gap
+$aside-ratio: 1 !default;
+$main-ratio: 3 !default;
+$aside-min: 300px !default;
+$main-min: 320px !default;
+$total-ratio: $aside-ratio + $main-ratio !default;
+$available-width: calc(#{$container-max} - #{calc(#{$gutter} * 2)}) !default; // when layout have gap
 
 // font path
-$font-path: '~@razerspine/ui/fonts' !default;
+$font-path: '@razerspine/ui/fonts' !default;

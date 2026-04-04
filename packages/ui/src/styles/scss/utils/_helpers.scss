@@ -1,5 +1,6 @@
 @use "sass:map";
 @use "sass:meta";
+@use "sass:string";
 
 $space-scale: (
         0: 0,
@@ -18,4 +19,28 @@ $space-scale: (
 
 @function suf($k) {
   @return $k;
+}
+
+@function str-replace($string, $search, $replace: "") {
+  $index: string.index($string, $search);
+
+  @if $index {
+    @return string.slice($string, 1, $index - 1)
+      + $replace
+      + str-replace(
+          string.slice($string, $index + string.length($search)),
+          $search,
+          $replace
+        );
+  }
+
+  @return $string;
+}
+
+@function svg-encode($svg) {
+  $svg: str-replace($svg, "#", "%23");
+  $svg: str-replace($svg, "<", "%3c");
+  $svg: str-replace($svg, ">", "%3e");
+  $svg: str-replace($svg, '"', "'");
+  @return $svg;
 }
