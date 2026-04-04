@@ -191,7 +191,7 @@ $display-map: (d-none: none, d-block: block, d-inline: inline, d-inline-block: i
   justify-content: space-evenly;
 }
 
-/* GAP (uses existing $space-map scale) */
+/* GAP (uses existing space-map scale) */
 @each $s in $scales {
   .gap-#{$s} {
     gap: helpers-space($s);
