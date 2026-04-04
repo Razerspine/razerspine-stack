@@ -8,6 +8,11 @@
 A modern, modular **UI layer for Pug-based applications**.
 Provides a complete styling system (SCSS / LESS / CSS) and reusable Pug components.
 
+- 🎨 Design tokens with Light / Dark themes out of the box
+- 🔧 Fully overridable via `!default` variables (SCSS) and pre-declared variables (LESS)
+- 📦 Tree-shakable SCSS architecture — import only what you need
+- 🧩 Reusable Pug component mixins with optional reactive bindings
+
 ---
 
 ## Table of Contents
@@ -18,7 +23,8 @@ Provides a complete styling system (SCSS / LESS / CSS) and reusable Pug componen
   - [Use SCSS](#use-scss)
   - [Use LESS](#use-less)
 - [Styling System](#styling-system)
-- [Fonts](fonts)
+- [Customization](#customization)
+- [Fonts](#fonts)
 - [Modular Imports](#modular-imports-advanced)
 - [Pug Components](#pug-components)
 - [Documentation](#documentation)
@@ -28,7 +34,7 @@ Provides a complete styling system (SCSS / LESS / CSS) and reusable Pug componen
 
 ---
 
-# Installation
+## Installation
 
 ```bash
 npm install @razerspine/ui
@@ -58,7 +64,7 @@ Best for simple setups without preprocessors.
 @use "@razerspine/ui/scss" as *;
 ```
 
-Override variables:
+Override variables before importing:
 
 ```text
 @use "@razerspine/ui/scss/settings" with (
@@ -76,7 +82,7 @@ Override variables:
 @import "@razerspine/ui/less";
 ```
 
-Override variables:
+Override variables before importing:
 
 ```text
 @font-path: "/my-fonts";
@@ -94,6 +100,23 @@ The UI layer includes:
 - Base reset
 - Layout system (grid)
 - UI components
+- Utility classes (spacing, display, flex, grid, text, colors)
+
+### Utility classes
+
+Spacing utilities follow the pattern `.m-{direction}-{scale}` and `.p-{direction}-{scale}` with scale `0–4`.
+
+Flex utilities cover the full flex model:
+
+```text
+.flex, .flex-row, .flex-column, .flex-center, .flex-between
+.flex-wrap, .flex-nowrap, .flex-wrap-reverse
+.flex-row-reverse, .flex-col-reverse
+.items-start, .items-center, .items-end, .items-stretch, .items-baseline
+.justify-start, .justify-center, .justify-end, .justify-between, .justify-around, .justify-evenly
+.gap-{0-4}, .gap-x-{0-4}, .gap-y-{0-4}
+.flex-1, .flex-auto, .flex-none, .grow, .grow-0, .shrink, .shrink-0
+```
 
 ### Entry points
 
@@ -106,6 +129,75 @@ SCSS:
 LESS:
 
 ```text
+@import "@razerspine/ui/less";
+```
+
+---
+
+## Customization
+
+All SCSS design tokens use the `!default` flag — override any variable via `@use ... with (...)` without modifying
+package sources.
+
+### Override theme tokens
+
+```text
+@use "@razerspine/ui/scss/themes" with (
+  $brand-500: #7c3aed,
+  $brand-600: #6d28d9,
+  $light-bg-surface: #f8f8f8,
+  $dark-bg-color: #0a0a0a
+);
+
+@use "@razerspine/ui/scss" as *;
+```
+
+### Override settings
+
+```text
+@use "@razerspine/ui/scss/settings" with (
+  $font-family: "Inter", system-ui, sans-serif,
+  $base-font-size: 16px,
+  $container-max: 1280px,
+  $breakpoints: (
+    sm: 640px,
+    md: 768px,
+    lg: 1024px,
+    xl: 1280px
+  )
+);
+
+@use "@razerspine/ui/scss" as *;
+```
+
+### Available overridable variables
+
+**Theme — Light:**
+`$brand-50` – `$brand-900`, `$slate-50` – `$slate-900`,
+`$success`, `$warning`, `$error`, `$info`,
+`$light-shadow-sm`, `$light-shadow-md`, `$light-shadow-outline`,
+`$light-icon-color`, `$light-bg-surface`, `$light-text-on-brand`
+
+**Theme — Dark:**
+`$dark-bg-color`, `$dark-bg-surface`, `$dark-bg-subtle`,
+`$dark-text-primary`, `$dark-text-secondary`, `$dark-text-disabled`, `$dark-text-on-brand`,
+`$dark-success`, `$dark-error`,
+`$dark-border-subtle`, `$dark-border-strong`,
+`$dark-shadow-sm`, `$dark-shadow-md`, `$dark-shadow-outline`, `$dark-icon-color`
+
+**Settings:**
+`$container-max`, `$columns`, `$gutter`, `$border-radius`,
+`$aside-ratio`, `$main-ratio`, `$aside-min`, `$main-min`,
+`$font-path`, `$font-family`, `$base-font-size`, `$breakpoints`
+
+### LESS overrides
+
+In LESS, declare variables before the import — they take precedence due to LESS lazy evaluation:
+
+```text
+@brand-500: #7c3aed;
+@font-family: "Inter", system-ui, sans-serif;
+@container-max: 1280px;
 @import "@razerspine/ui/less";
 ```
 
@@ -152,26 +244,38 @@ LESS:
 
 ## Modular Imports (Advanced)
 
-Each layer is split into modules:
+The SCSS architecture is fully modular — import only the layers you need.
 
 ```text
 scss/
-  base/
-  settings/
-  themes/
-  layout/
-  components/
-  utils/
+  base/         → reset, fonts
+  settings/     → tokens, breakpoints, typography
+  themes/       → light and dark theme variables
+  layout/       → grid, layout
+  components/   → buttons, forms, table, inputs, select...
+  utils/        → helpers, mixins, utilities, icons
 ```
 
-Example:
+Examples:
 
 ```text
+// Only settings and components — no layout, no reset
 @use "@razerspine/ui/scss/settings" as *;
 @use "@razerspine/ui/scss/components";
 ```
 
-> ⚠ When using partial imports, you must include dependencies manually.
+```text
+// Only utilities (spacing, flex, display)
+@use "@razerspine/ui/scss/utils";
+```
+
+```text
+// Only theme tokens
+@use "@razerspine/ui/scss/themes";
+```
+
+> ⚠ When using partial imports, you must include dependencies manually. For example, `components` requires `settings`
+> and `themes` to be loaded first.
 
 ---
 
@@ -251,6 +355,14 @@ Pipeline:
 
 ```text
 clean → build:css → build:copy → build:ts
+```
+
+### Validate LESS
+
+LESS compilation is not part of the main build. Run separately to catch errors:
+
+```bash
+npm run check:less
 ```
 
 ---
