@@ -86,7 +86,7 @@ Passing a plain object would overwrite defaults — a known `html-webpack-plugin
 defineConfig({
   templates: {
     type: 'html',
-    entry: 'src/views/pages',
+    entry: 'src/app/index.html',
     data: {
       siteName: 'My App',
       version: process.env.npm_package_version,
@@ -103,6 +103,73 @@ Usage in HTML template (EJS syntax):
 
 > Note: `html-webpack-plugin` does not support a `string` path for data (unlike `pug-plugin`).
 > The `data` option for `html` templates accepts only an `object`.
+
+---
+
+#### Full HTML component architecture (`type: 'html'`)
+
+`templates.type: 'html'` has been completely reworked into a proper component-based architecture,
+on par with the existing `type: 'pug'` pipeline.
+
+**`htmlRule`** — new dual-mode Webpack rule for `.html` files (injected automatically for `type: 'html'`):
+
+- **Compile mode** (`issuer: JS/TS`): `.html` files imported from JS/TS are compiled by `ejs-loader`
+  into callable JavaScript functions. Enables the component pattern:
+
+  ```ts
+  // home.page.ts
+  import './style.scss';
+  import template from './home.html';
+
+  export class HomePage extends BaseComponent<HomeState> {
+    public render() {
+      this.container.innerHTML = template();
+    }
+  }
+  ```
+
+- **Render mode** (fallback): `.html` files used as `html-webpack-plugin` templates are processed
+  by `html-loader`, which resolves static assets (`<img src>`, `<link href>`).
+
+**`htmlStylesRule`** — new CSS processing rule for `type: 'html'`, replacing `stylesRule` in this mode.
+Uses the correct extraction strategy for a standard JS/TS entry pipeline:
+
+- **Development**: `style-loader` injects CSS via `<style>` tags at runtime (HMR-friendly).
+- **Production**: `MiniCssExtractPlugin.loader` extracts CSS into a separate `.css` file.
+
+**`templates.scriptEntry`** — new option in `ConfigOptionType.templates`:
+
+```ts
+defineConfig({
+  appType: 'spa',
+  scripts: 'ts',
+  styles: 'scss',
+  templates: {
+    type: 'html',
+    entry: 'src/app/index.html',
+    scriptEntry: 'src/app/main.ts',  // optional, see defaults below
+  },
+});
+```
+
+The `scriptEntry` is registered as the Webpack `entry` by `HtmlTemplatesPlugin`.
+This is required because `html-webpack-plugin` only generates HTML — Webpack still needs
+an explicit JS/TS entry to build the bundle that gets injected into the output.
+
+Defaults (when `scriptEntry` is omitted):
+- `scripts: 'ts'` → `src/app/main.ts`
+- `scripts: 'js'` → `src/app/main.js`
+
+If the resolved file does not exist on disk, a clear actionable error is thrown before the build starts.
+
+**`MiniCssExtractPlugin`** — registered automatically by `HtmlTemplatesPlugin` in production mode.
+In development, `style-loader` handles injection — no plugin registration needed.
+
+**New required peer dependencies** for `type: 'html'`:
+
+```bash
+npm install -D html-webpack-plugin ejs-loader html-loader mini-css-extract-plugin style-loader
+```
 
 ---
 
@@ -130,6 +197,9 @@ Required when using `templates.type: "pug"`.
 
 Both resolvers also handle ESM/CJS interop by unwrapping `.default` if present,
 ensuring consistent behavior between the production environment and vitest's module system.
+
+`HtmlTemplatesPlugin` extends this pattern to `mini-css-extract-plugin` as well —
+it is resolved lazily only in production mode.
 
 ---
 
@@ -168,6 +238,10 @@ ensuring consistent behavior between the production environment and vitest's mod
 - `ConfigOptionType.templates.data` type extended to `Record<string, unknown> | string`
   (string path supported for `pug` only; `html` accepts object only)
 - `NormalizedCoreOptions.templates.data` type updated accordingly
+- `ConfigOptionType.templates.scriptEntry` added (optional, only applies to `type: 'html'`)
+- `NormalizedCoreOptions.templates.scriptEntry` added (resolved absolute path)
+- `stylesRule` is no longer used for `type: 'html'` — replaced by `htmlStylesRule`
+- `rules/index.ts` exports `htmlRule` and `htmlStylesRule`
 
 ---
 

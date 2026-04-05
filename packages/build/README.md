@@ -40,8 +40,10 @@ with smart auto-hosting capabilities.
 - **Enhanced DX**: Recursive file watching (`src/**/*`), automatic browser opening, and detailed infrastructure logging.
 - **Build Plugins Lifecycle**: Extend the build process safely using `setup`, `applyBase`, `applyDev`, and `applyProd`
   hooks.
-- **Lazy Peer Dependencies**: `pug-plugin` and `html-webpack-plugin` are only required when actually used — no install
-  errors when switching template engines.
+- **HTML Component Architecture**: Both `pug` and `html` modes support `import template from './home.html'` in JS/TS —
+  the same component pattern works regardless of template engine.
+- **Lazy Peer Dependencies**: Peer dependencies are resolved at runtime only when actually used — no install errors when
+  switching template engines.
 - **Rock Solid**: Covered by 90+ Unit, Integration, E2E, and Snapshot tests.
 
 ---
@@ -54,11 +56,11 @@ npm install -D @razerspine/build
 
 Peer dependencies are optional and only required based on your template engine choice:
 
-| Template engine         | Required peer dependency             |
-|:------------------------|:-------------------------------------|
-| `type: 'pug'` (default) | `npm install -D pug-plugin`          |
-| `type: 'html'`          | `npm install -D html-webpack-plugin` |
-| `type: 'none'`          | none                                 |
+| Template engine         | Required peer dependencies                                                                       |
+|:------------------------|:-------------------------------------------------------------------------------------------------|
+| `type: 'pug'` (default) | `npm install -D pug-plugin`                                                                      |
+| `type: 'html'`          | `npm install -D html-webpack-plugin ejs-loader html-loader mini-css-extract-plugin style-loader` |
+| `type: 'none'`          | none                                                                                             |
 
 ---
 
@@ -189,10 +191,76 @@ Configure how your application structure is processed using the `appType` option
 
 Control template processing via `templates.type`:
 
-- `pug` (Default) — uses `PugTemplatesPlugin`. Dual-mode: compiles Pug files imported from JS/TS as functions, renders
-  entry files as static HTML.
-- `html` — uses `HtmlTemplatesPlugin` (wrapper around `html-webpack-plugin`).
+- `pug` (Default) — uses `PugTemplatesPlugin`. Dual-mode: compiles Pug files imported from JS/TS as
+  functions (`import template from './home.pug'`), renders entry files as static HTML.
+- `html` — uses `HtmlTemplatesPlugin` + `htmlRule` + `htmlStylesRule`. Full component architecture
+  support: import HTML templates from JS/TS, connect styles via `import`, standard Webpack JS/TS entry.
 - `none` — disables template handling entirely (useful for React/Vue or custom setups).
+
+### HTML mode — full setup example
+
+**`webpack.config.js`**:
+
+```js
+const {defineConfig} = require('@razerspine/build');
+
+module.exports = defineConfig({
+  appType: 'spa',
+  scripts: 'ts',
+  styles: 'scss',
+  templates: {
+    type: 'html',
+    entry: 'src/app/index.html',        // HTML template processed by html-webpack-plugin
+    scriptEntry: 'src/app/main.ts',     // JS/TS entry registered as webpack entry (default: src/app/main.ts)
+  },
+});
+```
+
+**`src/app/index.html`** — the entry HTML template. No `<script>` or `<link>` tags needed —
+`html-webpack-plugin` injects the compiled bundle and CSS automatically:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My App</title>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>
+```
+
+**`src/app/main.ts`** — the script entry. Import global styles here:
+
+```ts
+import '../styles/main.scss';
+import {bootstrapApplication} from '@razerspine/runtime';
+// ...
+```
+
+**Component templates** — import `.html` files from JS/TS as callable functions:
+
+```ts
+// src/pages/home/home.page.ts
+import './style.scss';
+import template from './home.html';
+
+export class HomePage extends BaseComponent<HomeState> {
+  public render() {
+    this.container.innerHTML = template();
+  }
+}
+```
+
+> **`templates.scriptEntry`** defaults to `src/app/main.ts` (when `scripts: 'ts'`) or
+> `src/app/main.js` (when `scripts: 'js'`). You can override it explicitly in the config.
+> If the default file does not exist, a clear error is thrown before the build starts.
+
+> **CSS extraction**: in development, styles are injected via `<style>` tags by `style-loader`
+> (HMR-friendly). In production, `MiniCssExtractPlugin` extracts them into a separate `.css` file
+> which `html-webpack-plugin` injects as a `<link>` tag automatically.
 
 ---
 
@@ -319,8 +387,8 @@ configuration.
 - **Template-First**: While Webpack handles assets, templates (Pug/HTML) drive the entry points.
 - **Stability-First**: Aggressive optimizations (like `splitChunks`) are carefully tuned or disabled by default to
   ensure reliable asset resolution within templates.
-- **Lazy Dependencies**: Peer dependencies (`pug-plugin`, `html-webpack-plugin`) are resolved at runtime only when
-  needed — switching template engines never causes install-time errors.
+- **Lazy Dependencies**: All peer dependencies are resolved at runtime only when actually used —
+  switching template engines never causes install-time errors. Missing dependencies produce clear, actionable errors.
 - **Type Safety**: Built with TypeScript for excellent IDE support and internal build reliability.
 
 ---
