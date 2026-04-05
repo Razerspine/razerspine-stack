@@ -4,6 +4,135 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.0.2] - 2026-04-05
+
+### Added
+
+#### Template Data Support (`templates.data`)
+
+Both `PugTemplatesPlugin` and `HtmlTemplatesPlugin` now accept a `data` option
+for passing global variables into all templates at compile time.
+
+**`PugTemplatesPlugin`** — passes data as a top-level `data` option of `html-bundler-plugin`
+(which `pug-plugin` extends). Supports two formats:
+
+- `object` — static data, available immediately (requires webpack restart on change)
+- `string` — path to a JSON or JS file, supports HMR via webpack watch
+
+```ts
+defineConfig({
+  templates: {
+    type: 'pug',
+    entry: 'src/views/pages',
+    data: {
+      siteName: 'My App',
+      version: process.env.npm_package_version,
+    },
+    // or HMR-friendly:
+    // data: './src/data/site.json',
+  }
+});
+```
+
+Usage in Pug template:
+```pug
+title= siteName
+p Version: #{version}
+```
+
+**`HtmlTemplatesPlugin`** — injects data via `templateParameters` as a **function**
+(not a plain object) to safely merge user data with default `htmlWebpackPlugin` parameters.
+Passing a plain object would overwrite defaults — a known `html-webpack-plugin` gotcha.
+
+```ts
+defineConfig({
+  templates: {
+    type: 'html',
+    entry: 'src/views/pages',
+    data: {
+      siteName: 'My App',
+      version: process.env.npm_package_version,
+    }
+  }
+});
+```
+
+Usage in HTML template (EJS syntax):
+```html
+<title><%= siteName %></title>
+<meta name="version" content="<%= version %>">
+```
+
+> Note: `html-webpack-plugin` does not support a `string` path for data (unlike `pug-plugin`).
+> The `data` option for `html` templates accepts only an `object`.
+
+---
+
+### Fixed
+
+#### Lazy Peer Dependency Resolution
+
+Both `PugTemplatesPlugin` and `HtmlTemplatesPlugin` previously imported their
+peer dependencies (`pug-plugin`, `html-webpack-plugin`) at the module level via static `import`.
+This caused build failures when switching template engines — e.g. a project using
+`templates.type: 'html'` would crash on startup because `pug-plugin` was not installed,
+even though it was never used.
+
+Both plugins now use **lazy `require()`** inside `apply()` with a clear actionable error
+if the dependency is missing:
+
+```
+[build] Missing peer dependency: `pug-plugin`.
+Install it with:
+
+  npm install -D pug-plugin
+
+Required when using `templates.type: "pug"`.
+```
+
+Both resolvers also handle ESM/CJS interop by unwrapping `.default` if present,
+ensuring consistent behavior between the production environment and vitest's module system.
+
+---
+
+#### Hosting Routing Plugin
+
+- **Vercel**: removed incorrect emission of `vercel.json` into `dist/`.
+  Vercel reads `vercel.json` from the repository root before the build starts —
+  placing it in `dist/` has no effect on routing and caused confusion.
+  The plugin now logs a reminder instead:
+  ```
+  📦 Vercel detected (SPA mode). Ensure vercel.json is present in your project root...
+  ```
+
+- **Lifecycle stage**: changed from `PROCESS_ASSETS_STAGE_ADDITIONS` →
+  `PROCESS_ASSETS_STAGE_SUMMARIZE`. This ensures `index.html` already exists in
+  the compilation when the SPA `404.html` fallback is generated. Previously,
+  the fallback could silently fail if `index.html` was not yet emitted.
+
+- **SPA fallback warning**: if `index.html` is not found in compilation assets during
+  SPA mode, the plugin now emits a `logger.warn` with a clear explanation instead of
+  silently skipping.
+
+- **`GITHUB_ACTIONS` detection removed**: `GITHUB_ACTIONS=true` indicates a CI runner,
+  not a GitHub Pages deployment. There is no reliable env var for GitHub Pages at build time.
+  Such projects now correctly fall through to `'static'`, and the SPA `404.html` fallback
+  is still generated — which is exactly what GitHub Pages needs.
+
+- **`'github'` removed from `HostingType`**: no longer a valid hosting target
+  since it cannot be reliably detected. Replaced by `'static'` fallback.
+
+---
+
+### Changed
+
+- `HostingType` union: removed `'github'`, now `'netlify' | 'vercel' | 'cloudflare' | 'static'`
+- `ConfigOptionType.templates.data` type extended to `Record<string, unknown> | string`
+  (string path supported for `pug` only; `html` accepts object only)
+- `NormalizedCoreOptions.templates.data` type updated accordingly
+
+---
+
 ## [1.0.1] - 2026-03-31
 
 ### Changed
