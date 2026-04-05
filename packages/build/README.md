@@ -85,6 +85,34 @@ module.exports = defineConfig({
 });
 ```
 
+### DevServer & Production Overrides
+
+Use `devServer` to configure the Webpack Dev Server, and `prod` to override production Webpack options.
+Both fields are optional and only applied in their respective modes.
+
+```js
+const {defineConfig} = require('@razerspine/build');
+
+module.exports = defineConfig({
+  scripts: 'ts',
+  styles: 'scss',
+
+  // Merged on top of the default devServer config (development only)
+  devServer: {
+    port: 3000,
+    proxy: {
+      '/api': 'http://localhost:4000',
+    },
+  },
+
+  // Merged last into the production config — takes priority over internal defaults
+  prod: {
+    optimization: { minimize: false },
+    performance: { hints: 'warning' },
+  },
+});
+```
+
 ### Dynamic & Async Configuration
 
 You can pass a function to `defineConfig` to access the current mode or fetch async data:

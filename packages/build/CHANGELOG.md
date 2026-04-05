@@ -8,6 +8,44 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+#### `devServer` and `prod` overrides in `defineConfig`
+
+Users can now configure the Dev Server and production Webpack options directly inside `defineConfig`
+without reaching for `buildPlugins`.
+
+**`devServer`** — passed to `createDevConfig` as DevServer overrides. Merged on top of the default
+devServer settings. Only applied in `development` mode.
+
+```ts
+defineConfig({
+  scripts: 'ts',
+  styles: 'scss',
+  devServer: {
+    port: 3000,
+    proxy: { '/api': 'http://localhost:4000' },
+  },
+})
+```
+
+**`prod`** — passed to `createProdConfig` as Webpack overrides. Merged last, so these settings take
+priority over all internal production defaults. Only applied in `production` mode.
+
+```ts
+defineConfig({
+  scripts: 'ts',
+  styles: 'scss',
+  prod: {
+    optimization: { minimize: false },
+    performance: { hints: 'warning' },
+  },
+})
+```
+
+Both fields are optional and fully type-safe. For complex lifecycle scenarios, `buildPlugins`
+remains the recommended approach.
+
+---
+
 #### Template Data Support (`templates.data`)
 
 Both `PugTemplatesPlugin` and `HtmlTemplatesPlugin` now accept a `data` option
