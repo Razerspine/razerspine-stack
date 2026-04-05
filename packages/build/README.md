@@ -1,7 +1,7 @@
 # @razerspine/build
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/build.svg)](https://www.npmjs.com/package/@razerspine/build)
-[![Vitest](https://img.shields.io/badge/Vitest-92_passed-success?logo=vitest)]()
+[![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/build.svg)](./LICENSE)
 
@@ -19,6 +19,7 @@ with smart auto-hosting capabilities.
 - [React Preset (Beta)](#-react-preset-beta)
 - [Application Modes (SPA/MPA)](#-application-modes)
 - [Template Engines](#-template-engines)
+- [Template Data](#-template-data)
 - [Extensibility (Hooks & Plugins)](#-extensibility)
 - [Smart Hosting Adapter](#-smart-hosting-adapter)
 - [Architecture Principles](#-architecture-principles)
@@ -29,15 +30,18 @@ with smart auto-hosting capabilities.
 
 ## 🚀 Key Features
 
-- **New `defineConfig` API**: Single entry point for configuration with automatic mode-based resolution.
+- **`defineConfig` API**: Single entry point for configuration with automatic mode-based resolution.
 - **Multi-Engine Templates**: Built-in support for `pug`, `html`, or `none`.
+- **Template Data**: Pass global variables into all templates at compile time via `templates.data`.
 - **React Support (Beta)**: DX with Fast Refresh and Babel pipeline via `reactPreset`.
 - **Hybrid Architectures**: Seamlessly switch between Multi-page (MPA) and Single-page (SPA) modes.
-- **Smart Auto-Hosting**: Automatically detects **Vercel, Netlify, Cloudflare**, and **GitHub Pages** to generate
-  required routing configs.
+- **Smart Auto-Hosting**: Automatically detects **Vercel, Netlify, and Cloudflare** to generate required routing
+  configs.
 - **Enhanced DX**: Recursive file watching (`src/**/*`), automatic browser opening, and detailed infrastructure logging.
 - **Build Plugins Lifecycle**: Extend the build process safely using `setup`, `applyBase`, `applyDev`, and `applyProd`
   hooks.
+- **Lazy Peer Dependencies**: `pug-plugin` and `html-webpack-plugin` are only required when actually used — no install
+  errors when switching template engines.
 - **Rock Solid**: Covered by 90+ Unit, Integration, E2E, and Snapshot tests.
 
 ---
@@ -47,6 +51,14 @@ with smart auto-hosting capabilities.
 ```bash
 npm install -D @razerspine/build
 ```
+
+Peer dependencies are optional and only required based on your template engine choice:
+
+| Template engine         | Required peer dependency             |
+|:------------------------|:-------------------------------------|
+| `type: 'pug'` (default) | `npm install -D pug-plugin`          |
+| `type: 'html'`          | `npm install -D html-webpack-plugin` |
+| `type: 'none'`          | none                                 |
 
 ---
 
@@ -94,7 +106,7 @@ module.exports = defineConfig(async ({mode}) => {
 
 ## ⚛️ React Preset (Beta)
 
-We've introduced a powerful React preset built on top of the new Build Plugins system.
+We've introduced a powerful React preset built on top of the Build Plugins system.
 It provides a modern developer experience out of the box.
 
 **Features**: Babel pipeline, React Fast Refresh, automatic JSX runtime, and safe deduplication.
@@ -114,7 +126,7 @@ module.exports = defineConfig({
   scripts: 'ts',
   styles: 'scss',
   templates: {
-    type: 'none', // Handle templates manually or disable for raw React builds
+    type: 'none',
   },
   presets: [
     reactPreset()
@@ -147,12 +159,73 @@ Configure how your application structure is processed using the `appType` option
 
 ## 📄 Template Engines
 
-You can now explicitly control template processing via `templates.type`:
+Control template processing via `templates.type`:
 
-- `pug` (Default): Uses `PugTemplatesPlugin`. Dual-mode support (compiles components for JS imports, renders static HTML
-  for entries).
-- `html`: Uses `HtmlTemplatesPlugin` (wrapper around `html-webpack-plugin`).
-- `none`: Disables template handling entirely (useful for custom setups or pure JS/React builds).
+- `pug` (Default) — uses `PugTemplatesPlugin`. Dual-mode: compiles Pug files imported from JS/TS as functions, renders
+  entry files as static HTML.
+- `html` — uses `HtmlTemplatesPlugin` (wrapper around `html-webpack-plugin`).
+- `none` — disables template handling entirely (useful for React/Vue or custom setups).
+
+---
+
+## 🗂 Template Data
+
+Pass global variables into all templates at compile time via `templates.data`.
+
+### Pug templates
+
+Supports both `object` (static) and `string` path to a JSON/JS file (HMR-friendly):
+
+```js
+module.exports = defineConfig({
+  templates: {
+    type: 'pug',
+    entry: 'src/views/pages',
+    data: {
+      siteName: 'My App',
+      version: process.env.npm_package_version,
+    },
+    // HMR-friendly alternative — webpack watches the file for changes:
+    // data: './src/data/site.json',
+  }
+});
+```
+
+Usage in Pug template:
+
+```pug
+title= siteName
+p Version: #{version}
+```
+
+> When using a string path, webpack detects changes and recompiles automatically without a restart.
+
+### HTML templates
+
+Accepts only `object`. Variables are available via EJS syntax (the default `html-webpack-plugin` engine):
+
+```js
+module.exports = defineConfig({
+  templates: {
+    type: 'html',
+    entry: 'src/views/pages',
+    data: {
+      siteName: 'My App',
+      version: process.env.npm_package_version,
+    }
+  }
+});
+```
+
+Usage in HTML template:
+
+```html
+<title><%= siteName %></title>
+<meta name="version" content="<%= version %>">
+```
+
+> Internally, data is injected via `templateParameters` as a function — not a plain object — to safely preserve the
+> default `htmlWebpackPlugin` parameters alongside your custom variables.
 
 ---
 
@@ -176,7 +249,7 @@ module.exports = defineConfig({
 
 ### Build Plugins System (Lifecycle Hooks)
 
-For advanced use cases or framework integrations, use the new internal plugin system:
+For advanced use cases or framework integrations, use the internal plugin system:
 
 ```js
 module.exports = defineConfig({
@@ -199,15 +272,17 @@ module.exports = defineConfig({
 
 ## 🌍 Smart Hosting Adapter
 
-The core automatically detects your CI/CD environment during the production build and emits necessary routing
-configurations in-memory.
+During production builds, the plugin automatically detects your deployment environment and emits the necessary routing
+configuration.
 
-| Platform                 | Generated File | Purpose                                                                  |
-|:-------------------------|:---------------|:-------------------------------------------------------------------------|
-| **Netlify / Cloudflare** | `_redirects`   | Handles SPA rewrites and MPA fallbacks.                                  |
-| **Vercel**               | `vercel.json`  | Configures Vercel Edge Network routing based on `appType`.               |
-| **GitHub Pages**         | `404.html`     | Duplicates `index.html` to prevent 404 errors on deep links in SPA mode. |
-| **Static / Others**      | `404.html`     | Generic fallback for SPA mode.                                           |
+| Platform                           | Action                                                                       |
+|:-----------------------------------|:-----------------------------------------------------------------------------|
+| **Netlify / Cloudflare**           | Emits `_redirects` into `dist/` for SPA rewrites or MPA 404 fallback.        |
+| **Vercel**                         | Logs a reminder to ensure `vercel.json` is present in your **project root**. |
+| **Static / GitHub Pages / Others** | Emits `404.html` (copy of `index.html`) for SPA deep-link fallback.          |
+
+> **Vercel note**: `vercel.json` must live in the repository root — not in `dist/`. Vercel reads it before the build
+> starts. The plugin will log a reminder with a link to the Vercel docs if it detects a Vercel environment.
 
 ---
 
@@ -216,13 +291,15 @@ configurations in-memory.
 - **Template-First**: While Webpack handles assets, templates (Pug/HTML) drive the entry points.
 - **Stability-First**: Aggressive optimizations (like `splitChunks`) are carefully tuned or disabled by default to
   ensure reliable asset resolution within templates.
+- **Lazy Dependencies**: Peer dependencies (`pug-plugin`, `html-webpack-plugin`) are resolved at runtime only when
+  needed — switching template engines never causes install-time errors.
 - **Type Safety**: Built with TypeScript for excellent IDE support and internal build reliability.
 
 ---
 
 ## ⚠️ Requirements
 
-- **Node.js**: `^20.0.0` (Recommended: latest LTS)
+- **Node.js**: `>=20.0.0` (Recommended: latest LTS)
 - **Webpack**: `^5.0.0`
 
 ---
