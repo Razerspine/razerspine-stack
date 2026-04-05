@@ -18,6 +18,13 @@ export interface NormalizedCoreOptions {
         type: TemplatesType;
         entry?: string;
         /**
+         * Resolved absolute path to the JS/TS script entry point.
+         * Only populated when `templates.type` is `'html'`.
+         * Used by `HtmlTemplatesPlugin` to register the webpack entry
+         * and by `create-base-config` to wire up the bundle correctly.
+         */
+        scriptEntry?: string;
+        /**
          * Global data passed to all templates at compile time.
          * Currently used by PugTemplatesPlugin as a top-level `data` option of html-bundler-plugin.
          * Supports object (static) or string path to a JSON/JS file (HMR-friendly).
@@ -48,6 +55,26 @@ export function normalizeOptions(
                 : 'src/views/pages');
     }
 
+    /**
+     * Resolve script entry only for `type: 'html'`.
+     *
+     * For `type: 'pug'`, pug-plugin handles entry resolution internally — no JS entry needed.
+     * For `type: 'none'`, the user controls webpack entry entirely.
+     *
+     * Default follows the `scripts` option:
+     * - `scripts: 'ts'` → `src/app/main.ts`
+     * - `scripts: 'js'` → `src/app/main.js`
+     */
+    let scriptEntry: string | undefined;
+
+    if (templatesType === 'html') {
+        const defaultScriptEntry = options.scripts === 'ts'
+            ? 'src/app/main.ts'
+            : 'src/app/main.js';
+
+        scriptEntry = options.templates?.scriptEntry ?? defaultScriptEntry;
+    }
+
     return {
         mode,
         appType,
@@ -57,6 +84,9 @@ export function normalizeOptions(
             type: templatesType,
             entry: templatesEntry
                 ? path.resolve(process.cwd(), templatesEntry)
+                : undefined,
+            scriptEntry: scriptEntry
+                ? path.resolve(process.cwd(), scriptEntry)
                 : undefined,
             data: options.templates?.data,
         },

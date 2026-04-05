@@ -16,6 +16,7 @@ describe('HtmlTemplatesPlugin', () => {
         expect(() => {
             new HtmlTemplatesPlugin({
                 entry: 'invalid',
+                scriptEntry: 'src/app/main.ts',
                 mode: 'development',
                 appType: 'spa'
             });
@@ -31,6 +32,7 @@ describe('HtmlTemplatesPlugin', () => {
         expect(() => {
             new HtmlTemplatesPlugin({
                 entry: 'dir',
+                scriptEntry: 'src/app/main.ts',
                 mode: 'development',
                 appType: 'spa'
             });
@@ -46,6 +48,7 @@ describe('HtmlTemplatesPlugin', () => {
         expect(() => {
             new HtmlTemplatesPlugin({
                 entry: 'file.html',
+                scriptEntry: 'src/app/main.ts',
                 mode: 'development',
                 appType: 'mpa'
             });
@@ -61,11 +64,13 @@ describe('HtmlTemplatesPlugin', () => {
         const applyMock = vi.fn();
 
         const compiler: any = {
-            hooks: {}
+            hooks: {},
+            options: {}
         };
 
         const plugin = new HtmlTemplatesPlugin({
             entry: 'index.html',
+            scriptEntry: 'src/app/main.ts',
             mode: 'development',
             appType: 'spa'
         });
@@ -76,6 +81,7 @@ describe('HtmlTemplatesPlugin', () => {
         plugin.apply(compiler);
 
         expect(spy).toHaveBeenCalled();
+        expect(compiler.options.entry).toBeDefined();
 
         spy.mockRestore();
     });
@@ -95,7 +101,8 @@ describe('HtmlTemplatesPlugin', () => {
         const applyMock = vi.fn();
 
         const compiler: any = {
-            hooks: {}
+            hooks: {},
+            options: {}
         };
 
         const spy = vi.spyOn(require('html-webpack-plugin').prototype, 'apply')
@@ -103,6 +110,7 @@ describe('HtmlTemplatesPlugin', () => {
 
         const plugin = new HtmlTemplatesPlugin({
             entry: 'pages',
+            scriptEntry: 'src/app/main.ts',
             mode: 'development',
             appType: 'mpa'
         });
@@ -129,6 +137,7 @@ describe('HtmlTemplatesPlugin', () => {
 
         const plugin = new HtmlTemplatesPlugin({
             entry: 'index.html',
+            scriptEntry: 'src/app/main.ts',
             mode: 'development',
             appType: 'spa',
             data: {
@@ -138,7 +147,8 @@ describe('HtmlTemplatesPlugin', () => {
         });
 
         const compiler: any = {
-            hooks: {}
+            hooks: {},
+            options: {}
         };
         plugin.apply(compiler);
 

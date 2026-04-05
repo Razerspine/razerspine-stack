@@ -1,6 +1,6 @@
 {
   "name": "@razerspine/build",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Scalable Webpack build system for Pug, HTML, and React applications with smart hosting support",
   "keywords": [
     "webpack",
@@ -63,6 +63,10 @@
     "webpack": "^5",
     "webpack-dev-server": "^5",
     "html-webpack-plugin": "^5",
+    "ejs-loader": "^0.5.0",
+    "html-loader": "^4 || ^5",
+    "mini-css-extract-plugin": "^2",
+    "style-loader": "^3 || ^4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2"
   },
   "peerDependenciesMeta": {
@@ -72,6 +76,18 @@
     "html-webpack-plugin": {
       "optional": true
     },
+    "ejs-loader": {
+      "optional": true
+    },
+    "html-loader": {
+      "optional": true
+    },
+    "mini-css-extract-plugin": {
+      "optional": true
+    },
+    "style-loader": {
+      "optional": true
+    },
     "@pmmmwh/react-refresh-webpack-plugin": {
       "optional": true
     }
@@ -79,9 +95,13 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@vitest/coverage-v8": "^4.1.0",
+    "ejs-loader": "^0.5.0",
+    "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.6",
     "jsdom": "^29.0.0",
+    "mini-css-extract-plugin": "^2.9.0",
     "pug-plugin": "^6.1.0",
+    "style-loader": "^4.0.0",
     "typescript": "^5.3.3",
     "vitest": "^4.1.0",
     "webpack": "^5.105.0",

@@ -8,6 +8,19 @@ type HtmlTemplatesPluginOptions = {
     mode: ModeType;
     appType: AppType;
     /**
+     * Absolute path to the JS/TS script entry point.
+     *
+     * Registered as the Webpack `entry` so that the script bundle is built
+     * and automatically injected into the output HTML by `html-webpack-plugin`.
+     *
+     * Resolved and validated upstream by `normalizeOptions` and `validateOptions`.
+     * Always present when `templates.type` is `'html'`.
+     *
+     * @example
+     * Resolves to the absolute path of `src/app/main.ts` or a user-provided path.
+     */
+    scriptEntry: string;
+    /**
      * Custom data passed to all HTML templates at compile time.
      *
      * ⚠️ Important: `html-webpack-plugin` does NOT have a global `data` option like `pug-plugin`.
@@ -24,6 +37,7 @@ type HtmlTemplatesPluginOptions = {
      * ```ts
      * new HtmlTemplatesPlugin({
      *   entry: 'src/views/pages',
+     *   scriptEntry: '/abs/path/to/src/app/main.ts',
      *   mode: 'production',
      *   appType: 'mpa',
      *   data: {
@@ -48,22 +62,29 @@ type HtmlTemplatesPluginOptions = {
  * @class HtmlTemplatesPlugin
  * @description Webpack plugin that configures html-webpack-plugin for HTML-based template rendering.
  *
- * Supports:
- * - SPA mode: single `.html` entry file → outputs `index.html`
- * - MPA mode: directory of `.html` files → each file outputs its own `.html`
- * - Global template data via `data` option (injected via `templateParameters` function)
+ * Responsibilities:
+ * - Registers the JS/TS `scriptEntry` as the Webpack entry point so the bundle is built
+ *   and injected into the output HTML automatically by `html-webpack-plugin`.
+ * - In production mode, registers `MiniCssExtractPlugin` so CSS imported from the script
+ *   entry is extracted into a separate `.css` file and injected into HTML.
+ * - Configures `html-webpack-plugin` for:
+ *   - SPA mode: single `.html` entry file → outputs `index.html`
+ *   - MPA mode: directory of `.html` files → each file outputs its own `.html`
+ * - Supports global template data via `data` option (injected via `templateParameters` function).
  *
  * Requires `html-webpack-plugin` to be installed as a peer dependency.
  * If not installed, a clear actionable error is thrown at build start (not at import time).
  */
 export class HtmlTemplatesPlugin {
     private readonly entry: string;
+    private readonly scriptEntry: string;
     private readonly mode: ModeType;
     private readonly appType: AppType;
     private readonly data: Record<string, unknown>;
 
     constructor(options: HtmlTemplatesPluginOptions) {
         this.entry = path.resolve(options.entry);
+        this.scriptEntry = options.scriptEntry;
         this.mode = options.mode;
         this.appType = options.appType;
         this.data = options.data ?? {};
@@ -116,6 +137,29 @@ export class HtmlTemplatesPlugin {
     }
 
     /**
+     * Lazily resolves the `mini-css-extract-plugin` package.
+     *
+     * Only loaded in production mode. In development, `style-loader` (registered via
+     * `htmlStylesRule`) injects CSS into the DOM directly — no extraction plugin needed.
+     *
+     * @throws {Error} If `mini-css-extract-plugin` is not installed in the consumer project.
+     */
+    private resolveMiniCssExtractPlugin() {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const mod = require('mini-css-extract-plugin');
+            return mod?.default ?? mod;
+        } catch {
+            throw new Error(
+                '[build] Missing peer dependency: `mini-css-extract-plugin`.\n' +
+                'Install it with:\n\n' +
+                '  npm install -D mini-css-extract-plugin\n\n' +
+                'Required when using `templates.type: "html"` in production mode.'
+            );
+        }
+    }
+
+    /**
      * Builds a `templateParameters` function that safely merges user `data`
      * with the default html-webpack-plugin parameters.
      *
@@ -144,6 +188,40 @@ export class HtmlTemplatesPlugin {
     }
 
     apply(compiler: Compiler) {
+        /**
+         * Register the JS/TS script entry into the Webpack entry configuration.
+         *
+         * `html-webpack-plugin` only generates HTML — it does not create a script bundle.
+         * Webpack needs an explicit JS/TS entry to build the bundle that gets injected.
+         *
+         * We use the `entryName: 'main'` convention so `html-webpack-plugin` picks it up
+         * automatically and injects the resulting script tag into the output HTML.
+         */
+        compiler.options.entry = {
+            ...((compiler.options.entry as object) ?? {}),
+            main: {
+                import: [this.scriptEntry],
+            },
+        };
+
+        /**
+         * Register MiniCssExtractPlugin in production mode.
+         *
+         * In production, `htmlStylesRule` uses `MiniCssExtractPlugin.loader` to extract
+         * CSS into a separate file. The plugin itself must also be registered to emit
+         * the `.css` asset and let `html-webpack-plugin` inject the `<link>` tag.
+         *
+         * In development, `style-loader` injects CSS via `<style>` tags at runtime —
+         * no extraction plugin is needed.
+         */
+        if (this.mode === 'production') {
+            const MiniCssExtractPlugin = this.resolveMiniCssExtractPlugin();
+
+            new MiniCssExtractPlugin({
+                filename: 'css/[name].[contenthash:8].css',
+            }).apply(compiler);
+        }
+
         const HtmlWebpackPlugin = this.resolveHtmlPlugin();
 
         const templateParameters = Object.keys(this.data).length > 0

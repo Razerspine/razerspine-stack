@@ -44,6 +44,29 @@ export type ConfigOptionType = {
          */
         entry?: string;
         /**
+         * Path to the JavaScript/TypeScript script entry point.
+         *
+         * **Only used when `templates.type` is `'html'`.**
+         * Ignored for `type: 'pug'` and `type: 'none'`.
+         *
+         * When using `type: 'html'`, `html-webpack-plugin` handles the HTML template,
+         * but Webpack still needs a JS/TS entry to build the script bundle that gets
+         * injected into the output HTML.
+         *
+         * Defaults to `src/app/main.ts` (when `scripts: 'ts'`)
+         * or `src/app/main.js` (when `scripts: 'js'`).
+         *
+         * @example
+         * ```ts
+         * templates: {
+         *   type: 'html',
+         *   entry: 'src/app/index.html',
+         *   scriptEntry: 'src/app/app.ts',
+         * }
+         * ```
+         */
+        scriptEntry?: string;
+        /**
          * Global data passed to all templates at compile time.
          *
          * Currently supported by `templates.type: 'pug'` only.
@@ -98,8 +121,9 @@ export type ConfigOptionType = {
          * Disables:
          * - assetsRule
          * - scriptsRule
-         * - stylesRule
-         * - pugRule (if enabled)
+         * - stylesRule / htmlStylesRule
+         * - pugRule (if templates.type is 'pug')
+         * - htmlRule (if templates.type is 'html')
          *
          * Use only if you fully control the webpack pipeline.
          */

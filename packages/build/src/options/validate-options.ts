@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {ConfigOptionType} from '../types';
 
 export function validateOptions(options: ConfigOptionType): void {
@@ -28,5 +30,36 @@ export function validateOptions(options: ConfigOptionType): void {
 
     if (appType === 'mpa' && templateType !== 'none' && !options.templates?.entry) {
         throw new Error('[build] templates.entry is required for MPA when templates are enabled');
+    }
+
+    if (templateType === 'html') {
+        const defaultScriptEntry = scripts === 'ts'
+            ? 'src/app/main.ts'
+            : 'src/app/main.js';
+
+        const resolvedScriptEntry = path.resolve(
+            process.cwd(),
+            options.templates?.scriptEntry ?? defaultScriptEntry
+        );
+
+        if (!fs.existsSync(resolvedScriptEntry)) {
+            const isCustom = !!options.templates?.scriptEntry;
+
+            if (isCustom) {
+                throw new Error(
+                    `[build] templates.scriptEntry file not found: "${resolvedScriptEntry}".\n` +
+                    `Make sure the file exists or update templates.scriptEntry in your config.`
+                );
+            } else {
+                throw new Error(
+                    `[build] templates.type is "html" but no script entry file was found at the default path: "${resolvedScriptEntry}".\n` +
+                    `Either create the file or explicitly set templates.scriptEntry in your config:\n\n` +
+                    `  templates: {\n` +
+                    `    type: 'html',\n` +
+                    `    scriptEntry: 'src/app/app.ts',\n` +
+                    `  }`
+                );
+            }
+        }
     }
 }

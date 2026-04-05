@@ -8,7 +8,7 @@ import {ConfigOptionType} from '../types';
 import {Configuration, RuleSetRule, WebpackPluginInstance} from 'webpack';
 import {resolveOptions} from '../options';
 import path from 'path';
-import {assetsRule, pugRule, scriptsRule, stylesRule} from '../rules';
+import {assetsRule, htmlRule, htmlStylesRule, pugRule, scriptsRule, stylesRule} from '../rules';
 import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
 import {HtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
 import {dedupePlugins, dedupeRules} from '../utils';
@@ -25,7 +25,7 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * The build system supports multiple template engines via `templates.type`:
  *
  * - `pug`  → uses PugTemplatesPlugin (default)
- * - `html` → uses HtmlTemplatesPlugin
+ * - `html` → uses HtmlTemplatesPlugin + htmlRule (for import from JS/TS)
  * - `none` → disables template handling (React/Vue/custom setups)
  *
  * This allows flexible integration with different rendering strategies.
@@ -36,8 +36,17 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * Internal rules pipeline:
  * - assets
  * - scripts (js/ts)
- * - styles (scss/less)
- * - pug (only when enabled)
+ * - styles (scss/less) — `stylesRule` for pug/none, `htmlStylesRule` for html
+ * - pug (only when templates.type is 'pug')
+ * - html (only when templates.type is 'html')
+ *
+ * The `htmlRule` enables two modes for `.html` files:
+ * - **compile** (issuer: JS/TS) → returns a function; use as `import template from './home.html'`
+ * - **render** (entry files)    → renders static HTML; resolves static asset tags
+ *
+ * The `htmlStylesRule` replaces `stylesRule` for `type: 'html'`:
+ * - development → `style-loader` (injects CSS via <style> tags, HMR-friendly)
+ * - production  → `MiniCssExtractPlugin.loader` (extracts CSS into a separate file)
  *
  * Users can:
  * - extend rules safely (`rules.extend`)
@@ -63,18 +72,42 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     const templateType = normalized.templates?.type ?? 'pug';
     /**
      * Rules (core pipeline)
+     *
+     * For `type: 'html'`, `htmlStylesRule` replaces the standard `stylesRule` because
+     * the CSS extraction strategy is different:
+     * - `stylesRule` is designed for `pug-plugin` which handles extraction internally.
+     * - `htmlStylesRule` uses `style-loader` (dev) or `MiniCssExtractPlugin` (prod)
+     *   which is required when styles are imported from a standard JS/TS entry.
      */
+    const isHtmlMode = templateType === 'html';
+
     let rules: RuleSetRule[] = [
         assetsRule(),
         scriptsRule(normalized),
-        stylesRule(normalized),
+        isHtmlMode ? htmlStylesRule(normalized) : stylesRule(normalized),
     ];
 
     /**
-     * Conditionally enable pug processing
+     * Conditionally enable pug processing.
+     * Inserted at the front so it takes priority over other rules.
      */
     if (templateType === 'pug') {
         rules.unshift(pugRule());
+    }
+
+    /**
+     * Conditionally enable html processing.
+     *
+     * Provides dual-mode handling for `.html` files:
+     * - compile mode: `import template from './home.html'` in JS/TS → returns a callable function
+     * - render mode: entry `.html` files processed by html-webpack-plugin → resolves static assets
+     *
+     * Inserted at the front so it takes priority over other rules.
+     *
+     * ⚠️ Requires `ejs-loader` and `html-loader` peer dependencies.
+     */
+    if (templateType === 'html') {
+        rules.unshift(htmlRule());
     }
 
     /**
@@ -111,15 +144,26 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
 
     /**
      * HTML templates support (HtmlWebpackPlugin wrapper)
+     *
+     * Handles entry `.html` files and injects compiled scripts/styles into the output HTML.
+     * Works together with:
+     * - `htmlRule`       → enables `import template from './component.html'` in JS/TS (compile mode)
+     * - `htmlStylesRule` → extracts CSS via style-loader (dev) or MiniCssExtractPlugin (prod)
+     * - `scriptEntry`    → registered as the Webpack entry so the bundle is built and injected
      */
     if (templateType === 'html') {
         if (!normalized.templates.entry) {
             throw new Error('[build] templates.entry is required when templates.type is "html"');
         }
 
+        if (!normalized.templates.scriptEntry) {
+            throw new Error('[build] templates.scriptEntry is required when templates.type is "html"');
+        }
+
         plugins.push(
             new HtmlTemplatesPlugin({
                 entry: normalized.templates.entry,
+                scriptEntry: normalized.templates.scriptEntry,
                 mode: normalized.mode,
                 appType: normalized.appType,
                 data: normalized.templates.data as Record<string, unknown> | undefined,
