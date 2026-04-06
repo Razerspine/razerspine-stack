@@ -1,6 +1,6 @@
-import {ConfigOptionType} from '../types';
+import {NormalizedCoreOptions} from '../options';
 
-export function scriptsRule(env: ConfigOptionType) {
+export function scriptsRule(env: NormalizedCoreOptions) {
     if (env.scripts === 'ts') {
         return {
             test: /\.ts$/,

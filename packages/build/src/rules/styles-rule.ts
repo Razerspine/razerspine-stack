@@ -1,6 +1,6 @@
-import {ConfigOptionType} from '../types';
+import {NormalizedCoreOptions} from '../options';
 
-export function stylesRule(env: ConfigOptionType) {
+export function stylesRule(env: NormalizedCoreOptions) {
     const isLess = env.styles === 'less';
 
     return {
