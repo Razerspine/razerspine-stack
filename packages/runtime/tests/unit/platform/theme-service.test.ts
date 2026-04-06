@@ -22,6 +22,8 @@ describe('ThemeService', () => {
     });
 
     it('initializes with fallback theme', () => {
+        vi.stubGlobal('matchMedia', undefined);
+
         const service = new ThemeService({
             storage: null,
             fallback: 'dark'
@@ -30,6 +32,7 @@ describe('ThemeService', () => {
         service.init();
 
         expect(service.getTheme()).toBe('dark');
+        vi.unstubAllGlobals();
     });
 
     it('reads theme from storage on init', () => {
