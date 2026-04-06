@@ -111,7 +111,7 @@ export class HtmlTemplatesPlugin {
     /**
      * Lazily resolves the `html-webpack-plugin` package.
      *
-     * Using a lazy require instead of a top-level import ensures that projects
+     * Using a lazy requirement instead of a top-level import ensures that projects
      * using `templates.type: 'pug'` are not forced to install `html-webpack-plugin`.
      *
      * Handles both native CJS (returns constructor directly) and ESM-interop
@@ -196,9 +196,22 @@ export class HtmlTemplatesPlugin {
          *
          * We use the `entryName: 'main'` convention so `html-webpack-plugin` picks it up
          * automatically and injects the resulting script tag into the output HTML.
+         *
+         * Safety: webpack `entry` can be a string, array, object, or function.
+         * We only spread when it is a plain object — all other formats are replaced
+         * with a new object that contains the `main` entry, because they are not
+         * compatible with the object spread pattern and indicate an unexpected external
+         * configuration which HtmlTemplatesPlugin cannot safely merge with.
          */
+        const existingEntry = compiler.options.entry;
+        const isPlainObject =
+            existingEntry !== null &&
+            typeof existingEntry === 'object' &&
+            !Array.isArray(existingEntry) &&
+            typeof existingEntry !== 'function';
+
         compiler.options.entry = {
-            ...((compiler.options.entry as object) ?? {}),
+            ...(isPlainObject ? (existingEntry as object) : {}),
             main: {
                 import: [this.scriptEntry],
             },

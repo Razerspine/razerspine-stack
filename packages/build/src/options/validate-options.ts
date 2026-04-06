@@ -32,6 +32,13 @@ export function validateOptions(options: ConfigOptionType): void {
         throw new Error('[build] templates.entry is required for MPA when templates are enabled');
     }
 
+    if (options.templates?.scriptEntry && templateType !== 'html') {
+        throw new Error(
+            `[build] templates.scriptEntry is only supported when templates.type is "html".\n` +
+            `Current templates.type is "${templateType}". Remove scriptEntry from your config.`
+        );
+    }
+
     if (templateType === 'html') {
         const defaultScriptEntry = scripts === 'ts'
             ? 'src/app/main.ts'

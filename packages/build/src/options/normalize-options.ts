@@ -43,16 +43,27 @@ export function normalizeOptions(
     const templatesType: TemplatesType = options.templates?.type ?? 'pug';
 
     /**
-     * Resolve templates entry only when templates system is enabled
+     * Resolve templates entry only when templates system is enabled.
+     *
+     * Defaults are type-aware:
+     * - `type: 'pug'`  → `src/views/app.pug` (SPA) or `src/views/pages` (MPA)
+     * - `type: 'html'` → `src/app/index.html` (SPA) or `src/views/pages` (MPA)
+     *
+     * This prevents a `pug`-specific default from silently passing validation
+     * when the project uses `type: 'html'` and omits `templates.entry`.
      */
     let templatesEntry: string | undefined;
 
     if (templatesType !== 'none') {
-        templatesEntry =
-            options.templates?.entry ??
-            (appType === 'spa'
-                ? 'src/views/app.pug'
-                : 'src/views/pages');
+        if (options.templates?.entry) {
+            templatesEntry = options.templates.entry;
+        } else if (appType === 'spa') {
+            templatesEntry = templatesType === 'html'
+                ? 'src/app/index.html'
+                : 'src/views/app.pug';
+        } else {
+            templatesEntry = 'src/views/pages';
+        }
     }
 
     /**
