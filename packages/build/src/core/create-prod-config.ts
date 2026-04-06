@@ -7,7 +7,7 @@ import {Configuration, WebpackPluginInstance} from 'webpack';
 import {merge} from 'webpack-merge';
 import {HostingRoutingPlugin} from '../plugins/hosting-routing-plugin';
 import {getConfigMeta} from './config-meta';
-import {dedupePlugins} from '../utils/dedupe-plugins';
+import {dedupePlugins} from '../utils';
 
 /**
  * Creates a production configuration with minification and hosting-specific plugins.

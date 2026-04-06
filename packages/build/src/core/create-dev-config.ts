@@ -8,7 +8,7 @@ import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
 import {BaseWebpackConfigType} from '../types';
 import {getConfigMeta} from './config-meta';
-import {dedupePlugins} from '../utils/dedupe-plugins';
+import {dedupePlugins} from '../utils';
 
 type DevConfig = BaseWebpackConfigType & {
     devServer?: DevServerConfiguration;
