@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.0.2] - 2026-04-05
+## [1.0.2] - 2026-04-06
 
 ### Added
 
@@ -22,7 +22,7 @@ defineConfig({
   styles: 'scss',
   devServer: {
     port: 3000,
-    proxy: { '/api': 'http://localhost:4000' },
+    proxy: {'/api': 'http://localhost:4000'},
   },
 })
 ```
@@ -35,8 +35,8 @@ defineConfig({
   scripts: 'ts',
   styles: 'scss',
   prod: {
-    optimization: { minimize: false },
-    performance: { hints: 'warning' },
+    optimization: {minimize: false},
+    performance: {hints: 'warning'},
   },
 })
 ```
@@ -73,6 +73,7 @@ defineConfig({
 ```
 
 Usage in Pug template:
+
 ```pug
 title= siteName
 p Version: #{version}
@@ -96,6 +97,7 @@ defineConfig({
 ```
 
 Usage in HTML template (EJS syntax):
+
 ```html
 <title><%= siteName %></title>
 <meta name="version" content="<%= version %>">
@@ -157,6 +159,7 @@ This is required because `html-webpack-plugin` only generates HTML — Webpack s
 an explicit JS/TS entry to build the bundle that gets injected into the output.
 
 Defaults (when `scriptEntry` is omitted):
+
 - `scripts: 'ts'` → `src/app/main.ts`
 - `scripts: 'js'` → `src/app/main.js`
 
@@ -232,6 +235,54 @@ it is resolved lazily only in production mode.
 
 ---
 
+#### `normalizeOptions` — type-aware default `templates.entry` for SPA
+
+Previously the SPA default for `templates.entry` was always `src/views/app.pug` regardless
+of `templates.type`. This meant a project using `type: 'html'` without an explicit `entry`
+would silently receive a `.pug` path — which could pass validation if the file happened to
+exist from a previous `pug` setup, leading to a confusing mismatch.
+
+Default is now resolved per template type:
+
+| `templates.type` | `appType: 'spa'` default | `appType: 'mpa'` default |
+|:-----------------|--------------------------|:-------------------------|
+| `pug`            | `src/views/app.pug`      | `src/views/pages`        |
+| `html`           | `src/app/index.html`     | `src/views/pages`        |
+
+---
+
+#### `HtmlTemplatesPlugin` — safe `compiler.options.entry` mutation
+
+Previously `compiler.options.entry` was spread unconditionally via `...((entry as object) ?? {})`.
+Webpack `entry` can legally be a `string`, `string[]`, `object`, or `function` — spreading a
+non-object value produces incorrect results or throws a `TypeError` at runtime.
+
+The plugin now checks the type before spreading:
+
+- **plain object** → spread and merge `main` entry on top (existing entries preserved)
+- **any other format** (string, array, function) → replace entirely with `{ main: { import: [scriptEntry] } }`
+
+This does not affect `type: 'pug'` at all — `HtmlTemplatesPlugin` is never instantiated in
+that pipeline.
+
+---
+
+#### `validateOptions` — `scriptEntry` guard for `type: 'pug'` and `type: 'none'`
+
+`templates.scriptEntry` is only meaningful for `type: 'html'`. If provided for `type: 'pug'`
+or `type: 'none'`, the value would be silently ignored — `pug-plugin` manages its own entry
+system and does not read `scriptEntry`. This could mislead developers expecting it to have an
+effect.
+
+A validation error is now thrown immediately:
+
+```
+[build] templates.scriptEntry is only supported when templates.type is "html".
+Current templates.type is "pug". Remove scriptEntry from your config.
+```
+
+---
+
 ### Changed
 
 - `HostingType` union: removed `'github'`, now `'netlify' | 'vercel' | 'cloudflare' | 'static'`
@@ -242,6 +293,7 @@ it is resolved lazily only in production mode.
 - `NormalizedCoreOptions.templates.scriptEntry` added (resolved absolute path)
 - `stylesRule` is no longer used for `type: 'html'` — replaced by `htmlStylesRule`
 - `rules/index.ts` exports `htmlRule` and `htmlStylesRule`
+- `normalizeOptions` SPA default for `templates.entry` is now type-aware (see Fixed above)
 
 ---
 
@@ -254,7 +306,6 @@ it is resolved lazily only in production mode.
 ### Fixed
 
 - Fix and update `README.md`.
-
 
 ---
 
