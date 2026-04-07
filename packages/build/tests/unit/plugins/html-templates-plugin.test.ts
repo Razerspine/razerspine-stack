@@ -1,20 +1,20 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import * as fs from 'node:fs';
-import {HtmlTemplatesPlugin} from '../../../src/plugins/html-templates-plugin';
+import {createHtmlTemplatesPlugin} from '../../../src/plugins/html-templates-plugin';
 
 vi.mock('node:fs');
 
-describe('HtmlTemplatesPlugin', () => {
+describe('createHtmlTemplatesPlugin', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
     it('should throw if entry does not exist', () => {
-        (fs.existsSync as any).mockReturnValue(false);
+        vi.mocked(fs.existsSync).mockReturnValue(false);
 
         expect(() => {
-            new HtmlTemplatesPlugin({
+            createHtmlTemplatesPlugin({
                 entry: 'invalid',
                 scriptEntry: 'src/app/main.ts',
                 mode: 'development',
@@ -24,13 +24,13 @@ describe('HtmlTemplatesPlugin', () => {
     });
 
     it('should throw if SPA entry is not a file', () => {
-        (fs.existsSync as any).mockReturnValue(true);
-        (fs.statSync as any).mockReturnValue({
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+        vi.mocked(fs.statSync).mockReturnValue({
             isFile: () => false
-        });
+        } as any);
 
         expect(() => {
-            new HtmlTemplatesPlugin({
+            createHtmlTemplatesPlugin({
                 entry: 'dir',
                 scriptEntry: 'src/app/main.ts',
                 mode: 'development',
@@ -40,13 +40,13 @@ describe('HtmlTemplatesPlugin', () => {
     });
 
     it('should throw if MPA entry is not a directory', () => {
-        (fs.existsSync as any).mockReturnValue(true);
-        (fs.statSync as any).mockReturnValue({
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+        vi.mocked(fs.statSync).mockReturnValue({
             isDirectory: () => false
-        });
+        } as any);
 
         expect(() => {
-            new HtmlTemplatesPlugin({
+            createHtmlTemplatesPlugin({
                 entry: 'file.html',
                 scriptEntry: 'src/app/main.ts',
                 mode: 'development',
@@ -55,87 +55,64 @@ describe('HtmlTemplatesPlugin', () => {
         }).toThrow('MPA requires templates.entry to be a directory');
     });
 
-    it('should apply HtmlWebpackPlugin for SPA', () => {
-        (fs.existsSync as any).mockReturnValue(true);
-        (fs.statSync as any).mockReturnValue({
+    it('should apply HtmlWebpackPlugin for SPA and inject scriptEntry', () => {
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+        vi.mocked(fs.statSync).mockReturnValue({
             isFile: () => true
-        });
+        } as any);
 
-        const applyMock = vi.fn();
-
-        const compiler: any = {
-            hooks: {},
-            options: {}
-        };
-
-        const plugin = new HtmlTemplatesPlugin({
+        const plugin = createHtmlTemplatesPlugin({
             entry: 'index.html',
             scriptEntry: 'src/app/main.ts',
             mode: 'development',
             appType: 'spa'
         });
 
-        const spy = vi.spyOn(require('html-webpack-plugin').prototype, 'apply')
-            .mockImplementation(applyMock);
+        const config: any = {};
+        plugin.applyBase!(config);
 
-        plugin.apply(compiler);
+        expect(config.entry.main.import).toEqual(['src/app/main.ts']);
 
-        expect(spy).toHaveBeenCalled();
-        expect(compiler.options.entry).toBeDefined();
-
-        spy.mockRestore();
+        expect(config.plugins.length).toBe(1);
+        expect(config.plugins[0].constructor.name).toBe('HtmlWebpackPlugin');
     });
 
     it('should apply HtmlWebpackPlugin for each HTML file in MPA', () => {
-        (fs.existsSync as any).mockReturnValue(true);
-        (fs.statSync as any).mockReturnValue({
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+        vi.mocked(fs.statSync).mockReturnValue({
             isDirectory: () => true
-        });
+        } as any);
 
-        (fs.readdirSync as any).mockReturnValue([
+        vi.mocked(fs.readdirSync).mockReturnValue([
             'index.html',
             'about.html',
             'ignore.txt'
-        ]);
+        ] as any);
 
-        const applyMock = vi.fn();
-
-        const compiler: any = {
-            hooks: {},
-            options: {}
-        };
-
-        const spy = vi.spyOn(require('html-webpack-plugin').prototype, 'apply')
-            .mockImplementation(applyMock);
-
-        const plugin = new HtmlTemplatesPlugin({
+        const plugin = createHtmlTemplatesPlugin({
             entry: 'pages',
             scriptEntry: 'src/app/main.ts',
             mode: 'development',
             appType: 'mpa'
         });
 
-        plugin.apply(compiler);
+        const config: any = {};
+        plugin.applyBase!(config);
 
-        expect(applyMock).toHaveBeenCalledTimes(2);
+        expect(config.entry.main.import).toEqual(['src/app/main.ts']);
 
-        spy.mockRestore();
+        expect(config.plugins.length).toBe(2);
+        expect(config.plugins[0].constructor.name).toBe('HtmlWebpackPlugin');
+        expect(config.plugins[1].constructor.name).toBe('HtmlWebpackPlugin');
     });
 
     it('should pass data via templateParameters function and merge correctly', () => {
-        (fs.existsSync as any).mockReturnValue(true);
-        (fs.statSync as any).mockReturnValue({
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+        vi.mocked(fs.statSync).mockReturnValue({
             isFile: () => true
-        });
+        } as any);
 
-        let pluginOptions: any;
-
-        const spy = vi.spyOn(require('html-webpack-plugin').prototype, 'apply')
-            .mockImplementation(function (this: any) {
-                pluginOptions = this.userOptions || this.options;
-            });
-
-        const plugin = new HtmlTemplatesPlugin({
+        const plugin = createHtmlTemplatesPlugin({
             entry: 'index.html',
             scriptEntry: 'src/app/main.ts',
             mode: 'development',
@@ -146,13 +123,11 @@ describe('HtmlTemplatesPlugin', () => {
             }
         });
 
-        const compiler: any = {
-            hooks: {},
-            options: {}
-        };
-        plugin.apply(compiler);
+        const config: any = {};
+        plugin.applyBase!(config);
 
-        expect(spy).toHaveBeenCalled();
+        const htmlPlugin = config.plugins[0] as any;
+        const pluginOptions = htmlPlugin.userOptions || htmlPlugin.options;
 
         expect(pluginOptions.templateParameters).toBeTypeOf('function');
 
@@ -172,7 +147,5 @@ describe('HtmlTemplatesPlugin', () => {
             siteName: 'My App',
             version: '1.0.0'
         });
-
-        spy.mockRestore();
     });
 });

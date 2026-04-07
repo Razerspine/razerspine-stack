@@ -85,7 +85,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
   ],
   "resolve": {
     "alias": {},
@@ -185,7 +185,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot with buildPlugins 
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
   ],
   "resolve": {
     "alias": {},

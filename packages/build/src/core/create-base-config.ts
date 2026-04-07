@@ -9,8 +9,9 @@ import {Configuration, RuleSetRule, WebpackPluginInstance} from 'webpack';
 import {resolveOptions} from '../options';
 import path from 'path';
 import {assetsRule, htmlRule, htmlStylesRule, pugRule, scriptsRule, stylesRule} from '../rules';
-import {PugTemplatesPlugin} from '../plugins/pug-templates-plugin';
-import {HtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
+import {createPugTemplatesPlugin} from '../plugins/pug-templates-plugin';
+import {createHtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
+import {BuildPluginType} from '../types';
 import {dedupePlugins, dedupeRules} from '../utils';
 
 /**
@@ -24,8 +25,8 @@ import {dedupePlugins, dedupeRules} from '../utils';
  *
  * The build system supports multiple template engines via `templates.type`:
  *
- * - `pug`  → uses PugTemplatesPlugin (default)
- * - `html` → uses HtmlTemplatesPlugin + htmlRule (for import from JS/TS)
+ * - `pug`  → creates internal `BuildPluginType` via `createPugTemplatesPlugin` (default)
+ * - `html` → creates internal `BuildPluginType` via `createHtmlTemplatesPlugin`
  * - `none` → disables template handling (React/Vue/custom setups)
  *
  * This allows flexible integration with different rendering strategies.
@@ -37,8 +38,8 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * - assets
  * - scripts (js/ts)
  * - styles (scss/less) — `stylesRule` for pug/none, `htmlStylesRule` for html
- * - pug (only when templates.type is 'pug')
- * - html (only when templates.type is 'html')
+ * - pug (only when templates type is 'pug')
+ * - html (only when templates type is 'html')
  *
  * The `htmlRule` enables two modes for `.html` files:
  * - **compile** (issuer: JS/TS) → returns a function; use as `import template from './home.html'`
@@ -121,58 +122,18 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
 
     /**
      * Plugins (core pipeline)
+     *
+     * Template plugins (pug, html) are no longer pushed here directly.
+     * They are registered as internal BuildPlugins below and push their
+     * webpack instances into `config.plugins` through `applyBase` hooks.
+     * This makes them visible to `dedupePlugins` and `plugins.override`.
      */
     let plugins: WebpackPluginInstance[] = [];
 
     /**
-     * PUG templates support
-     */
-    if (templateType === 'pug') {
-        if (!normalized.templates.entry) {
-            throw new Error('[build] templates.entry is required when templates.type is "pug"');
-        }
-
-        plugins.push(
-            new PugTemplatesPlugin({
-                entry: normalized.templates.entry,
-                mode: normalized.mode,
-                appType: normalized.appType,
-                data: normalized.templates.data,
-            })
-        );
-    }
-
-    /**
-     * HTML templates support (HtmlWebpackPlugin wrapper)
-     *
-     * Handles entry `.html` files and injects compiled scripts/styles into the output HTML.
-     * Works together with:
-     * - `htmlRule`       → enables `import template from './component.html'` in JS/TS (compile mode)
-     * - `htmlStylesRule` → extracts CSS via style-loader (dev) or MiniCssExtractPlugin (prod)
-     * - `scriptEntry`    → registered as the Webpack entry so the bundle is built and injected
-     */
-    if (templateType === 'html') {
-        if (!normalized.templates.entry) {
-            throw new Error('[build] templates.entry is required when templates.type is "html"');
-        }
-
-        if (!normalized.templates.scriptEntry) {
-            throw new Error('[build] templates.scriptEntry is required when templates.type is "html"');
-        }
-
-        plugins.push(
-            new HtmlTemplatesPlugin({
-                entry: normalized.templates.entry,
-                scriptEntry: normalized.templates.scriptEntry,
-                mode: normalized.mode,
-                appType: normalized.appType,
-                data: normalized.templates.data as Record<string, unknown> | undefined,
-            })
-        );
-    }
-
-    /**
-     * Apply user plugins overrides/extensions
+     * Apply user plugins overrides/extensions.
+     * These are merged before the config object is created so user-provided
+     * plugins are included in the initial `dedupePlugins` pass.
      */
     if (options.plugins?.override) {
         plugins = options.plugins.override;
@@ -202,16 +163,81 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      *
      * These are NOT webpack plugins.
      * They are internal framework plugins used to extend config behavior.
+     *
+     * Internal template plugins (`createPugTemplatesPlugin`, `createHtmlTemplatesPlugin`)
+     * are prepended as the first entries so they run before user-supplied `buildPlugins`.
+     * This guarantees that template-related webpack plugins and entry points are in
+     * `config.plugins` / `config.entry` before any user hook has a chance to read or
+     * further mutate them — and before the final `dedupePlugins` pass cleans up duplicates.
      */
+    const internalBuildPlugins: BuildPluginType[] = [];
+
+    /**
+     * PUG templates support
+     *
+     * Registered as an internal BuildPlugin so `applyBase` pushes PugPlugin into
+     * `config.plugins` declaratively — visible to `dedupePlugins` and `plugins.override`.
+     */
+    if (templateType === 'pug') {
+        if (!normalized.templates.entry) {
+            throw new Error('[build] templates.entry is required when templates.type is "pug"');
+        }
+
+        internalBuildPlugins.push(
+            createPugTemplatesPlugin({
+                entry: normalized.templates.entry,
+                mode: normalized.mode,
+                appType: normalized.appType,
+                data: normalized.templates.data,
+            })
+        );
+    }
+
+    /**
+     * HTML templates support (HtmlWebpackPlugin wrapper)
+     *
+     * Registered as an internal BuildPlugin so `applyBase` declaratively:
+     * - injects `entry.main` (JS/TS script entry)
+     * - pushes MiniCssExtractPlugin (production only)
+     * - pushes HtmlWebpackPlugin instance(s)
+     *
+     * Works together with:
+     * - `htmlRule`       → enables `import template from './component.html'` in JS/TS (compile mode)
+     * - `htmlStylesRule` → extracts CSS via style-loader (dev) or MiniCssExtractPlugin (prod)
+     * - `scriptEntry`    → registered as the Webpack entry so the bundle is built and injected
+     */
+    if (templateType === 'html') {
+        if (!normalized.templates.entry) {
+            throw new Error('[build] templates.entry is required when templates.type is "html"');
+        }
+
+        if (!normalized.templates.scriptEntry) {
+            throw new Error('[build] templates.scriptEntry is required when templates.type is "html"');
+        }
+
+        internalBuildPlugins.push(
+            createHtmlTemplatesPlugin({
+                entry: normalized.templates.entry,
+                scriptEntry: normalized.templates.scriptEntry,
+                mode: normalized.mode,
+                appType: normalized.appType,
+                data: normalized.templates.data as Record<string, unknown> | undefined,
+            })
+        );
+    }
+
     const buildPlugins = options.buildPlugins ?? [];
 
-    // Run setup phase
-    for (const plugin of buildPlugins) {
+    // Internal plugins run first, then user-supplied plugins.
+    const allBuildPlugins = [...internalBuildPlugins, ...buildPlugins];
+
+    // Run setup phase (internal plugins have no setup hook by design)
+    for (const plugin of allBuildPlugins) {
         plugin.setup?.({options: normalized});
     }
 
     // Apply base config hooks
-    for (const plugin of buildPlugins) {
+    for (const plugin of allBuildPlugins) {
         plugin.applyBase?.(config);
     }
 
@@ -230,7 +256,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     }
 
     /**
-     * Store metadata (appType + buildPlugins)
+     * Store metadata (appType + buildPlugins).
+     * Only user-supplied buildPlugins are stored — internal template plugins
+     * have already completed their work in applyBase and do not need dev/prod hooks.
      */
     setConfigMeta(config, {
         appType: normalized.appType,

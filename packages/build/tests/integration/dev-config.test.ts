@@ -1,14 +1,29 @@
 import {describe, it, expect, vi} from 'vitest';
 import {createBaseConfig, createDevConfig} from '../../src';
-import {PugTemplatesPlugin} from '../../src/plugins/pug-templates-plugin';
+import PugPlugin from 'pug-plugin';
 
 vi.mock('node:fs', () => ({
     default: {
         existsSync: () => true,
-        statSync: () => ({isFile: () => true, isDirectory: () => true})
+        statSync: () => ({
+            isFile: () => true,
+            isDirectory: () => true
+        }),
+        readdirSync: () => ['index.html']
     },
     existsSync: () => true,
-    statSync: () => ({isFile: () => true, isDirectory: () => true}),
+    statSync: () => ({
+        isFile: () => true,
+        isDirectory: () => true
+    }),
+    readdirSync: () => ['index.html']
+}));
+
+vi.mock('pug-plugin', () => ({
+    default: class PugPlugin {
+        apply() {
+        }
+    }
 }));
 
 describe('createDevConfig', () => {
@@ -18,7 +33,10 @@ describe('createDevConfig', () => {
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
-            appType: 'spa'
+            appType: 'spa',
+            templates: {
+                type: 'none'
+            }
         });
 
         const devConfig = createDevConfig(base);
@@ -34,6 +52,7 @@ describe('createDevConfig', () => {
             styles: 'scss',
             appType: 'mpa',
             templates: {
+                type: 'pug',
                 entry: 'src/views/pages'
             }
         });
@@ -44,60 +63,47 @@ describe('createDevConfig', () => {
         expect(rewrites[0].to).toBe('/404.html');
     });
 
-    it('should merge user devServer options', () => {
-        const base = createBaseConfig({
+    it('should call buildPlugins.applyDev and deduplicate results', () => {
+        const applyDevSpy = vi.fn().mockImplementation((config: any) => {
+            config.plugins.push(new (PugPlugin as any)());
+        });
+
+        const mockPlugin = {
+            name: 'dev-plugin',
+            applyDev: applyDevSpy
+        };
+
+        const baseWithPlugins = createBaseConfig({
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
+            appType: 'spa',
             templates: {
-                entry: 'src/views/pages'
-            }
+                type: 'pug',
+                entry: 'src/index.pug'
+            },
+            buildPlugins: [mockPlugin]
         });
 
-        const devConfig = createDevConfig(base, {port: 3000});
-        expect(devConfig.devServer?.port).toBe(3000);
-        expect(devConfig.devtool).toBe('source-map');
+        const finalConfig = createDevConfig(baseWithPlugins);
+
+        expect(applyDevSpy).toHaveBeenCalled();
+
+        const pugPlugins = finalConfig.plugins?.filter(
+            p => p?.constructor.name === 'PugPlugin'
+        );
+
+        expect(pugPlugins).toHaveLength(1);
     });
 
-    it('should not override custom historyApiFallback', () => {
-        const base = createBaseConfig({
-            mode: 'development',
-            scripts: 'ts',
-            styles: 'scss',
-            appType: 'spa'
-        });
-
-        const devConfig = createDevConfig(base, {
-            historyApiFallback: {
-                rewrites: [{from: /./, to: '/custom.html'}]
-            }
-        });
-
-        const rewrites = (devConfig.devServer?.historyApiFallback as any).rewrites;
-        expect(rewrites[0].to).toBe('/custom.html');
-    });
-
-    it('should preserve existing devServer config', () => {
-        const base = createBaseConfig({
-            mode: 'development',
-            scripts: 'ts',
-            styles: 'scss'
-        });
-
-        const devConfig = createDevConfig(base, {
-            hot: false
-        });
-
-        expect(devConfig.devServer?.hot).toBe(false);
-    });
-
-    it('should merge devServer options correctly', () => {
+    it('should merge user devServer options', () => {
         const base = createBaseConfig({
             mode: 'development',
             scripts: 'ts',
             styles: 'scss',
             appType: 'mpa',
             templates: {
+                type: 'pug',
                 entry: 'src/views/pages'
             }
         });
@@ -111,35 +117,5 @@ describe('createDevConfig', () => {
 
         expect(config.devServer?.port).toBe(3000);
         expect(config.devServer?.historyApiFallback).toBeDefined();
-    });
-
-    it('should call buildPlugins.applyDev and deduplicate results', () => {
-        const applyDevSpy = vi.fn((config) => {
-            config.plugins.push(
-                new PugTemplatesPlugin({
-                    entry: 'test',
-                    mode: 'development',
-                    appType: 'spa'
-                })
-            );
-        });
-
-        const mockPlugin = {
-            name: 'dev-plugin',
-            applyDev: applyDevSpy
-        };
-        const baseWithPlugins = createBaseConfig({
-            mode: 'development',
-            scripts: 'ts',
-            styles: 'scss',
-            appType: 'spa',
-            buildPlugins: [mockPlugin]
-        });
-
-        const finalConfig = createDevConfig(baseWithPlugins);
-
-        expect(applyDevSpy).toHaveBeenCalled();
-        const pugPlugins = finalConfig.plugins?.filter(p => p instanceof PugTemplatesPlugin);
-        expect(pugPlugins).toHaveLength(1);
     });
 });

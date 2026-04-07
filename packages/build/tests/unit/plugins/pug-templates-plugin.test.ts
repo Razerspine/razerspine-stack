@@ -1,10 +1,10 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
-import {PugTemplatesPlugin} from '../../../src/plugins/pug-templates-plugin';
+import {createPugTemplatesPlugin} from '../../../src/plugins/pug-templates-plugin';
 import * as fs from 'node:fs';
 
 vi.mock('node:fs');
 
-describe('PugTemplatesPlugin', () => {
+describe('createPugTemplatesPlugin', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -17,7 +17,7 @@ describe('PugTemplatesPlugin', () => {
             isDirectory: () => true
         } as any);
 
-        expect(() => new PugTemplatesPlugin({
+        expect(() => createPugTemplatesPlugin({
             entry: 'test.pug',
             mode: 'development',
             appType: 'spa'
@@ -30,29 +30,21 @@ describe('PugTemplatesPlugin', () => {
             isDirectory: () => false
         } as any);
 
-        let capturedOptions: any;
-
-        const PugPlugin = require('pug-plugin');
-        const spy = vi.spyOn(PugPlugin.prototype, 'apply')
-            .mockImplementation(function (this: any) {
-                capturedOptions = this.option?.options || this.options;
-            });
-
-        const plugin = new PugTemplatesPlugin({
+        const plugin = createPugTemplatesPlugin({
             entry: 'test.pug',
             mode: 'development',
             appType: 'spa',
             data: {siteName: 'Pug App'}
         });
 
-        plugin.apply({
-            hooks: {}
-        } as any);
+        const config: any = {};
+        plugin.applyBase!(config);
 
-        expect(spy).toHaveBeenCalled();
+        const pugPlugin = config.plugins[0] as any;
+        const capturedOptions = pugPlugin.options || pugPlugin.option?.options;
+
+        expect(config.plugins.length).toBe(1);
         expect(capturedOptions.data).toEqual({siteName: 'Pug App'});
-
-        spy.mockRestore();
     });
 
     it('should pass string path data directly to pug-plugin options', () => {
@@ -61,27 +53,19 @@ describe('PugTemplatesPlugin', () => {
             isDirectory: () => false
         } as any);
 
-        let capturedOptions: any;
-        const PugPlugin = require('pug-plugin');
-        const spy = vi.spyOn(PugPlugin.prototype, 'apply')
-            .mockImplementation(function (this: any) {
-                capturedOptions = this.option?.options || this.options;
-            });
-
-        const plugin = new PugTemplatesPlugin({
+        const plugin = createPugTemplatesPlugin({
             entry: 'test.pug',
             mode: 'development',
             appType: 'spa',
             data: './src/data/site.json'
         });
 
-        plugin.apply({
-            hooks: {}
-        } as any);
+        const config: any = {};
+        plugin.applyBase!(config);
 
-        expect(spy).toHaveBeenCalled();
+        const pugPlugin = config.plugins[0] as any;
+        const capturedOptions = pugPlugin.options || pugPlugin.option?.options;
+
         expect(capturedOptions.data).toBe('./src/data/site.json');
-
-        spy.mockRestore();
     });
 });

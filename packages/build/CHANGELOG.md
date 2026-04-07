@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.0.2] - 2026-04-06
+## [1.0.2] - 2026-04-07
 
 ### Added
 
@@ -266,6 +266,53 @@ This does not affect `type: 'pug'` at all — `HtmlTemplatesPlugin` is never ins
 that pipeline.
 
 ---
+
+#### Architectural Refactoring: `PugTemplatesPlugin` and `HtmlTemplatesPlugin` as `BuildPluginType`
+
+**Problem (Legacy Architecture)**
+
+Previously, internal template plugins were standard Webpack plugins using the `apply(compiler)` method. They acted as "
+black boxes," meaning their internal logic remained hidden from the `config.plugins` array until Webpack was fully
+initialized. This led to several issues:
+
+- **Deduplication failure:** `dedupePlugins` could not detect internal instances of `PugPlugin` or `HtmlWebpackPlugin`
+  if a user added their own via `plugins.extend`.
+- **Override limitations:** `plugins.override` could not target or replace plugins hidden inside these internal classes.
+- **Hidden dependencies:** Plugins like `MiniCssExtractPlugin` were instantiated inside `apply(compiler)`, making them
+  invisible for external configuration.
+- **Entry point conflicts:** Modifying `compiler.options.entry` inside `apply()` occurred too late, causing collisions
+  with user-defined entries or `buildPlugin.applyBase` hooks.
+
+**Solution**
+
+`PugTemplatesPlugin` and `HtmlTemplatesPlugin` are no longer standard Webpack plugins. They have been replaced by *
+*factory functions** (`createPugTemplatesPlugin` / `createHtmlTemplatesPlugin`) that return a **`BuildPluginType`**
+object featuring the `applyBase(config)` hook.
+
+**New Execution Flow in `createBaseConfig`:**
+
+1. The system resolves `templates.type` and initializes the corresponding `BuildPluginType`.
+2. These are stored in `internalBuildPlugins` and executed **before** user-supplied `buildPlugins`.
+3. The `applyBase(config)` hook **declaratively** pushes Webpack plugins and entry points into the `Configuration`
+   object.
+4. `dedupePlugins` and `dedupeRules` are executed at the very end, ensuring a clean, conflict-free final configuration.
+
+**Specific Plugin Changes**
+
+**`createPugTemplatesPlugin` (`applyBase`):**
+
+- Declaratively pushes `PugPlugin` into `config.plugins`, making it available for `dedupePlugins` and
+  `plugins.override`.
+- **Fixed MPA Path Flattening:** Changed logic from `let [name] = chunk.name.split('/')` to preserve full directory
+  structures (e.g., `shop/product` now correctly results in `shop/product.html`).
+- Maintained the legacy mapping of `home` to `index.html` for the root page.
+
+**`createHtmlTemplatesPlugin` (`applyBase`):**
+
+- Pushes `MiniCssExtractPlugin` (in production mode) directly into `config.plugins`.
+- Pushes one or more `HtmlWebpackPlugin` instances into `config.plugins` where they are visible for deduplication.
+- **Entry Point Safety:** Now writes to `config.entry.main` **only if it is not already defined**, preventing it from
+  overwriting custom entry points or those defined via other `buildPlugin.applyBase` hooks.
 
 #### `validateOptions` — `scriptEntry` guard for `type: 'pug'` and `type: 'none'`
 

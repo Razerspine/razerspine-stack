@@ -94,7 +94,7 @@ exports[`createProdConfig (snapshots) > should match snapshot (SPA) and include 
     "hints": false,
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
     "HostingRoutingPlugin",
   ],
   "resolve": {
@@ -205,7 +205,7 @@ exports[`createProdConfig (snapshots) > should match snapshot with production ov
     "hints": false,
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
     "HostingRoutingPlugin",
   ],
   "resolve": {

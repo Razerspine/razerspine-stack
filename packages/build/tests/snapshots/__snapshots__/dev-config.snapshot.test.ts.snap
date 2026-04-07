@@ -105,7 +105,7 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
   ],
   "resolve": {
     "alias": {},
@@ -224,7 +224,7 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
-    "PugTemplatesPlugin",
+    "PugPlugin",
   ],
   "resolve": {
     "alias": {},

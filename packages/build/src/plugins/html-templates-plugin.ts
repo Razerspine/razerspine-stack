@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'path';
-import {Compiler} from 'webpack';
-import {ModeType, AppType} from '../types';
+import {Configuration, WebpackPluginInstance} from 'webpack';
+import {AppType, BuildPluginType, ModeType} from '../types';
 
 type HtmlTemplatesPluginOptions = {
     entry: string;
@@ -35,7 +35,7 @@ type HtmlTemplatesPluginOptions = {
      *
      * @example Config:
      * ```ts
-     * new HtmlTemplatesPlugin({
+     * createHtmlTemplatesPlugin({
      *   entry: 'src/views/pages',
      *   scriptEntry: '/abs/path/to/src/app/main.ts',
      *   mode: 'production',
@@ -59,210 +59,250 @@ type HtmlTemplatesPluginOptions = {
 };
 
 /**
- * @class HtmlTemplatesPlugin
- * @description Webpack plugin that configures html-webpack-plugin for HTML-based template rendering.
+ * Lazily resolves the `html-webpack-plugin` package.
  *
- * Responsibilities:
- * - Registers the JS/TS `scriptEntry` as the Webpack entry point so the bundle is built
- *   and injected into the output HTML automatically by `html-webpack-plugin`.
- * - In production mode, registers `MiniCssExtractPlugin` so CSS imported from the script
- *   entry is extracted into a separate `.css` file and injected into HTML.
- * - Configures `html-webpack-plugin` for:
- *   - SPA mode: single `.html` entry file → outputs `index.html`
- *   - MPA mode: directory of `.html` files → each file outputs its own `.html`
- * - Supports global template data via `data` option (injected via `templateParameters` function).
+ * Using a lazy requirement instead of a top-level import ensures that projects
+ * using `templates.type: 'pug'` are not forced to install `html-webpack-plugin`.
+ *
+ * Handles both native CJS (returns constructor directly) and ESM-interop
+ * scenarios (returns `{ default: constructor }`) — the latter occurs in
+ * vitest's module system when the mock uses `{ default: MockClass }`.
+ *
+ * @throws {Error} If `html-webpack-plugin` is not installed in the consumer project.
+ */
+function resolveHtmlPlugin() {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const mod = require('html-webpack-plugin');
+        // Unwrap ESM default export if present (e.g. vitest mock environment)
+        return mod?.default ?? mod;
+    } catch {
+        throw new Error(
+            '[build] Missing peer dependency: `html-webpack-plugin`.\n' +
+            'Install it with:\n\n' +
+            '  npm install -D html-webpack-plugin\n\n' +
+            'Required when using `templates.type: "html"`.'
+        );
+    }
+}
+
+/**
+ * Lazily resolves the `mini-css-extract-plugin` package.
+ *
+ * Only loaded in production mode. In development, `style-loader` (registered via
+ * `htmlStylesRule`) injects CSS into the DOM directly — no extraction plugin needed.
+ *
+ * @throws {Error} If `mini-css-extract-plugin` is not installed in the consumer project.
+ */
+function resolveMiniCssExtractPlugin() {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const mod = require('mini-css-extract-plugin');
+        return mod?.default ?? mod;
+    } catch {
+        throw new Error(
+            '[build] Missing peer dependency: `mini-css-extract-plugin`.\n' +
+            'Install it with:\n\n' +
+            '  npm install -D mini-css-extract-plugin\n\n' +
+            'Required when using `templates.type: "html"` in production mode.'
+        );
+    }
+}
+
+/**
+ * Builds a `templateParameters` function that safely merges user `data`
+ * with the default html-webpack-plugin parameters.
+ *
+ * Using a **function** instead of a plain object is required to preserve
+ * the default params (`htmlWebpackPlugin`, `webpackConfig`, `compilation`).
+ * Passing a plain object overwrites all defaults — a known html-webpack-plugin gotcha.
+ *
+ * @see https://github.com/jantimon/html-webpack-plugin/issues/1117
+ */
+function buildTemplateParameters(userData: Record<string, unknown>) {
+    return (
+        compilation: unknown,
+        assets: unknown,
+        assetTags: unknown,
+        options: unknown
+    ) => ({
+        compilation,
+        webpackConfig: (compilation as any).options,
+        htmlWebpackPlugin: {
+            tags: assetTags,
+            files: assets,
+            options,
+        },
+        ...userData,
+    });
+}
+
+/**
+ * Validates the entry path for the given appType.
+ *
+ * @throws {Error} If entry does not exist or does not match the expected shape
+ *   (file for SPA, directory for MPA).
+ */
+function validateEntry(entry: string, appType: AppType): void {
+    if (!fs.existsSync(entry)) {
+        throw new Error(`[build] HTML templates entry not found: ${entry}`);
+    }
+
+    const stats = fs.statSync(entry);
+
+    if (appType === 'spa' && !stats.isFile()) {
+        throw new Error(`[build] SPA requires a single HTML file as templates.entry`);
+    }
+
+    if (appType === 'mpa' && !stats.isDirectory()) {
+        throw new Error(`[build] MPA requires templates.entry to be a directory`);
+    }
+}
+
+/**
+ * @function createHtmlTemplatesPlugin
+ * @description Internal build plugin factory that wires up `html-webpack-plugin` for HTML-based template rendering.
+ *
+ * Returns a {@link BuildPluginType} whose `applyBase` hook declaratively:
+ * - Injects the `main` JS/TS script entry into `config.entry` (only if not already defined).
+ * - Pushes `MiniCssExtractPlugin` into `config.plugins` in production mode.
+ * - Pushes one or more `HtmlWebpackPlugin` instances into `config.plugins`.
+ *
+ * All mutations happen on the plain `Configuration` object inside `applyBase`,
+ * so every pushed plugin is visible to the standard `dedupePlugins` pass
+ * at the end of `createBaseConfig` and can be replaced by the user via `plugins.override`.
+ *
+ * Supports:
+ * - SPA mode: single `.html` entry file → outputs `index.html`
+ * - MPA mode: directory of `.html` files → each file outputs its own `.html`
+ * - Global template data via `data` option (injected via `templateParameters` function)
  *
  * Requires `html-webpack-plugin` to be installed as a peer dependency.
- * If not installed, a clear actionable error is thrown at build start (not at import time).
+ * If not installed, a clear actionable error is thrown during `applyBase` (not at import time).
  */
-export class HtmlTemplatesPlugin {
-    private readonly entry: string;
-    private readonly scriptEntry: string;
-    private readonly mode: ModeType;
-    private readonly appType: AppType;
-    private readonly data: Record<string, unknown>;
+export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): BuildPluginType {
+    const entry = path.resolve(options.entry);
+    const data = options.data ?? {};
 
-    constructor(options: HtmlTemplatesPluginOptions) {
-        this.entry = path.resolve(options.entry);
-        this.scriptEntry = options.scriptEntry;
-        this.mode = options.mode;
-        this.appType = options.appType;
-        this.data = options.data ?? {};
+    // Validate eagerly so the error surfaces before the webpack compilation starts.
+    validateEntry(entry, options.appType);
 
-        this.validate();
-    }
-
-    private validate() {
-        if (!fs.existsSync(this.entry)) {
-            throw new Error(`[build] HTML templates entry not found: ${this.entry}`);
-        }
-
-        const stats = fs.statSync(this.entry);
-
-        if (this.appType === 'spa' && !stats.isFile()) {
-            throw new Error(`[build] SPA requires a single HTML file as templates.entry`);
-        }
-
-        if (this.appType === 'mpa' && !stats.isDirectory()) {
-            throw new Error(`[build] MPA requires templates.entry to be a directory`);
-        }
-    }
-
-    /**
-     * Lazily resolves the `html-webpack-plugin` package.
-     *
-     * Using a lazy requirement instead of a top-level import ensures that projects
-     * using `templates.type: 'pug'` are not forced to install `html-webpack-plugin`.
-     *
-     * Handles both native CJS (returns constructor directly) and ESM-interop
-     * scenarios (returns `{ default: constructor }`) — the latter occurs in
-     * vitest's module system when the mock uses `{ default: MockClass }`.
-     *
-     * @throws {Error} If `html-webpack-plugin` is not installed in the consumer project.
-     */
-    private resolveHtmlPlugin() {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
-            const mod = require('html-webpack-plugin');
-            // Unwrap ESM default export if present (e.g. vitest mock environment)
-            return mod?.default ?? mod;
-        } catch {
-            throw new Error(
-                '[build] Missing peer dependency: `html-webpack-plugin`.\n' +
-                'Install it with:\n\n' +
-                '  npm install -D html-webpack-plugin\n\n' +
-                'Required when using `templates.type: "html"`.'
-            );
-        }
-    }
-
-    /**
-     * Lazily resolves the `mini-css-extract-plugin` package.
-     *
-     * Only loaded in production mode. In development, `style-loader` (registered via
-     * `htmlStylesRule`) injects CSS into the DOM directly — no extraction plugin needed.
-     *
-     * @throws {Error} If `mini-css-extract-plugin` is not installed in the consumer project.
-     */
-    private resolveMiniCssExtractPlugin() {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
-            const mod = require('mini-css-extract-plugin');
-            return mod?.default ?? mod;
-        } catch {
-            throw new Error(
-                '[build] Missing peer dependency: `mini-css-extract-plugin`.\n' +
-                'Install it with:\n\n' +
-                '  npm install -D mini-css-extract-plugin\n\n' +
-                'Required when using `templates.type: "html"` in production mode.'
-            );
-        }
-    }
-
-    /**
-     * Builds a `templateParameters` function that safely merges user `data`
-     * with the default html-webpack-plugin parameters.
-     *
-     * Using a **function** instead of a plain object is required to preserve
-     * the default params (`htmlWebpackPlugin`, `webpackConfig`, `compilation`).
-     * Passing a plain object overwrites all defaults — a known html-webpack-plugin gotcha.
-     *
-     * @see https://github.com/jantimon/html-webpack-plugin/issues/1117
-     */
-    private buildTemplateParameters(userData: Record<string, unknown>) {
-        return (
-            compilation: unknown,
-            assets: unknown,
-            assetTags: unknown,
-            options: unknown
-        ) => ({
-            compilation,
-            webpackConfig: (compilation as any).options,
-            htmlWebpackPlugin: {
-                tags: assetTags,
-                files: assets,
-                options,
-            },
-            ...userData,
-        });
-    }
-
-    apply(compiler: Compiler) {
-        /**
-         * Register the JS/TS script entry into the Webpack entry configuration.
-         *
-         * `html-webpack-plugin` only generates HTML — it does not create a script bundle.
-         * Webpack needs an explicit JS/TS entry to build the bundle that gets injected.
-         *
-         * We use the `entryName: 'main'` convention so `html-webpack-plugin` picks it up
-         * automatically and injects the resulting script tag into the output HTML.
-         *
-         * Safety: webpack `entry` can be a string, array, object, or function.
-         * We only spread when it is a plain object — all other formats are replaced
-         * with a new object that contains the `main` entry, because they are not
-         * compatible with the object spread pattern and indicate an unexpected external
-         * configuration which HtmlTemplatesPlugin cannot safely merge with.
-         */
-        const existingEntry = compiler.options.entry;
-        const isPlainObject =
-            existingEntry !== null &&
-            typeof existingEntry === 'object' &&
-            !Array.isArray(existingEntry) &&
-            typeof existingEntry !== 'function';
-
-        compiler.options.entry = {
-            ...(isPlainObject ? (existingEntry as object) : {}),
-            main: {
-                import: [this.scriptEntry],
-            },
-        };
+    return {
+        name: 'html-templates',
 
         /**
-         * Register MiniCssExtractPlugin in production mode.
+         * Declaratively mutates the base `Configuration` object:
          *
-         * In production, `htmlStylesRule` uses `MiniCssExtractPlugin.loader` to extract
-         * CSS into a separate file. The plugin itself must also be registered to emit
-         * the `.css` asset and let `html-webpack-plugin` inject the `<link>` tag.
+         * 1. Injects `entry.main` with the JS/TS script path — only when `main` is not
+         *    already defined, so user-defined entries from `buildPlugin.applyBase` are preserved.
          *
-         * In development, `style-loader` injects CSS via `<style>` tags at runtime —
-         * no extraction plugin is needed.
+         * 2. Pushes `MiniCssExtractPlugin` into `config.plugins` (production only).
+         *    In development, `style-loader` from `htmlStylesRule` handles CSS injection —
+         *    no extraction plugin is needed.
+         *
+         * 3. Pushes `HtmlWebpackPlugin` instance(s) into `config.plugins`:
+         *    - SPA → one instance targeting `entry` → `index.html`
+         *    - MPA → one instance per `.html` file in the `entry` directory
+         *
+         * All pushed instances land in `config.plugins` before `dedupePlugins` runs,
+         * so the user can safely replace them via `plugins.override`.
          */
-        if (this.mode === 'production') {
-            const MiniCssExtractPlugin = this.resolveMiniCssExtractPlugin();
+        applyBase(config: Configuration): void {
+            config.plugins = config.plugins ?? [];
 
-            new MiniCssExtractPlugin({
-                filename: 'css/[name].[contenthash:8].css',
-            }).apply(compiler);
-        }
+            /**
+             * Inject the JS/TS script entry.
+             *
+             * `html-webpack-plugin` only generates HTML — it does not create a script bundle.
+             * Webpack needs an explicit JS/TS entry to build the bundle that gets injected.
+             *
+             * We use the `main` entry name convention so `html-webpack-plugin` picks it up
+             * automatically and injects the resulting script tag into the output HTML.
+             *
+             * Safety: webpack `entry` can be a string, array, object, or function.
+             * We only spread when it is a plain object. Any other format (string, array,
+             * function) is replaced with `{ main: ... }` because it cannot be merged safely.
+             *
+             * `main` is only written when absent — this preserves entries set by earlier
+             * `buildPlugin.applyBase` hooks and avoids silently overwriting user intent.
+             */
+            const existingEntry = config.entry;
+            const isPlainObject =
+                existingEntry !== null &&
+                typeof existingEntry === 'object' &&
+                !Array.isArray(existingEntry) &&
+                typeof existingEntry !== 'function';
 
-        const HtmlWebpackPlugin = this.resolveHtmlPlugin();
+            const baseEntry = isPlainObject ? (existingEntry as Record<string, unknown>) : {};
 
-        const templateParameters = Object.keys(this.data).length > 0
-            ? this.buildTemplateParameters(this.data)
-            : undefined;
+            if (!('main' in baseEntry)) {
+                config.entry = {
+                    ...baseEntry,
+                    main: {
+                        import: [options.scriptEntry],
+                    },
+                };
+            }
 
-        if (this.appType === 'spa') {
-            new HtmlWebpackPlugin({
-                template: this.entry,
-                filename: 'index.html',
-                minify: this.mode === 'production',
-                ...(templateParameters && {templateParameters}),
-            }).apply(compiler);
+            /**
+             * MiniCssExtractPlugin (production only).
+             *
+             * In production, `htmlStylesRule` uses `MiniCssExtractPlugin.loader` to extract
+             * CSS into a separate file. The plugin itself must also be present to emit
+             * the `.css` asset and let `html-webpack-plugin` inject the `<link>` tag.
+             *
+             * Pushed into `config.plugins` so `dedupePlugins` can see and deduplicate it
+             * if the user has already added their own instance via `plugins.extend`.
+             */
+            if (options.mode === 'production') {
+                const MiniCssExtractPlugin = resolveMiniCssExtractPlugin();
 
-            return;
-        }
+                config.plugins.push(
+                    new MiniCssExtractPlugin({
+                        filename: 'css/[name].[contenthash:8].css',
+                    }) as WebpackPluginInstance
+                );
+            }
 
-        const files = fs.readdirSync(this.entry).filter(f => f.endsWith('.html'));
+            /**
+             * HtmlWebpackPlugin instance(s).
+             *
+             * Each instance is pushed into `config.plugins` so it is visible for
+             * `dedupePlugins` and can be inspected or replaced by the user.
+             */
+            const HtmlWebpackPlugin = resolveHtmlPlugin();
 
-        files.forEach(file => {
-            const name = path.basename(file, '.html');
+            const templateParameters = Object.keys(data).length > 0
+                ? buildTemplateParameters(data)
+                : undefined;
 
-            new HtmlWebpackPlugin({
-                template: path.join(this.entry, file),
-                filename: `${name}.html`,
-                minify: this.mode === 'production',
-                ...(templateParameters && {templateParameters}),
-            }).apply(compiler);
-        });
-    }
+            if (options.appType === 'spa') {
+                config.plugins.push(
+                    new HtmlWebpackPlugin({
+                        template: entry,
+                        filename: 'index.html',
+                        minify: options.mode === 'production',
+                        ...(templateParameters && {templateParameters}),
+                    }) as WebpackPluginInstance
+                );
+
+                return;
+            }
+
+            const files = fs.readdirSync(entry).filter(f => f.endsWith('.html'));
+
+            files.forEach(file => {
+                const name = path.basename(file, '.html');
+
+                (config.plugins as WebpackPluginInstance[]).push(
+                    new HtmlWebpackPlugin({
+                        template: path.join(entry, file),
+                        filename: `${name}.html`,
+                        minify: options.mode === 'production',
+                        ...(templateParameters && {templateParameters}),
+                    }) as WebpackPluginInstance
+                );
+            });
+        },
+    };
 }
