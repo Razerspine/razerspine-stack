@@ -84,7 +84,16 @@ exports[`createProdConfig (snapshots) > should match snapshot (SPA) and include 
   "optimization": {
     "minimize": true,
     "runtimeChunk": false,
-    "splitChunks": false,
+    "splitChunks": {
+      "cacheGroups": {
+        "vendors": {
+          "chunks": "all",
+          "enforce": true,
+          "name": "vendors",
+          "test": "/\\.(js|ts)$/",
+        },
+      },
+    },
   },
   "output": {
     "clean": true,
@@ -195,7 +204,16 @@ exports[`createProdConfig (snapshots) > should match snapshot with production ov
   "optimization": {
     "minimize": false,
     "runtimeChunk": false,
-    "splitChunks": false,
+    "splitChunks": {
+      "cacheGroups": {
+        "vendors": {
+          "chunks": "all",
+          "enforce": true,
+          "name": "vendors",
+          "test": "/\\.(js|ts)$/",
+        },
+      },
+    },
   },
   "output": {
     "clean": true,
