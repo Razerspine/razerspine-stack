@@ -516,6 +516,15 @@ unchanged from the user's perspective.
 - `getDefaultScriptEntry(scripts)` helper extracted from `normalize-options.ts` (exported) and
   `validate-options.ts` (imported); removes duplicated `scripts === 'ts' ? ... : ...` ternary
   that previously lived in both files independently
+- `HostingRoutingPlugin` refactored from a Webpack plugin class instantiated directly in
+  `createProdConfig` to a `BuildPluginType` factory (`createHostingRoutingPlugin`) following
+  the same pattern as `createPugTemplatesPlugin` / `createHtmlTemplatesPlugin`; the `markPlugin`
+  call is now co-located with the plugin definition inside `applyProd` rather than at the call site
+  in `createProdConfig`; `markPlugin` import removed from `create-prod-config.ts`
+- `splitChunks` default in `createProdConfig` changed from `false` to a `vendors` cache group
+  that targets script files only (`/\.(js|ts)$/`) — third-party modules are split into a
+  separate `vendors` chunk shared across all entry points, reducing total bundle size on
+  multi-entry (MPA) builds
 
 ---
 

@@ -44,7 +44,7 @@ with smart auto-hosting capabilities.
   the same component pattern works regardless of template engine.
 - **Lazy Peer Dependencies**: Peer dependencies are resolved at runtime only when actually used — no install errors when
   switching template engines.
-- **Rock Solid**: Covered by 90+ Unit, Integration, E2E, and Snapshot tests.
+- **Rock Solid**: Covered by 92+ Unit, Integration, E2E, and Snapshot tests.
 
 ---
 
@@ -175,7 +175,14 @@ Configure how your application structure is processed using the `appType` option
 `appType: 'mpa'`
 
 - `templates.entry` must be a directory (e.g., `src/views/pages`).
-- Each file in the directory generates its own HTML file.
+- All `.html` (or `.pug`) files in the directory are scanned **recursively**, including nested subdirectories.
+  Output paths mirror the source structure:
+  ```
+  src/views/pages/
+    index.html           → dist/index.html
+    about/index.html     → dist/about/index.html
+    shop/product.html    → dist/shop/product.html
+  ```
 
 ### SPA
 
@@ -343,6 +350,23 @@ module.exports = defineConfig({
 });
 ```
 
+Use `override` to completely replace the internal plugin list. All internal template plugins
+(`PugPlugin`, `HtmlWebpackPlugin`, `MiniCssExtractPlugin`, `HostingRoutingPlugin`) are
+suppressed — only the plugins you supply are used:
+
+```js
+module.exports = defineConfig({
+  plugins: {
+    override: [new DefinePlugin({VERSION: '"1.0.0"'})],
+  }
+});
+// config.plugins === [DefinePlugin] — no internal plugins injected
+```
+
+> **Note on rules deduplication**: rules with the same `test` pattern but different loaders
+> are treated as distinct and are never silently merged. To fully replace an internal rule,
+> use `rules.override`.
+
 ### Build Plugins System (Lifecycle Hooks)
 
 For advanced use cases or framework integrations, use the internal plugin system:
@@ -385,10 +409,15 @@ configuration.
 ## 🏗 Architecture Principles
 
 - **Template-First**: While Webpack handles assets, templates (Pug/HTML) drive the entry points.
-- **Stability-First**: Aggressive optimizations (like `splitChunks`) are carefully tuned or disabled by default to
-  ensure reliable asset resolution within templates.
+- **Stability-First**: Optimizations are carefully scoped by default. `splitChunks` uses a `vendors` cache group
+  targeting script files only (`/\.(js|ts)$/`) — styles and assets are excluded to ensure reliable asset resolution
+  within templates. The `vendors` chunk is shared across all entry points, reducing bundle size on MPA builds.
 - **Lazy Dependencies**: All peer dependencies are resolved at runtime only when actually used —
   switching template engines never causes install-time errors. Missing dependencies produce clear, actionable errors.
+- **Uniform Plugin Factories**: All internal plugins (`PugTemplatesPlugin`, `HtmlTemplatesPlugin`,
+  `HostingRoutingPlugin`) are implemented as `BuildPluginType` factory functions returning lifecycle hooks
+  (`applyBase` / `applyProd`). Plugin instances are pushed into `config.plugins` declaratively, making
+  them visible to `dedupePlugins` and fully replaceable via `plugins.override`.
 - **Type Safety**: Built with TypeScript for excellent IDE support and internal build reliability.
 
 ---

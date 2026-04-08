@@ -33,7 +33,16 @@ export function createProdConfig(
         devtool: 'source-map',
         optimization: {
             minimize: true,
-            splitChunks: false,
+            splitChunks: {
+                cacheGroups: {
+                    vendors: {
+                        test: /\.(js|ts)$/,
+                        chunks: 'all',
+                        name: 'vendors',
+                        enforce: true,
+                    },
+                },
+            },
             runtimeChunk: false,
         },
         performance: {
