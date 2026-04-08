@@ -1,12 +1,14 @@
 import {
     Compiler,
     Compilation,
+    Configuration,
     sources,
+    WebpackPluginInstance,
 } from 'webpack';
-import {AppType, HostingType} from '../types';
+import {AppType, BuildPluginType, HostingType} from '../types';
 import {detectHosting} from '../hosting/detect-hosting';
 import {getRedirects} from '../hosting/get-redirects';
-import {textCapitalize} from '../utils';
+import {markPlugin, textCapitalize} from '../utils';
 
 type HostingRoutingPluginOptions = {
     appType: AppType;
@@ -118,4 +120,31 @@ export class HostingRoutingPlugin {
             }
         );
     }
+}
+
+/**
+ * @function createHostingRoutingPlugin
+ * @description Internal build plugin factory that wires up {@link HostingRoutingPlugin}
+ * for production builds.
+ *
+ * Returns a {@link BuildPluginType} whose `applyProd` hook pushes a tagged
+ * {@link HostingRoutingPlugin} instance into `config.plugins`. The instance is tagged
+ * via {@link markPlugin} so `dedupePlugins` can identify and remove any untagged copy
+ * of the same class added by the user via `plugins.extend`, preventing double-registration.
+ *
+ * Using a factory instead of instantiating the plugin directly in `createProdConfig`
+ * keeps the `markPlugin` call co-located with the plugin definition — consistent with
+ * how `createPugTemplatesPlugin` and `createHtmlTemplatesPlugin` are structured.
+ */
+export function createHostingRoutingPlugin(options: HostingRoutingPluginOptions): BuildPluginType {
+    return {
+        name: 'hosting-routing',
+
+        applyProd(config: Configuration): void {
+            config.plugins = config.plugins ?? [];
+            config.plugins.push(
+                markPlugin(new HostingRoutingPlugin(options) as WebpackPluginInstance)
+            );
+        },
+    };
 }

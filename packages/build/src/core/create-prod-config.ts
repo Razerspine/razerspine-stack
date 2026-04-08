@@ -5,17 +5,18 @@
 
 import {Configuration, WebpackPluginInstance} from 'webpack';
 import {merge} from 'webpack-merge';
-import {HostingRoutingPlugin} from '../plugins/hosting-routing-plugin';
+import {createHostingRoutingPlugin} from '../plugins/hosting-routing-plugin';
 import {getConfigMeta} from './config-meta';
-import {dedupePlugins, markPlugin} from '../utils';
+import {dedupePlugins} from '../utils';
 
 /**
  * Creates a production configuration with minification and hosting-specific plugins.
  *
- * The `HostingRoutingPlugin` instance is tagged via {@link markPlugin} so that
- * `dedupePlugins` can identify it as an internal framework plugin. Any untagged
- * instance of the same class added by the user via `plugins.extend` will be removed
- * by the hybrid deduplication pass, preventing double-registration.
+ * `HostingRoutingPlugin` is registered via `createHostingRoutingPlugin`, which is a
+ * {@link BuildPluginType} factory consistent with `createPugTemplatesPlugin` and
+ * `createHtmlTemplatesPlugin`. The factory's `applyProd` hook tags the instance via
+ * {@link markPlugin} so `dedupePlugins` can remove any untagged duplicate added by
+ * the user via `plugins.extend`, preventing double-registration.
  *
  * @param {Configuration} baseConfig - The base configuration from createBaseConfig.
  * @param {Configuration} [options={}] - Additional Webpack overrides for production.
@@ -27,18 +28,6 @@ export function createProdConfig(
 ): Configuration {
     const meta = getConfigMeta(baseConfig);
     const appType = meta?.appType ?? 'mpa';
-
-    /**
-     * Internal production plugins.
-     *
-     * `HostingRoutingPlugin` is tagged with {@link markPlugin} so that
-     * `dedupePlugins` treats it as an authoritative internal instance and removes
-     * any untagged copy of the same class that the user may have added via
-     * `plugins.extend` in the base config.
-     */
-    const defaultPlugins = [
-        markPlugin(new HostingRoutingPlugin({appType})),
-    ];
 
     const defaultConfig: Configuration = {
         devtool: 'source-map',
@@ -52,10 +41,18 @@ export function createProdConfig(
         },
     };
 
-    const finalConfig = merge(baseConfig, {
-        ...defaultConfig,
-        plugins: defaultPlugins,
-    }, options);
+    const finalConfig = merge(baseConfig, defaultConfig, options);
+
+    /**
+     * Internal production build plugin.
+     *
+     * `createHostingRoutingPlugin` follows the same `BuildPluginType` factory pattern
+     * as `createPugTemplatesPlugin` / `createHtmlTemplatesPlugin`. Its `applyProd` hook
+     * pushes a `markPlugin`-tagged `HostingRoutingPlugin` instance into `config.plugins`,
+     * making deduplication co-located with the plugin definition rather than spread across
+     * call sites.
+     */
+    createHostingRoutingPlugin({appType}).applyProd!(finalConfig);
 
     /**
      * Build Plugins (prod lifecycle)
