@@ -419,6 +419,40 @@ realm-safe and returns the correct tag for any `RegExp` instance regardless of i
 
 ---
 
+#### `StaticCopyPlugin` — non-blocking async I/O
+
+Previously, `collectFiles` used `fs.readdirSync`, `fs.statSync`, and the asset emission loop used
+`fs.readFileSync`. Synchronous I/O blocks Node.js's event loop for the entire duration of the
+directory scan and file reads — noticeably harmful when `static/` contains many or large files,
+and incompatible with Webpack's internal async scheduler when other async work is in-flight.
+
+- `collectFiles` converted to `async function` using `fs.promises.readdir` and
+  `fs.promises.stat`
+- `fs.existsSync` replaced with `try { await fs.promises.access(staticDir) } catch { return }`
+- Hook registration changed from `processAssets.tap` → `processAssets.tapPromise` with an
+  `async` callback
+- Files are now read in parallel via `Promise.all` over `fs.promises.readFile` calls, which
+  reduces total copy time on multi-file directories
+
+---
+
+#### `StaticCopyPlugin` — watch mode support via `contextDependencies`
+
+Previously, Webpack Dev Server (`--watch`) had no awareness of the `static/` directory.
+Adding, removing, or editing a file inside `static/` would not trigger a rebuild — the
+change was silently ignored until the next manual restart.
+
+`compilation.contextDependencies.add(staticDir)` is now called **unconditionally** (before
+the `fs.promises.access` existence check). This registers the path as a context dependency
+regardless of whether the directory exists yet:
+
+- **Directory exists**: any file add/remove/change inside `static/` triggers an incremental
+  rebuild and re-emission.
+- **Directory does not exist**: Webpack watches the parent and triggers a rebuild the moment
+  `static/` is created — no restart required.
+
+---
+
 #### `validateOptions` — `scriptEntry` guard for `type: 'pug'` and `type: 'none'`
 
 `templates.scriptEntry` is only meaningful for `type: 'html'`. If provided for `type: 'pug'`
@@ -530,7 +564,8 @@ unchanged from the user's perspective.
 
 - `StaticCopyPlugin` registered as an always-on internal plugin in `createBaseConfig` via
   `createStaticCopyPlugin()` factory — active in both development and production builds for
-  all template engine types
+  all template engine types; uses `tapPromise` + `fs.promises.*` (fully async, non-blocking);
+  registers `static/` as a `compilation.contextDependency` for watch mode / HMR support
 - `HostingType` union: removed `'github'`, now `'netlify' | 'vercel' | 'cloudflare' | 'static'`
 - `ConfigOptionType.templates.data` type extended to `Record<string, unknown> | string`
   (string path supported for `pug` only; `html` accepts object only)

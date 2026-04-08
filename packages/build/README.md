@@ -353,6 +353,10 @@ This follows the "Convention over Configuration" principle — useful for files 
 served as-is and should not go through Webpack's asset pipeline (e.g. `robots.txt`, `.htaccess`,
 pre-built icons, manifest files).
 
+**Watch mode**: `static/` is registered as a Webpack context dependency, so adding, removing, or
+editing any file inside it triggers an incremental rebuild automatically — no server restart needed.
+This works even if `static/` does not exist yet when the dev server starts.
+
 ---
 
 ## 🔌 Extensibility
