@@ -7,16 +7,16 @@ import {markPlugin} from '../utils';
 /**
  * Recursively collects all file paths inside a directory.
  */
-function collectFiles(dir: string): string[] {
+async function collectFiles(dir: string): Promise<string[]> {
     const result: string[] = [];
-    const entries = fs.readdirSync(dir);
+    const entries = await fs.promises.readdir(dir);
 
     for (const entry of entries) {
         const fullPath = path.join(dir, entry);
-        const stat = fs.statSync(fullPath);
+        const stat = await fs.promises.stat(fullPath);
 
         if (stat.isDirectory()) {
-            result.push(...collectFiles(fullPath));
+            result.push(...(await collectFiles(fullPath)));
         } else {
             result.push(fullPath);
         }
@@ -37,25 +37,35 @@ function collectFiles(dir: string): string[] {
  * Lifecycle:
  * Uses `PROCESS_ASSETS_STAGE_ADDITIONAL` — runs early in the asset processing pipeline
  * so the copied files are available to subsequent stages (e.g. `PROCESS_ASSETS_STAGE_SUMMARIZE`).
+ *
+ * Watch mode:
+ * Registers `static/` as a context dependency so Webpack Dev Server / `--watch` rebuilds
+ * whenever files inside the directory are added, removed, or changed.
  */
 export class StaticCopyPlugin {
     apply(compiler: Compiler) {
         const logger = compiler.getInfrastructureLogger('@razerspine/build');
 
         compiler.hooks.thisCompilation.tap('StaticCopyPlugin', (compilation: Compilation) => {
-            compilation.hooks.processAssets.tap(
+            compilation.hooks.processAssets.tapPromise(
                 {
                     name: 'StaticCopyPlugin',
                     stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
                 },
-                () => {
+                async () => {
                     const staticDir = path.join(compiler.context, 'static');
 
-                    if (!fs.existsSync(staticDir)) {
+                    // Register as a context dependency so watch mode detects changes
+                    // even when the directory does not yet exist.
+                    compilation.contextDependencies.add(staticDir);
+
+                    try {
+                        await fs.promises.access(staticDir);
+                    } catch {
                         return;
                     }
 
-                    const files = collectFiles(staticDir);
+                    const files = await collectFiles(staticDir);
 
                     if (files.length === 0) {
                         return;
@@ -63,11 +73,13 @@ export class StaticCopyPlugin {
 
                     logger.info(`📦 Copying ${files.length} file(s) from static/ to dist/...`);
 
-                    for (const filePath of files) {
-                        const relPath = path.relative(staticDir, filePath).replace(/\\/g, '/');
-                        const content = fs.readFileSync(filePath);
-                        compilation.emitAsset(relPath, new sources.RawSource(content));
-                    }
+                    await Promise.all(
+                        files.map(async (filePath) => {
+                            const relPath = path.relative(staticDir, filePath).replace(/\\/g, '/');
+                            const content = await fs.promises.readFile(filePath);
+                            compilation.emitAsset(relPath, new sources.RawSource(content));
+                        })
+                    );
                 }
             );
         });

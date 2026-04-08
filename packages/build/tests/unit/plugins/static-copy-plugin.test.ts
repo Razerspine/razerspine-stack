@@ -2,12 +2,20 @@ import {describe, it, expect, vi, beforeEach} from 'vitest';
 import * as fs from 'node:fs';
 import {StaticCopyPlugin, createStaticCopyPlugin} from '../../../src/plugins/static-copy-plugin';
 
-vi.mock('node:fs');
+vi.mock('node:fs', () => ({
+    promises: {
+        access: vi.fn(),
+        readdir: vi.fn(),
+        stat: vi.fn(),
+        readFile: vi.fn(),
+    },
+}));
 
 describe('StaticCopyPlugin', () => {
     let mockCompiler: any;
     let mockCompilation: any;
     let mockLogger: any;
+    let tapPromiseCallback: () => Promise<void>;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -20,10 +28,15 @@ describe('StaticCopyPlugin', () => {
         mockCompilation = {
             hooks: {
                 processAssets: {
-                    tap: vi.fn((options, callback) => callback()),
+                    tapPromise: vi.fn((options, cb) => {
+                        tapPromiseCallback = cb;
+                    }),
                 },
             },
             emitAsset: vi.fn(),
+            contextDependencies: {
+                add: vi.fn(),
+            },
         };
 
         mockCompiler = {
@@ -37,37 +50,50 @@ describe('StaticCopyPlugin', () => {
         };
     });
 
-    it('should do nothing when static/ directory does not exist', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(false);
+    it('should do nothing when static/ directory does not exist', async () => {
+        vi.mocked(fs.promises.access).mockRejectedValue(new Error('ENOENT'));
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
         expect(mockCompilation.emitAsset).not.toHaveBeenCalled();
         expect(mockLogger.info).not.toHaveBeenCalled();
     });
 
-    it('should do nothing when static/ directory is empty', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(true);
-        vi.mocked(fs.readdirSync).mockReturnValue([] as any);
+    it('should always register contextDependencies for watch mode', async () => {
+        vi.mocked(fs.promises.access).mockRejectedValue(new Error('ENOENT'));
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
+
+        expect(mockCompilation.contextDependencies.add).toHaveBeenCalledWith('/project/static');
+    });
+
+    it('should do nothing when static/ directory is empty', async () => {
+        vi.mocked(fs.promises.access).mockResolvedValue(undefined);
+        vi.mocked(fs.promises.readdir).mockResolvedValue([] as any);
+
+        const plugin = new StaticCopyPlugin();
+        plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
         expect(mockCompilation.emitAsset).not.toHaveBeenCalled();
         expect(mockLogger.info).not.toHaveBeenCalled();
     });
 
-    it('should emit flat files from static/ to dist/', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(true);
-        vi.mocked(fs.readdirSync).mockReturnValue(['robots.txt', 'favicon.ico'] as any);
-        vi.mocked(fs.statSync).mockReturnValue({isDirectory: () => false} as any);
-        vi.mocked(fs.readFileSync).mockImplementation((filePath: any) =>
-            Buffer.from(`content-of-${String(filePath).split('/').pop()}`)
+    it('should emit flat files from static/ to dist/', async () => {
+        vi.mocked(fs.promises.access).mockResolvedValue(undefined);
+        vi.mocked(fs.promises.readdir).mockResolvedValue(['robots.txt', 'favicon.ico'] as any);
+        vi.mocked(fs.promises.stat).mockResolvedValue({isDirectory: () => false} as any);
+        vi.mocked(fs.promises.readFile).mockImplementation((filePath: any) =>
+            Promise.resolve(Buffer.from(`content-of-${String(filePath).split('/').pop()}`)) as any
         );
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
         expect(mockCompilation.emitAsset).toHaveBeenCalledTimes(2);
         expect(mockCompilation.emitAsset).toHaveBeenCalledWith(
@@ -80,52 +106,55 @@ describe('StaticCopyPlugin', () => {
         );
     });
 
-    it('should recursively copy nested files preserving directory structure', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(true);
+    it('should recursively copy nested files preserving directory structure', async () => {
+        vi.mocked(fs.promises.access).mockResolvedValue(undefined);
 
-        vi.mocked(fs.readdirSync).mockImplementation((dir: any) => {
+        vi.mocked(fs.promises.readdir).mockImplementation((dir: any) => {
             const d = String(dir);
-            if (d === '/project/static') return ['images', 'robots.txt'] as any;
-            if (d === '/project/static/images') return ['logo.png'] as any;
-            return [] as any;
+            if (d === '/project/static') return Promise.resolve(['images', 'robots.txt'] as any);
+            if (d === '/project/static/images') return Promise.resolve(['logo.png'] as any);
+            return Promise.resolve([] as any);
         });
 
-        vi.mocked(fs.statSync).mockImplementation((filePath: any) => {
+        vi.mocked(fs.promises.stat).mockImplementation((filePath: any) => {
             const p = String(filePath);
-            return {isDirectory: () => p === '/project/static/images'} as any;
+            return Promise.resolve({isDirectory: () => p === '/project/static/images'} as any);
         });
 
-        vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from('data'));
+        vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('data') as any);
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
         expect(mockCompilation.emitAsset).toHaveBeenCalledTimes(2);
         expect(mockCompilation.emitAsset).toHaveBeenCalledWith('images/logo.png', expect.anything());
         expect(mockCompilation.emitAsset).toHaveBeenCalledWith('robots.txt', expect.anything());
     });
 
-    it('should log info with file count when copying', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(true);
-        vi.mocked(fs.readdirSync).mockReturnValue(['file.txt'] as any);
-        vi.mocked(fs.statSync).mockReturnValue({isDirectory: () => false} as any);
-        vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from(''));
+    it('should log info with file count when copying', async () => {
+        vi.mocked(fs.promises.access).mockResolvedValue(undefined);
+        vi.mocked(fs.promises.readdir).mockResolvedValue(['file.txt'] as any);
+        vi.mocked(fs.promises.stat).mockResolvedValue({isDirectory: () => false} as any);
+        vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('') as any);
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
         expect(mockLogger.info).toHaveBeenCalledWith(
             expect.stringContaining('1 file(s) from static/ to dist/')
         );
     });
 
-    it('should use PROCESS_ASSETS_STAGE_ADDITIONAL stage', () => {
-        vi.mocked(fs.existsSync).mockReturnValue(false);
+    it('should use PROCESS_ASSETS_STAGE_ADDITIONAL stage', async () => {
+        vi.mocked(fs.promises.access).mockRejectedValue(new Error('ENOENT'));
 
         const plugin = new StaticCopyPlugin();
         plugin.apply(mockCompiler);
+        await tapPromiseCallback();
 
-        expect(mockCompilation.hooks.processAssets.tap).toHaveBeenCalledWith(
+        expect(mockCompilation.hooks.processAssets.tapPromise).toHaveBeenCalledWith(
             expect.objectContaining({
                 name: 'StaticCopyPlugin',
                 stage: expect.any(Number),
