@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {ConfigOptionType} from '../types';
+import {getDefaultScriptEntry} from './normalize-options';
 
 export function validateOptions(options: ConfigOptionType): void {
     if (!options) throw new Error('[build] Options are required.');
@@ -40,13 +41,9 @@ export function validateOptions(options: ConfigOptionType): void {
     }
 
     if (templateType === 'html') {
-        const defaultScriptEntry = scripts === 'ts'
-            ? 'src/app/main.ts'
-            : 'src/app/main.js';
-
         const resolvedScriptEntry = path.resolve(
             process.cwd(),
-            options.templates?.scriptEntry ?? defaultScriptEntry
+            options.templates?.scriptEntry ?? getDefaultScriptEntry(scripts)
         );
 
         if (!fs.existsSync(resolvedScriptEntry)) {

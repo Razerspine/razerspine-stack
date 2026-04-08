@@ -9,6 +9,13 @@ import {
 } from '../types';
 import {Configuration} from 'webpack';
 
+/**
+ * Returns the default script entry path based on the configured script language.
+ */
+export function getDefaultScriptEntry(scripts: ScriptType | undefined): string {
+    return scripts === 'ts' ? 'src/app/main.ts' : 'src/app/main.js';
+}
+
 export interface NormalizedCoreOptions {
     mode: ModeType;
     appType: AppType;
@@ -52,9 +59,7 @@ export function normalizeOptions(
      * Resolve script entry globally for all templates.
      * Enforces the Webpack-first model where scripts are registered in entry.main.
      */
-    const defaultScriptEntry = options.scripts === 'ts'
-        ? 'src/app/main.ts'
-        : 'src/app/main.js';
+    const defaultScriptEntry = getDefaultScriptEntry(options.scripts);
 
     const scriptEntry = options.templates?.scriptEntry ?? defaultScriptEntry;
 
