@@ -20,6 +20,7 @@ with smart auto-hosting capabilities.
 - [Application Modes (SPA/MPA)](#-application-modes)
 - [Template Engines](#-template-engines)
 - [Template Data](#-template-data)
+- [Static Files](#-static-files)
 - [Extensibility (Hooks & Plugins)](#-extensibility)
 - [Smart Hosting Adapter](#-smart-hosting-adapter)
 - [Architecture Principles](#-architecture-principles)
@@ -35,6 +36,8 @@ with smart auto-hosting capabilities.
 - **Template Data**: Pass global variables into all templates at compile time via `templates.data`.
 - **React Support (Beta)**: DX with Fast Refresh and Babel pipeline via `reactPreset`.
 - **Hybrid Architectures**: Seamlessly switch between Multi-page (MPA) and Single-page (SPA) modes.
+- **Static File Copying**: Drop any file into `static/` — it is automatically copied to `dist/` in every build,
+  no config required.
 - **Smart Auto-Hosting**: Automatically detects **Vercel, Netlify, and Cloudflare** to generate required routing
   configs.
 - **Enhanced DX**: Recursive file watching (`src/**/*`), automatic browser opening, and detailed infrastructure logging.
@@ -329,6 +332,26 @@ Usage in HTML template:
 
 > Internally, data is injected via `templateParameters` as a function — not a plain object — to safely preserve the
 > default `htmlWebpackPlugin` parameters alongside your custom variables.
+
+---
+
+## 📁 Static Files
+
+Place any file inside a `static/` directory in your project root — it will be copied automatically
+to `dist/` on every build (development and production), with the directory structure preserved.
+
+No configuration is required. If `static/` does not exist, the plugin silently skips.
+
+```
+static/
+  robots.txt          → dist/robots.txt
+  favicon.ico         → dist/favicon.ico
+  images/og-image.png → dist/images/og-image.png
+```
+
+This follows the "Convention over Configuration" principle — useful for files that must be
+served as-is and should not go through Webpack's asset pipeline (e.g. `robots.txt`, `.htaccess`,
+pre-built icons, manifest files).
 
 ---
 

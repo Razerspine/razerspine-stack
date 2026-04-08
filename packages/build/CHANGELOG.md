@@ -8,6 +8,36 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+#### Static file copying — `static/` convention
+
+A new `StaticCopyPlugin` automatically copies all files from a `static/` directory in the
+project root into `dist/`, preserving the directory structure. No configuration is required —
+the plugin follows the "Convention over Configuration" pattern.
+
+- If `static/` does not exist, the plugin silently skips.
+- Nested directories are copied recursively.
+- Output paths mirror the source structure relative to `static/`:
+
+  ```
+  static/
+    robots.txt          → dist/robots.txt
+    favicon.ico         → dist/favicon.ico
+    images/logo.png     → dist/images/logo.png
+  ```
+
+- Active in **both development and production** builds, regardless of the template engine.
+- Runs at `PROCESS_ASSETS_STAGE_ADDITIONAL` (early in the asset pipeline).
+
+```ts
+// No config needed — just create the directory:
+// static/
+//   robots.txt
+//   .htaccess
+//   images/og-image.png
+```
+
+---
+
 #### `devServer` and `prod` overrides in `defineConfig`
 
 Users can now configure the Dev Server and production Webpack options directly inside `defineConfig`
@@ -498,6 +528,9 @@ unchanged from the user's perspective.
 
 ### Changed
 
+- `StaticCopyPlugin` registered as an always-on internal plugin in `createBaseConfig` via
+  `createStaticCopyPlugin()` factory — active in both development and production builds for
+  all template engine types
 - `HostingType` union: removed `'github'`, now `'netlify' | 'vercel' | 'cloudflare' | 'static'`
 - `ConfigOptionType.templates.data` type extended to `Record<string, unknown> | string`
   (string path supported for `pug` only; `html` accepts object only)
