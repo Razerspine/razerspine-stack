@@ -11,6 +11,7 @@ import path from 'path';
 import {assetsRule, htmlRule, htmlStylesRule, pugRule, scriptsRule, stylesRule} from '../rules';
 import {createPugTemplatesPlugin} from '../plugins/pug-templates-plugin';
 import {createHtmlTemplatesPlugin} from '../plugins/html-templates-plugin';
+import {createStaticCopyPlugin} from '../plugins/static-copy-plugin';
 import {BuildPluginType} from '../types';
 import {dedupePlugins, dedupeRules} from '../utils';
 
@@ -235,7 +236,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      * `config.plugins` / `config.entry` before any user hook has a chance to read or
      * further mutate them — and before the final `dedupePlugins` pass cleans up duplicates.
      */
-    const internalBuildPlugins: BuildPluginType[] = [];
+    const internalBuildPlugins: BuildPluginType[] = [
+        createStaticCopyPlugin(),
+    ];
 
     /**
      * PUG templates support

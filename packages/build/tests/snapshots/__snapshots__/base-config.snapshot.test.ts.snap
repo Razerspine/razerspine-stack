@@ -85,6 +85,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot (SPA) 1`] = `
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
+    "StaticCopyPlugin",
     "PugPlugin",
   ],
   "resolve": {
@@ -185,6 +186,7 @@ exports[`createBaseConfig (snapshots) > should match snapshot with buildPlugins 
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
+    "StaticCopyPlugin",
     "PugPlugin",
   ],
   "resolve": {
@@ -272,7 +274,9 @@ exports[`createBaseConfig (snapshots) > should support templates.type = none 1`]
     "clean": true,
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
-  "plugins": [],
+  "plugins": [
+    "StaticCopyPlugin",
+  ],
   "resolve": {
     "alias": {},
     "extensions": [

@@ -105,6 +105,7 @@ exports[`createDevConfig (snapshots) > should match snapshot (SPA) 1`] = `
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
+    "StaticCopyPlugin",
     "PugPlugin",
   ],
   "resolve": {
@@ -224,6 +225,7 @@ exports[`createDevConfig (snapshots) > should match snapshot with devServer over
     "path": "<PROJECT_ROOT>/packages/build/dist",
   },
   "plugins": [
+    "StaticCopyPlugin",
     "PugPlugin",
   ],
   "resolve": {
