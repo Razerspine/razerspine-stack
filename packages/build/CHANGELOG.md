@@ -314,6 +314,58 @@ object featuring the `applyBase(config)` hook.
 - **Entry Point Safety:** Now writes to `config.entry.main` **only if it is not already defined**, preventing it from
   overwriting custom entry points or those defined via other `buildPlugin.applyBase` hooks.
 
+#### `plugins.override` — internal build plugins no longer bypass the override
+
+Previously, when a user passed `plugins.override`, the initial `config.plugins` array was
+correctly replaced with the user-supplied list. However, internal `BuildPluginType` instances
+(`createPugTemplatesPlugin`, `createHtmlTemplatesPlugin`) still ran their `applyBase(config)`
+hook afterward, pushing `PugPlugin`, `HtmlWebpackPlugin`, and `MiniCssExtractPlugin` directly
+into `config.plugins`. This meant `override: []` never produced an empty plugins array —
+internal template plugins would always sneak back in, violating the principle of least surprise.
+
+`createBaseConfig` now skips `applyBase` for all `internalBuildPlugins` when `plugins.override`
+is set. User-supplied `buildPlugins` are unaffected and still run their `applyBase` regardless.
+
+```ts
+// Before: internal plugins always called applyBase — override was partial at best
+// After: override: [] produces exactly what the user expects
+defineConfig({
+  plugins: { override: [new DefinePlugin({ VERSION: '"1.0.0"' })] },
+});
+// config.plugins === [DefinePlugin] — no PugPlugin injected behind the scenes
+```
+
+---
+
+#### `dedupeRules` — rules with same `test` but different loaders are no longer falsely deduplicated
+
+`getRuleKey` previously identified rules by their matching conditions only (`test`, `include`,
+`exclude`, `issuer`, `resourceQuery`). Two rules with the same `test` pattern but entirely
+different loaders — e.g. a `?raw` variant and the standard processing pipeline, or two
+post-processors for the same file type — were treated as the same rule, with the first one
+silently dropped (last-wins).
+
+The key now also covers `use`, `loader`, and `type`. Rules are only considered duplicates when
+both their matching conditions **and** their loader actions are identical.
+
+To replace an internal rule entirely, use `rules.override` (the intended API for full
+replacement).
+
+---
+
+#### `serialize` — cross-realm `RegExp` detection
+
+`serialize` in `dedupe-rules.ts` previously used `value instanceof RegExp` to detect regular
+expressions. In environments where the `RegExp` constructor differs across module realms (e.g.
+complex `npm link` setups or monorepo hoisting edge cases), `instanceof` can return `false` for
+a value that is a valid `RegExp`, causing the serializer to fall through to the object branch
+and produce an incorrect key.
+
+The check is now `Object.prototype.toString.call(value) === '[object RegExp]'`, which is
+realm-safe and returns the correct tag for any `RegExp` instance regardless of its origin.
+
+---
+
 #### `validateOptions` — `scriptEntry` guard for `type: 'pug'` and `type: 'none'`
 
 `templates.scriptEntry` is only meaningful for `type: 'html'`. If provided for `type: 'pug'`
@@ -407,16 +459,16 @@ Injecting an external `entry.main` alongside `pug-plugin` causes a "Module not f
 error when `src/app/main.js` does not exist — which is the expected state for
 Pug-driven projects where scripts are embedded inside `.pug` templates.
 
-Per-type behaviour after this change:
+Per-type behavior after this change:
 
-| `templates.type` | `entry.main` set by         | Template plugin behaviour                                        |
-|:-----------------|-----------------------------|:-----------------------------------------------------------------|
-| `none`           | `createBaseConfig`          | No template plugin; `entry.main` is the only entry.             |
+| `templates.type` | `entry.main` set by         | Template plugin behaviour                                               |
+|:-----------------|-----------------------------|-------------------------------------------------------------------------|
+| `none`           | `createBaseConfig`          | No template plugin; `entry.main` is the only entry.                     |
 | `html`           | `createBaseConfig`          | `HtmlTemplatesPlugin.applyBase` guard skips `entry.main` — already set. |
-| `pug`            | not set                     | `PugPlugin` registers its own entries from `.pug` files.        |
+| `pug`            | not set                     | `PugPlugin` registers its own entries from `.pug` files.                |
 
 `createHtmlTemplatesPlugin.applyBase` retains its existing safety guard and will not
-overwrite `entry.main` if it is already present, so the behaviour for `type: 'html'` is
+overwrite `entry.main` if it is already present, so the behavior for `type: 'html'` is
 unchanged from the user's perspective.
 
 ---
@@ -438,6 +490,9 @@ unchanged from the user's perspective.
   for `type: 'html'` and `type: 'none'` before any `buildPlugin.applyBase` hook runs;
   `type: 'pug'` is intentionally excluded — `pug-plugin` manages its own entry system
 - `markPlugin` helper exported from `utils/dedupe-plugins` for use in internal plugin factories
+- `getDefaultScriptEntry(scripts)` helper extracted from `normalize-options.ts` (exported) and
+  `validate-options.ts` (imported); removes duplicated `scripts === 'ts' ? ... : ...` ternary
+  that previously lived in both files independently
 
 ---
 
