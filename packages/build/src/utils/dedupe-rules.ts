@@ -16,15 +16,14 @@
  * ---
  * Deduplication strategy:
  *
- * Rules are identified by a signature composed of:
- * - test
- * - include
- * - exclude
- * - issuer
- * - resourceQuery
+ * Rules are identified by a signature composed of both matching conditions
+ * and loader actions:
+ * - test, include, exclude, issuer, resourceQuery (matching conditions)
+ * - use, loader, type (loader actions / asset type)
  *
- * This covers the most common rule-matching dimensions used in Webpack
- * and significantly reduces false-positive deduplication.
+ * Including both dimensions prevents false-positive deduplication: two rules
+ * with the same test but different loaders (e.g. ?raw vs. normal processing,
+ * or different post-processors) are kept as distinct entries.
  *
  * Note:
  * This is still a heuristic approach (not a full structural comparison),
@@ -48,8 +47,8 @@ import {RuleSetRule} from 'webpack';
 function serialize(value: unknown): string {
     if (!value) return '';
 
-    if (value instanceof RegExp) {
-        return `__REGEXP__:${value.toString()}`;
+    if (Object.prototype.toString.call(value) === '[object RegExp]') {
+        return `__REGEXP__:${(value as RegExp).toString()}`;
     }
 
     if (Array.isArray(value)) {
@@ -75,15 +74,11 @@ function serialize(value: unknown): string {
 /**
  * Extracts a comparable key from a rule.
  *
- * Uses the most relevant matching fields:
- * - test
- * - include
- * - exclude
- * - issuer
- * - resourceQuery
+ * Combines matching conditions (test, include, exclude, issuer, resourceQuery)
+ * with loader actions (use, loader, type) so that two rules with the same
+ * file-matching conditions but different loaders are NOT treated as duplicates.
  *
- * Produces a stable signature to prevent accidental rule collisions
- * while keeping "last rule wins" semantics.
+ * Use `rules.override` for full rule replacement.
  */
 function getRuleKey(rule: RuleSetRule): string {
     const parts = [
@@ -92,6 +87,9 @@ function getRuleKey(rule: RuleSetRule): string {
         serialize(rule.exclude),
         serialize(rule.issuer),
         serialize(rule.resourceQuery),
+        serialize(rule.use),
+        serialize(rule.loader),
+        serialize(rule.type),
     ];
 
     return parts.join('|');
