@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.0.2] - 2026-04-07
+## [1.0.2] - 2026-04-08
 
 ### Added
 
@@ -330,6 +330,97 @@ Current templates.type is "pug". Remove scriptEntry from your config.
 
 ---
 
+#### `dedupePlugins` — Symbol-based deduplication (replaces `constructor.name` heuristic)
+
+**Problem**
+
+The previous implementation keyed plugin instances on `constructor.name` combined with an
+optional `filename` field read from `(plugin as any).userOptions || (plugin as any).options`.
+This had two critical flaws:
+
+- **False positives for multi-instance plugins.** Many standard Webpack plugins
+  (`DefinePlugin`, `ProvidePlugin`, `CopyWebpackPlugin`, etc.) are legitimately used more
+  than once with different arguments. Because they share the same `constructor.name` and have
+  no `filename` field, all instances after the first were silently dropped.
+
+- **Fragile duck-typing.** Accessing undocumented private properties via `(plugin as any)`
+  is inherently unstable — plugin authors may rename internal fields at any time, which would
+  silently break deduplication for those plugins.
+
+**Solution**
+
+`dedupePlugins` now uses a **Symbol-based tagging** strategy via the new `markPlugin` helper.
+
+Internal plugin instances are tagged with a unique `Symbol` (stored in a side-channel
+`WeakMap`) immediately after construction. `dedupePlugins` checks only for this tag:
+
+- **Tagged plugins** (internal framework instances): deduplicated precisely — only the first
+  occurrence of each unique Symbol is kept.
+- **Untagged plugins** (user-supplied / third-party): always kept as-is, regardless of their
+  `constructor.name` or how many times they appear.
+
+The `WeakMap` storage means there is no memory leak — entries are garbage-collected along
+with their plugin instances.
+
+All internal plugin instances (`PugPlugin`, `HtmlWebpackPlugin`, `MiniCssExtractPlugin`)
+are now tagged with `markPlugin` before being pushed into `config.plugins`.
+
+```ts
+// Before (fragile):
+const key = name; // constructor.name — drops all duplicate DefinePlugin instances
+
+// After (precise):
+const pugPlugin = markPlugin(new PugPlugin({ ... }));
+config.plugins.push(pugPlugin);
+// dedupePlugins keeps the first occurrence, ignores untagged user plugins entirely
+```
+
+---
+
+#### `createBaseConfig` — Webpack-first entry for `type: 'html'` and `type: 'none'`
+
+**Problem**
+
+The previous implementation did not set `config.entry` at all for `templateType: 'none'`,
+causing Webpack to fall back to its default entry (`./src/index.js`). This silently broke
+React/Vue setups where `templates.type: 'none'` is the expected mode and the actual entry
+(e.g. `src/app/main.tsx`) was resolved in `normalizeOptions` but never registered.
+
+**Solution**
+
+`createBaseConfig` now sets `config.entry.main` from `normalized.templates.scriptEntry`
+**before** any `buildPlugin.applyBase` hook runs, but only for `templates.type: 'html'`
+and `templates.type: 'none'`:
+
+```ts
+// Set only for 'html' and 'none' — NOT for 'pug'
+config.entry = {
+    main: {
+        import: [normalized.templates.scriptEntry],
+    },
+};
+```
+
+`templates.type: 'pug'` is intentionally excluded because `pug-plugin`
+(html-bundler-webpack-plugin) manages its own internal entry system from `.pug` files.
+Injecting an external `entry.main` alongside `pug-plugin` causes a "Module not found"
+error when `src/app/main.js` does not exist — which is the expected state for
+Pug-driven projects where scripts are embedded inside `.pug` templates.
+
+Per-type behaviour after this change:
+
+| `templates.type` | `entry.main` set by         | Template plugin behaviour                                        |
+|:-----------------|-----------------------------|:-----------------------------------------------------------------|
+| `none`           | `createBaseConfig`          | No template plugin; `entry.main` is the only entry.             |
+| `html`           | `createBaseConfig`          | `HtmlTemplatesPlugin.applyBase` guard skips `entry.main` — already set. |
+| `pug`            | not set                     | `PugPlugin` registers its own entries from `.pug` files.        |
+
+`createHtmlTemplatesPlugin.applyBase` retains its existing safety guard and will not
+overwrite `entry.main` if it is already present, so the behaviour for `type: 'html'` is
+unchanged from the user's perspective.
+
+---
+
 ### Changed
 
 - `HostingType` union: removed `'github'`, now `'netlify' | 'vercel' | 'cloudflare' | 'static'`
@@ -341,6 +432,12 @@ Current templates.type is "pug". Remove scriptEntry from your config.
 - `stylesRule` is no longer used for `type: 'html'` — replaced by `htmlStylesRule`
 - `rules/index.ts` exports `htmlRule` and `htmlStylesRule`
 - `normalizeOptions` SPA default for `templates.entry` is now type-aware (see Fixed above)
+- `dedupePlugins` strategy changed from `constructor.name + filename duck-typing` to Symbol-based
+  tagging via `markPlugin`; untagged (user-supplied) plugins are never removed
+- `createBaseConfig` now sets `config.entry.main` from `normalized.templates.scriptEntry`
+  for `type: 'html'` and `type: 'none'` before any `buildPlugin.applyBase` hook runs;
+  `type: 'pug'` is intentionally excluded — `pug-plugin` manages its own entry system
+- `markPlugin` helper exported from `utils/dedupe-plugins` for use in internal plugin factories
 
 ---
 
