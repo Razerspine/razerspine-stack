@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import path from 'path';
 import {Configuration, WebpackPluginInstance} from 'webpack';
 import {AppType, BuildPluginType, ModeType} from '../types';
-import {markPlugin} from '../utils';
+import {markPlugin, getHtmlFiles} from '../utils';
 
 type HtmlTemplatesPluginOptions = {
     entry: string;
@@ -295,15 +295,24 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
                 return;
             }
 
-            const files = fs.readdirSync(entry).filter(f => f.endsWith('.html'));
+            /**
+             * Recursively collect all .html files under the entry directory.
+             *
+             * `getHtmlFiles` performs a deep scan, so nested MPA structures like
+             * `src/views/pages/about/index.html` are correctly included.
+             * The output filename preserves the directory structure relative to
+             * the entry root (e.g. `about/index.html`).
+             */
+            const files = getHtmlFiles(entry);
 
-            files.forEach(file => {
-                const name = path.basename(file, '.html');
+            files.forEach(filePath => {
+                const relPath = path.relative(entry, filePath);
+                const filename = relPath.replace(/\\/g, '/');
 
                 (config.plugins as WebpackPluginInstance[]).push(
                     markPlugin(new HtmlWebpackPlugin({
-                        template: path.join(entry, file),
-                        filename: `${name}.html`,
+                        template: filePath,
+                        filename,
                         minify: options.mode === 'production',
                         ...(templateParameters && {templateParameters}),
                     }) as WebpackPluginInstance)

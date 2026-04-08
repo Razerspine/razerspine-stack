@@ -314,6 +314,29 @@ object featuring the `applyBase(config)` hook.
 - **Entry Point Safety:** Now writes to `config.entry.main` **only if it is not already defined**, preventing it from
   overwriting custom entry points or those defined via other `buildPlugin.applyBase` hooks.
 
+#### `HtmlTemplatesPlugin` MPA — recursive directory scan for nested HTML pages
+
+Previously, `createHtmlTemplatesPlugin` located MPA page files using a flat
+`fs.readdirSync(entry).filter(f => f.endsWith('.html'))`, reading only the top level of the
+entry directory. Any HTML file nested inside a sub-directory (e.g.
+`src/views/pages/about/index.html`, `src/views/pages/shop/product.html`) was silently ignored
+and never included in the Webpack build.
+
+The MPA scan now uses `getHtmlFiles(entry)` (recursive deep scan introduced in `src/utils/`),
+which collects `.html` files at every nesting level. Output filenames are computed as paths
+relative to the entry root, preserving the directory structure:
+
+```
+src/views/pages/
+  index.html           → dist/index.html
+  about/index.html     → dist/about/index.html
+  shop/product.html    → dist/shop/product.html
+```
+
+Path separators are normalised to `/` so the behaviour is consistent on Windows as well.
+
+---
+
 #### `plugins.override` — internal build plugins no longer bypass the override
 
 Previously, when a user passed `plugins.override`, the initial `config.plugins` array was

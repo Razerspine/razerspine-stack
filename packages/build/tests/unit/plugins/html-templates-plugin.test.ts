@@ -79,9 +79,17 @@ describe('createHtmlTemplatesPlugin', () => {
 
     it('should apply HtmlWebpackPlugin for each HTML file in MPA', () => {
         vi.mocked(fs.existsSync).mockReturnValue(true);
-        vi.mocked(fs.statSync).mockReturnValue({
-            isDirectory: () => true
-        } as any);
+
+        // Entry directory → isDirectory: true; individual files → isDirectory: false
+        // so that getHtmlFiles does not recurse infinitely into mocked entries.
+        vi.mocked(fs.statSync).mockImplementation((filePath: any) => {
+            const p = String(filePath);
+            const isFile = p.endsWith('.html') || p.endsWith('.txt');
+            return {
+                isDirectory: () => !isFile,
+                isFile: () => isFile,
+            } as any;
+        });
 
         vi.mocked(fs.readdirSync).mockReturnValue([
             'index.html',
