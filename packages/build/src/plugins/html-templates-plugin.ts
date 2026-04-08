@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import path from 'path';
 import {Configuration, WebpackPluginInstance} from 'webpack';
 import {AppType, BuildPluginType, ModeType} from '../types';
+import {markPlugin} from '../utils';
 
 type HtmlTemplatesPluginOptions = {
     entry: string;
@@ -164,9 +165,13 @@ function validateEntry(entry: string, appType: AppType): void {
  * @description Internal build plugin factory that wires up `html-webpack-plugin` for HTML-based template rendering.
  *
  * Returns a {@link BuildPluginType} whose `applyBase` hook declaratively:
- * - Injects the `main` JS/TS script entry into `config.entry` (only if not already defined).
+ * - Guards `entry.main` — does not overwrite it if already set by `createBaseConfig`.
  * - Pushes `MiniCssExtractPlugin` into `config.plugins` in production mode.
  * - Pushes one or more `HtmlWebpackPlugin` instances into `config.plugins`.
+ *
+ * All pushed instances are tagged via {@link markPlugin} so `dedupePlugins` can identify
+ * and remove exact duplicates (including untagged user-supplied instances of the same class
+ * added via `plugins.extend`) without relying on `constructor.name` or private plugin options.
  *
  * All mutations happen on the plain `Configuration` object inside `applyBase`,
  * so every pushed plugin is visible to the standard `dedupePlugins` pass
@@ -193,14 +198,17 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
         /**
          * Declaratively mutates the base `Configuration` object:
          *
-         * 1. Injects `entry.main` with the JS/TS script path — only when `main` is not
-         *    already defined, so user-defined entries from `buildPlugin.applyBase` are preserved.
+         * 1. Guards `entry.main` — only writes it when absent, so the value set
+         *    by `createBaseConfig` (for `type: 'html'`) or by an earlier
+         *    `buildPlugin.applyBase` hook is never overwritten.
          *
-         * 2. Pushes `MiniCssExtractPlugin` into `config.plugins` (production only).
+         * 2. Pushes `MiniCssExtractPlugin` into `config.plugins` (production only),
+         *    tagged via {@link markPlugin}.
          *    In development, `style-loader` from `htmlStylesRule` handles CSS injection —
          *    no extraction plugin is needed.
          *
-         * 3. Pushes `HtmlWebpackPlugin` instance(s) into `config.plugins`:
+         * 3. Pushes `HtmlWebpackPlugin` instance(s) into `config.plugins`, each tagged
+         *    via {@link markPlugin}:
          *    - SPA → one instance targeting `entry` → `index.html`
          *    - MPA → one instance per `.html` file in the `entry` directory
          *
@@ -211,20 +219,16 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
             config.plugins = config.plugins ?? [];
 
             /**
-             * Inject the JS/TS script entry.
+             * Guard: only set `entry.main` when it has not already been set.
              *
-             * `html-webpack-plugin` only generates HTML — it does not create a script bundle.
-             * Webpack needs an explicit JS/TS entry to build the bundle that gets injected.
-             *
-             * We use the `main` entry name convention so `html-webpack-plugin` picks it up
-             * automatically and injects the resulting script tag into the output HTML.
+             * `createBaseConfig` writes `entry.main` from `normalized.templates.scriptEntry`
+             * before this hook runs for `type: 'html'` — so under normal conditions this
+             * block is a no-op. It exists as a safety net for edge cases where `config.entry`
+             * arrives in an unexpected shape.
              *
              * Safety: webpack `entry` can be a string, array, object, or function.
              * We only spread when it is a plain object. Any other format (string, array,
              * function) is replaced with `{ main: ... }` because it cannot be merged safely.
-             *
-             * `main` is only written when absent — this preserves entries set by earlier
-             * `buildPlugin.applyBase` hooks and avoids silently overwriting user intent.
              */
             const existingEntry = config.entry;
             const isPlainObject =
@@ -251,24 +255,26 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
              * CSS into a separate file. The plugin itself must also be present to emit
              * the `.css` asset and let `html-webpack-plugin` inject the `<link>` tag.
              *
-             * Pushed into `config.plugins` so `dedupePlugins` can see and deduplicate it
-             * if the user has already added their own instance via `plugins.extend`.
+             * Tagged with {@link markPlugin} so `dedupePlugins` can detect exact duplicates
+             * (including untagged user-supplied copies added via `plugins.extend`).
              */
             if (options.mode === 'production') {
                 const MiniCssExtractPlugin = resolveMiniCssExtractPlugin();
 
                 config.plugins.push(
-                    new MiniCssExtractPlugin({
+                    markPlugin(new MiniCssExtractPlugin({
                         filename: 'css/[name].[contenthash:8].css',
-                    }) as WebpackPluginInstance
+                    }) as WebpackPluginInstance)
                 );
             }
 
             /**
              * HtmlWebpackPlugin instance(s).
              *
-             * Each instance is pushed into `config.plugins` so it is visible for
-             * `dedupePlugins` and can be inspected or replaced by the user.
+             * Each instance is tagged with {@link markPlugin} and pushed into `config.plugins`
+             * so it is visible for precise deduplication (including removal of untagged copies
+             * of the same class added via `plugins.extend`) and can be replaced by the user
+             * via `plugins.override`.
              */
             const HtmlWebpackPlugin = resolveHtmlPlugin();
 
@@ -278,12 +284,12 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
 
             if (options.appType === 'spa') {
                 config.plugins.push(
-                    new HtmlWebpackPlugin({
+                    markPlugin(new HtmlWebpackPlugin({
                         template: entry,
                         filename: 'index.html',
                         minify: options.mode === 'production',
                         ...(templateParameters && {templateParameters}),
-                    }) as WebpackPluginInstance
+                    }) as WebpackPluginInstance)
                 );
 
                 return;
@@ -295,12 +301,12 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
                 const name = path.basename(file, '.html');
 
                 (config.plugins as WebpackPluginInstance[]).push(
-                    new HtmlWebpackPlugin({
+                    markPlugin(new HtmlWebpackPlugin({
                         template: path.join(entry, file),
                         filename: `${name}.html`,
                         minify: options.mode === 'production',
                         ...(templateParameters && {templateParameters}),
-                    }) as WebpackPluginInstance
+                    }) as WebpackPluginInstance)
                 );
             });
         },

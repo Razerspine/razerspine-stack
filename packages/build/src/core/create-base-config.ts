@@ -21,7 +21,33 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * Supports controlled extension/override of internal rules and plugins.
  *
  * ---
- * Template system:
+ * ## Entry point strategy
+ *
+ * `config.entry.main` is set from `normalized.templates.scriptEntry` **only for
+ * `templates.type: 'html'` and `templates.type: 'none'`**.
+ *
+ * It is intentionally **not set for `templates.type: 'pug'`** because `pug-plugin`
+ * (html-bundler-webpack-plugin) manages its own internal entry system — it reads
+ * `.pug` files as entry points and builds the JS/CSS bundles internally.
+ * Injecting an external `entry.main` alongside `pug-plugin` entries causes a
+ * "Module not found" error at build time when `src/app/main.js` does not exist
+ * in the project (which is the expected setup for Pug-driven projects).
+ *
+ * Per-type behaviour:
+ * - `none`  → `entry.main` set here; no template plugin registered.
+ *             Required for React/Vue setups that own their own HTML output.
+ * - `html`  → `entry.main` set here; `HtmlWebpackPlugin` injects the compiled
+ *             bundle into the HTML template automatically.
+ * - `pug`   → `entry` is NOT set; `pug-plugin` registers its own entries via
+ *             `applyBase`. The `scriptEntry` in `normalizeOptions` is resolved
+ *             but only used to validate that a sensible default exists — it is
+ *             not registered as a Webpack entry in this mode.
+ *
+ * `createHtmlTemplatesPlugin.applyBase` contains a safety guard that will not
+ * overwrite `entry.main` if it was already set.
+ *
+ * ---
+ * ## Template system
  *
  * The build system supports multiple template engines via `templates.type`:
  *
@@ -32,7 +58,7 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * This allows flexible integration with different rendering strategies.
  *
  * ---
- * Rules system:
+ * ## Rules system
  *
  * Internal rules pipeline:
  * - assets
@@ -54,7 +80,7 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * - fully override rules (`rules.override`)
  *
  * ---
- * 🔌 Plugins system:
+ * ## Plugins system
  *
  * Internal plugins are conditionally applied based on template type.
  *
@@ -65,12 +91,23 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * ⚠️ Override should be used with caution — it disables all internal plugins.
  *
  * ---
+ * ## Plugin deduplication
+ *
+ * All internal plugin instances are tagged via `markPlugin` before being pushed into
+ * `config.plugins`. `dedupePlugins` uses a hybrid strategy:
+ * - Tagged instances are deduplicated by their unique Symbol (first-wins).
+ * - Untagged (user-supplied) instances are removed only when a tagged instance of
+ *   the same class already exists, preventing double-registration via `plugins.extend`.
+ * - Purely user-supplied plugin classes (no internal counterpart) are never touched.
+ *
+ * ---
  * @param {ConfigOptionType} options - User-provided options for the build system.
  * @returns {Configuration} The generated base Webpack configuration.
  */
 export function createBaseConfig(options: ConfigOptionType): Configuration {
     const normalized = resolveOptions(options);
     const templateType = normalized.templates?.type ?? 'pug';
+
     /**
      * Rules (core pipeline)
      *
@@ -123,7 +160,7 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     /**
      * Plugins (core pipeline)
      *
-     * Template plugins (pug, html) are no longer pushed here directly.
+     * Template plugins (pug, html) are not pushed here directly.
      * They are registered as internal BuildPlugins below and push their
      * webpack instances into `config.plugins` through `applyBase` hooks.
      * This makes them visible to `dedupePlugins` and `plugins.override`.
@@ -141,9 +178,37 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
         plugins.push(...options.plugins.extend);
     }
 
+    /**
+     * Webpack entry registration for `html` and `none` template types.
+     *
+     * `entry.main` is set from `normalized.templates.scriptEntry` only when the
+     * template engine does NOT manage entries itself:
+     *
+     * - `none` → no template plugin; Webpack needs an explicit entry to build the bundle.
+     * - `html` → `html-webpack-plugin` generates HTML but requires a JS/TS entry for
+     *            the script bundle that gets injected into the output.
+     *
+     * For `pug`, `pug-plugin` (html-bundler-webpack-plugin) registers its own internal
+     * entry points from the `.pug` files. Injecting an external `entry.main` would cause
+     * a "Module not found" error when `src/app/main.js` does not exist — which is the
+     * expected state for Pug-driven projects that embed scripts inside `.pug` templates.
+     *
+     * `createHtmlTemplatesPlugin.applyBase` has a safety guard and will not overwrite
+     * `entry.main` if it is already present.
+     */
+    const entry: Configuration['entry'] | undefined =
+        templateType === 'html' || templateType === 'none'
+            ? {
+                main: {
+                    import: [normalized.templates.scriptEntry as string],
+                },
+            }
+            : undefined;
+
     const config: Configuration = {
         mode: normalized.mode,
         context: process.cwd(),
+        ...(entry !== undefined && {entry}),
         output: {
             path: path.join(process.cwd(), 'dist'),
             clean: true,
@@ -177,6 +242,9 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      *
      * Registered as an internal BuildPlugin so `applyBase` pushes PugPlugin into
      * `config.plugins` declaratively — visible to `dedupePlugins` and `plugins.override`.
+     *
+     * `pug-plugin` manages its own entry system — `entry.main` is intentionally NOT set
+     * for this template type (see entry registration block above).
      */
     if (templateType === 'pug') {
         if (!normalized.templates.entry) {
@@ -197,14 +265,14 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      * HTML templates support (HtmlWebpackPlugin wrapper)
      *
      * Registered as an internal BuildPlugin so `applyBase` declaratively:
-     * - injects `entry.main` (JS/TS script entry)
+     * - guards against overwriting `entry.main` (already set above for `html` type)
      * - pushes MiniCssExtractPlugin (production only)
      * - pushes HtmlWebpackPlugin instance(s)
      *
      * Works together with:
      * - `htmlRule`       → enables `import template from './component.html'` in JS/TS (compile mode)
      * - `htmlStylesRule` → extracts CSS via style-loader (dev) or MiniCssExtractPlugin (prod)
-     * - `scriptEntry`    → registered as the Webpack entry so the bundle is built and injected
+     * - `entry.main`     → registered above as the Webpack entry so the bundle is built and injected
      */
     if (templateType === 'html') {
         if (!normalized.templates.entry) {

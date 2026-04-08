@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import path from 'path';
 import {Configuration, WebpackPluginInstance} from 'webpack';
 import {AppType, BuildPluginType, ModeType} from '../types';
+import {markPlugin} from '../utils';
 
 type PugTemplatesPluginOptions = {
     entry: string;
@@ -108,6 +109,14 @@ function validateEntry(entry: string, appType: AppType): void {
  * This keeps the plugin visible and dedup-able by the standard `dedupePlugins` pass
  * in `createBaseConfig` — no imperative `.apply(compiler)` calls are needed.
  *
+ * The `PugPlugin` instance is tagged via {@link markPlugin} before being pushed, so
+ * `dedupePlugins` can precisely identify and remove duplicates without relying on
+ * fragile constructor-name or private-option heuristics.
+ *
+ * `pug-plugin` manages its own internal entry system — `createBaseConfig` does NOT
+ * set `config.entry.main` when `templates.type` is `'pug'`. This factory is the
+ * sole responsible party for registering Pug-driven entry points.
+ *
  * Supports:
  * - SPA mode: single `.pug` entry file → outputs `index.html`
  * - MPA mode: directory of `.pug` files → each file outputs its own `.html`,
@@ -133,6 +142,13 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
         /**
          * Declaratively pushes the `PugPlugin` webpack instance into `config.plugins`.
          *
+         * The instance is tagged with {@link markPlugin} so that `dedupePlugins` can
+         * identify it precisely — without relying on `constructor.name` or private
+         * option properties that may change across plugin versions.
+         *
+         * Additionally, `dedupePlugins` will remove any untagged instance of the same
+         * class (e.g. one added via `plugins.extend`) to prevent double-registration.
+         *
          * Running inside `applyBase` means the instance lands in the same array that
          * `dedupePlugins` will scan at the end of `createBaseConfig` — making it fully
          * visible and replaceable by the user via `plugins.override`.
@@ -146,7 +162,7 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
 
             const pluginEntry = options.appType === 'spa' ? {index: entry} : entry;
 
-            const pugPlugin = new PugPlugin({
+            const pugPlugin = markPlugin(new PugPlugin({
                 entry: pluginEntry,
 
                 filename: ({chunk}: any) => {
@@ -196,7 +212,7 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
                  * @see https://webdiscus.github.io/html-bundler-docs/plugin-options-data
                  */
                 data: options.data,
-            }) as WebpackPluginInstance;
+            }) as WebpackPluginInstance);
 
             config.plugins = config.plugins ?? [];
             config.plugins.push(pugPlugin);

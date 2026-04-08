@@ -202,6 +202,13 @@ exports[`createBaseConfig (snapshots) > should match snapshot with buildPlugins 
 exports[`createBaseConfig (snapshots) > should support templates.type = none 1`] = `
 {
   "context": "<PROJECT_ROOT>/packages/build",
+  "entry": {
+    "main": {
+      "import": [
+        "<PROJECT_ROOT>/packages/build/src/app/main.ts",
+      ],
+    },
+  },
   "mode": "development",
   "module": {
     "rules": [
