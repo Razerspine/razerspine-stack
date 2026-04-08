@@ -33,7 +33,7 @@ import {dedupePlugins, dedupeRules} from '../utils';
  * "Module not found" error at build time when `src/app/main.js` does not exist
  * in the project (which is the expected setup for Pug-driven projects).
  *
- * Per-type behaviour:
+ * Per-type behavior:
  * - `none`  → `entry.main` set here; no template plugin registered.
  *             Required for React/Vue setups that own their own HTML output.
  * - `html`  → `entry.main` set here; `HtmlWebpackPlugin` injects the compiled
@@ -304,8 +304,19 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
         plugin.setup?.({options: normalized});
     }
 
-    // Apply base config hooks
-    for (const plugin of allBuildPlugins) {
+    /**
+     * Apply base config hooks.
+     *
+     * When `plugins.override` is set, internal build plugins are excluded from
+     * the `applyBase` pass. This prevents template plugins (Pug, Html) from
+     * pushing their webpack plugin instances into `config.plugins` and silently
+     * bypassing the user's explicit override.
+     *
+     * User-supplied `buildPlugins` always run regardless of `plugins.override`.
+     */
+    const pluginsToApplyBase = options.plugins?.override ? buildPlugins : allBuildPlugins;
+
+    for (const plugin of pluginsToApplyBase) {
         plugin.applyBase?.(config);
     }
 
