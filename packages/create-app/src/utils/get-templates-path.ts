@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 /**
  * Gets the absolute path to the templates directory ('templates' folder in the package root).
