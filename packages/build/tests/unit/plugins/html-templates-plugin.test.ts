@@ -157,6 +157,45 @@ describe('createHtmlTemplatesPlugin', () => {
         expect(filenames).toContain('build.html');
     });
 
+    it('should not flatten when file name is only a suffix of the directory name (endsWith false positive)', () => {
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+
+        const mockFiles: Record<string, string[]> = {
+            'pages': ['my-layout'],
+            'pages/my-layout': ['out.html'],
+        };
+
+        vi.mocked(fs.statSync).mockImplementation((filePath: any) => {
+            const p = String(filePath).replace(/\\/g, '/');
+            const isFile = p.endsWith('.html');
+            return {
+                isDirectory: () => !isFile,
+                isFile: () => isFile,
+            } as any;
+        });
+
+        vi.mocked(fs.readdirSync).mockImplementation((dirPath: any) => {
+            const p = String(dirPath).replace(/\\/g, '/');
+            const key = Object.keys(mockFiles).find(k => p.endsWith(k));
+            return (key ? mockFiles[key] : []) as any;
+        });
+
+        const plugin = createHtmlTemplatesPlugin({
+            entry: 'pages',
+            scriptEntry: 'src/app/main.ts',
+            mode: 'development',
+            appType: 'mpa'
+        });
+
+        const config: any = {};
+        plugin.applyBase!(config);
+
+        expect(config.plugins.length).toBe(1);
+        const filename = (config.plugins[0].userOptions || config.plugins[0].options).filename;
+        // "my-layout".endsWith("out") === true — must NOT produce "my-layout.html"
+        expect(filename).toBe('my-layout/out.html');
+    });
+
     it('should pass data via templateParameters function and merge correctly', () => {
         vi.mocked(fs.existsSync).mockReturnValue(true);
         vi.mocked(fs.statSync).mockReturnValue({

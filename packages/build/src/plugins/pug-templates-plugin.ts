@@ -180,7 +180,9 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
                     }
 
                     const chunkName: string = pathData.chunk.name;
-                    const parsedPath = path.parse(chunkName);
+                    // Chunk names always use POSIX separators — use path.posix to parse correctly
+                    // on all platforms (Windows path.parse would expect backslashes).
+                    const parsedPath = path.posix.parse(chunkName);
 
                     if (parsedPath.name === 'home') {
                         return 'index.html';
@@ -190,7 +192,11 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
                         return '404.html';
                     }
 
-                    if (parsedPath.dir && parsedPath.dir.endsWith(parsedPath.name)) {
+                    // Exact match of the immediate parent directory name against the file name.
+                    // Using basename() instead of endsWith() to avoid false positives where the
+                    // file name is a suffix of the directory name (e.g. my-layout/out → "out"
+                    // would erroneously match "my-layout" with endsWith).
+                    if (parsedPath.dir && path.posix.basename(parsedPath.dir) === parsedPath.name) {
                         return `${parsedPath.dir}.html`;
                     }
 

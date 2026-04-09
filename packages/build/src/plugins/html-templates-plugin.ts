@@ -304,23 +304,29 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
             const files = getHtmlFiles(entry);
 
             files.forEach(filePath => {
-                const relPath = path.relative(entry, filePath);
-                const parsedPath = path.parse(relPath);
+                // Normalize to POSIX separators before parsing so path.posix.parse
+                // works correctly on Windows where path.relative() uses backslashes.
+                const relPath = path.relative(entry, filePath).replace(/\\/g, '/');
+                const parsedPath = path.posix.parse(relPath);
 
-                let filename = relPath.replace(/\\/g, '/');
+                let filename = relPath;
 
                 /**
                  * Smart routing normalizations:
                  * - Any file named 'home' → 'index.html' (site root)
                  * - Any file named '404'  → '404.html'   (error page at root)
                  * - Redundant dir/file pairs (e.g. 'about/about.html') → 'about.html'
+                 *
+                 * Uses path.posix.basename() instead of endsWith() to avoid false positives
+                 * where the file name is a suffix of the directory name
+                 * (e.g. 'my-layout/out.html': "my-layout".endsWith("out") → true, incorrect).
                  */
                 if (parsedPath.name === 'home') {
                     filename = 'index.html';
                 } else if (parsedPath.name === '404') {
                     filename = '404.html';
-                } else if (parsedPath.dir && parsedPath.dir.endsWith(parsedPath.name)) {
-                    filename = `${parsedPath.dir.replace(/\\/g, '/')}.html`;
+                } else if (parsedPath.dir && path.posix.basename(parsedPath.dir) === parsedPath.name) {
+                    filename = `${parsedPath.dir}.html`;
                 }
 
                 (config.plugins as WebpackPluginInstance[]).push(

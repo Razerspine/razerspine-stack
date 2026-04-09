@@ -66,6 +66,12 @@ describe('createPugTemplatesPlugin', () => {
             const filename = getFilenameFunction();
             expect(filename({chunk: {name: 'contact'}})).toBe('contact.html');
         });
+
+        it('does not flatten when file name is only a suffix of the directory name (endsWith false positive)', () => {
+            const filename = getFilenameFunction();
+            // "my-layout".endsWith("out") === true, but they are NOT a redundant pair
+            expect(filename({chunk: {name: 'my-layout/out'}})).toBe('my-layout/out.html');
+        });
     });
 
     it('should throw if SPA entry is not a file', () => {
