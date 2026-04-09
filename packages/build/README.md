@@ -47,7 +47,7 @@ with smart auto-hosting capabilities.
   the same component pattern works regardless of template engine.
 - **Lazy Peer Dependencies**: Peer dependencies are resolved at runtime only when actually used — no install errors when
   switching template engines.
-- **Rock Solid**: Covered by 92+ Unit, Integration, E2E, and Snapshot tests.
+- **Rock Solid**: Covered by 100+ Unit, Integration, E2E, and Snapshot tests.
 
 ---
 
@@ -179,12 +179,22 @@ Configure how your application structure is processed using the `appType` option
 
 - `templates.entry` must be a directory (e.g., `src/views/pages`).
 - All `.html` (or `.pug`) files in the directory are scanned **recursively**, including nested subdirectories.
-  Output paths mirror the source structure:
+- Output filenames are resolved with **smart routing normalization**, so both flat and per-folder
+  page architectures work correctly with `webpack-dev-server`:
+
+  | Source file                         | Output                  |
+  |-------------------------------------|-------------------------|
+  | `home.pug` or `home/home.pug`       | `dist/index.html`       |
+  | `404.pug` or `404/404.pug`          | `dist/404.html`         |
+  | `build/build.pug` *(dir = file)*    | `dist/build.html`       |
+  | `about/index.html` *(names differ)* | `dist/about/index.html` |
+
   ```
   src/views/pages/
-    index.html           → dist/index.html
-    about/index.html     → dist/about/index.html
-    shop/product.html    → dist/shop/product.html
+    home/home.pug        → dist/index.html
+    404/404.pug          → dist/404.html
+    build/build.pug      → dist/build.html
+    about/index.pug      → dist/about/index.html
   ```
 
 ### SPA

@@ -560,6 +560,48 @@ unchanged from the user's perspective.
 
 ---
 
+#### MPA output path normalization — smart routing for nested page entries
+
+**Problem**
+
+When using a directory as `templates.entry` (e.g. `src/views/pages/`) with an architecture
+where each page lives in its own folder (e.g. `home/home.pug`, `404/404.pug`), Webpack was
+generating output files that mirror the source structure exactly:
+
+```
+src/views/pages/home/home.pug  → dist/home/home.html
+src/views/pages/404/404.pug   → dist/404/404.html
+src/views/pages/build/build.pug → dist/build/build.html
+```
+
+This broke `webpack-dev-server` in development because `historyApiFallback` expects
+`index.html` and `404.html` at the `dist/` root. The dev server returned 404 for all
+routes, and URLs became inconvenient (`http://localhost:4323/home/home.html`).
+
+**Solution**
+
+Both `PugTemplatesPlugin` and `HtmlTemplatesPlugin` now apply **smart routing normalization**
+when resolving MPA output filenames:
+
+| Source path | Output filename |
+|:---|:---|
+| `home.pug` / `home/home.pug` | `index.html` |
+| `404.pug` / `404/404.pug` | `404.html` |
+| `build/build.pug` *(dir name = file name)* | `build.html` |
+| `about/index.pug` *(different names)* | `about/index.html` |
+
+Rules applied in order (first match wins):
+1. File base name is `home` → `index.html` (regardless of nesting depth)
+2. File base name is `404` → `404.html` (regardless of nesting depth)
+3. Parent directory name equals file base name → `{dir}.html` (flattens redundant structure)
+4. All other paths → preserved as-is
+
+`PugTemplatesPlugin` implements this via the `filename` callback on `PugPlugin` options;
+`HtmlTemplatesPlugin` applies the same logic inside the `getHtmlFiles` loop before
+constructing each `HtmlWebpackPlugin` instance.
+
+---
+
 ### Changed
 
 - `StaticCopyPlugin` registered as an always-on internal plugin in `createBaseConfig` via
