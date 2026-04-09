@@ -20,7 +20,7 @@ Create a modern webpack project using production-ready **SPA or MPA templates** 
 - [Template Resolution](#template-resolution)
 - [Testing](#testing)
 - [How It Works](#how-it-works)
-- [Changelog (1.0.0)](#changelog-100)
+- [Changelog](#changelog)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -202,7 +202,8 @@ Highlights:
 
 ## How It Works
 
-The CLI resolves and loads the template before the pipeline starts, then passes the ready template object directly into the first step:
+The CLI resolves and loads the template before the pipeline starts, then passes the ready template object directly into
+the first step:
 
 ```text
 CLI layer
