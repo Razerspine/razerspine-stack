@@ -25,6 +25,10 @@ export function validateOptions(options: ConfigOptionType): void {
         throw new Error(`[build] Invalid appType "${appType}". Expected "spa" or "mpa".`);
     }
 
+    if (appType === 'mpa' && !options.templates?.entry && templateType !== 'none') {
+        throw new Error('[build] templates.entry is required for MPA');
+    }
+
     if (options.templates?.type === 'none' && options.templates?.entry) {
         throw new Error('[build] templates.entry should not be provided when templates.type is "none"');
     }
