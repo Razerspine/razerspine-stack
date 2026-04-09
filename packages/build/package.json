@@ -56,7 +56,8 @@
     "test:snapshots": "vitest run tests/snapshots",
     "test:e2e:prepare": "npm install --prefix tests/fixtures/mpa && npm install --prefix tests/fixtures/spa",
     "test:e2e": "vitest run tests/e2e",
-    "test:e2e:full": "npm run test:e2e:prepare && npm run test:e2e"
+    "test:e2e:full": "npm run test:e2e:prepare && npm run test:e2e",
+    "test:full": "npm run build && npm run test:e2e:prepare && npm run test"
   },
   "peerDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",

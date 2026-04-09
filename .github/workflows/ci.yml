@@ -35,7 +35,7 @@ jobs:
       - name: Build monorepo packages
         run: npm run build
 
-      - name: 'Test: @razerspine/build (E2E)'
+      - name: 'Test: @razerspine/build (Unit & E2E & Integration & Snapshots)'
         run: npm run test:build
 
       - name: 'Test: @razerspine/runtime (Unit & E2E)'
