@@ -89,10 +89,11 @@ export function installDeps(
     console.log(`📦 Installing dependencies using ${pm}...`);
 
     return new Promise((resolve, reject) => {
-        const child = spawn(cmd, args, {
+        const isWindows = process.platform === 'win32';
+        const child = spawn(isWindows ? `${cmd}.cmd` : cmd, args, {
             cwd,
             stdio: 'inherit',
-            shell: process.platform === 'win32',
+            shell: false,
         });
 
         child.on('error', (err) => {
@@ -103,13 +104,13 @@ export function installDeps(
             );
         });
 
-        child.on('close', (code) => {
+        child.on('close', (code, signal) => {
             if (code === 0) {
                 resolve();
+            } else if (code === null) {
+                reject(new Error(`${pm} install was terminated by signal ${signal}`));
             } else {
-                reject(
-                    new Error(`${pm} install failed with exit code ${code}`)
-                );
+                reject(new Error(`${pm} install failed with exit code ${code}`));
             }
         });
     });

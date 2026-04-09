@@ -34,7 +34,7 @@ async function run(): Promise<void> {
 
         await createApp({
             projectName: cli.projectName,
-            templateKey: cli.template,
+            template: cli.template,
             appType: cli.appType,
             noInstall: cli.noInstall,
             dryRun: cli.dryRun,

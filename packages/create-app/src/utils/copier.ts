@@ -10,7 +10,8 @@ const IGNORED_FILES = [
     'package-lock.json',
     'pnpm-lock.yaml',
     'yarn.lock',
-    'bun.lockb'
+    'bun.lockb',
+    'bun.lock'
 ];
 
 /**

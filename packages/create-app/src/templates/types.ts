@@ -2,6 +2,11 @@
  * Atomic technology types supported by our templates.
  */
 export type AppType = 'mpa' | 'spa';
+
+/**
+ * Template key type (string-based, derived from filesystem directory name).
+ */
+export type TemplateKey = string;
 export type StyleType = 'scss' | 'less';
 export type ScriptType = 'js' | 'ts';
 
