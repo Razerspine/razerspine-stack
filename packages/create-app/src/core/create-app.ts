@@ -5,7 +5,8 @@ import {
     prepareDirectoryStep,
     copyTemplateStep,
     installDepsStep,
-    patchPackageStep
+    patchPackageStep,
+    writeGitignoreStep
 } from '../steps';
 import {log} from '../utils';
 import {CreateAppOptions, TemplateResolvedContext} from './types';
@@ -43,12 +44,14 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
      * 1. prepareDirectoryStep  — TemplateResolvedContext -> TemplateResolvedContext
      * 2. copyTemplateStep      — TemplateResolvedContext -> TemplateResolvedContext
      * 3. patchPackageStep      — TemplateResolvedContext -> TemplateResolvedContext
-     * 4. installDepsStep       — TemplateResolvedContext -> TemplateResolvedContext
+     * 4. writeGitignoreStep    — TemplateResolvedContext -> TemplateResolvedContext
+     * 5. installDepsStep       — TemplateResolvedContext -> TemplateResolvedContext
      */
     await Pipeline.create<TemplateResolvedContext>()
         .addStep(prepareDirectoryStep(spinner))
         .addStep(copyTemplateStep(spinner))
         .addStep(patchPackageStep(spinner))
+        .addStep(writeGitignoreStep(spinner))
         .addStep(installDepsStep(spinner))
         .run(ctx);
 
