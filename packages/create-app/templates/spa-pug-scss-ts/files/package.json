@@ -14,7 +14,7 @@
     "test:build:cloudflare": "CF_PAGES=true npm run build"
   },
   "devDependencies": {
-    "@razerspine/build": "^1.0.0",
+    "@razerspine/build": "^1.0.2",
     "@types/node": "^25.1.0",
     "autoprefixer": "^10.4.23",
     "css-loader": "^6.10.0",
@@ -36,7 +36,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "@razerspine/runtime": "^1.0.1",
-    "@razerspine/ui": "^1.0.0"
+    "@razerspine/runtime": "^1.0.2",
+    "@razerspine/ui": "^1.0.2"
   }
 }
