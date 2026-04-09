@@ -87,11 +87,15 @@ export function createDevConfig(
     }
 
     /**
-     * Re-dedupe plugins after merge and buildPlugins mutations
+     * Re-dedupe plugins after merge and buildPlugins mutations.
+     * Type guard passes both object instances and function-style plugins.
      */
     if (finalConfig.plugins) {
         finalConfig.plugins = dedupePlugins(
-            finalConfig.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+            finalConfig.plugins.filter(
+                (p): p is WebpackPluginInstance =>
+                    (typeof p === 'object' && p !== null) || typeof p === 'function'
+            )
         );
     }
 

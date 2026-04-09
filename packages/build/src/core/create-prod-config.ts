@@ -88,10 +88,14 @@ export function createProdConfig(
      * The hybrid strategy in `dedupePlugins` removes untagged instances of classes
      * that are already covered by a tagged instance (e.g. `HostingRoutingPlugin`
      * added via `plugins.extend` alongside the internal tagged instance).
+     * Type guard passes both object instances and function-style plugins.
      */
     if (finalConfig.plugins) {
         finalConfig.plugins = dedupePlugins(
-            finalConfig.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+            finalConfig.plugins.filter(
+                (p): p is WebpackPluginInstance =>
+                    (typeof p === 'object' && p !== null) || typeof p === 'function'
+            )
         );
     }
 

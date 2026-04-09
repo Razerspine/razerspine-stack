@@ -341,7 +341,10 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
      */
     if (config.plugins) {
         config.plugins = dedupePlugins(
-            config.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+            config.plugins.filter(
+                (p): p is WebpackPluginInstance =>
+                    (typeof p === 'object' && p !== null) || typeof p === 'function'
+            )
         );
     }
 

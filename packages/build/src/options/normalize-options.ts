@@ -76,7 +76,12 @@ export function normalizeOptions(
             scriptEntry: path.resolve(process.cwd(), scriptEntry),
             data: options.templates?.data,
         },
+        /**
+         * Extracts and normalizes the resolve configuration, ensuring
+         * user-provided resolve options like extensions are preserved.
+         */
         resolve: {
+            ...options.resolve,
             alias: options.resolve?.alias ?? {},
         },
     };
