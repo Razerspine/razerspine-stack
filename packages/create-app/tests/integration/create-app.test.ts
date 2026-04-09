@@ -32,6 +32,7 @@ vi.mock('../../src/steps', (): typeof StepsNamespace => {
         prepareDirectoryStep: createStepMock() as any,
         copyTemplateStep: createStepMock() as any,
         patchPackageStep: createStepMock() as any,
+        writeGitignoreStep: createStepMock() as any,
         installDepsStep: createStepMock() as any,
     };
 });
