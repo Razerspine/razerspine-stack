@@ -2,6 +2,13 @@
 
 ## [1.0.2] - 2026-04-09
 
+### Added
+
+- **`.gitignore` generation** (`steps/write-gitignore.step.ts`, `utils/write-gitignore.ts`): the pipeline now
+  automatically writes a `.gitignore` file into every generated project. The file covers `node_modules/`, `dist/`,
+  log files, `.env*` variants, common editor directories, and OS metadata files. The step runs after `patchPackageStep`
+  and before dependency installation; it is a no-op in `--dry-run` mode.
+
 ### Fixed
 
 - **Entry point error handling** (`src/index.ts`): replaced `.then()` (no-op) with `.catch()` — ensures top-level fatal

@@ -216,6 +216,8 @@ Pipeline
   ↓
   patch package.json
   ↓
+  write .gitignore
+  ↓
   install dependencies
 ```
 
@@ -225,6 +227,7 @@ Pipeline
 
 ### [1.0.2] — Latest
 
+- Added automatic `.gitignore` generation for every scaffolded project (`node_modules/`, `dist/`, `.env*`, logs, editor dirs)
 - Fixed `packageManager` field: now injects exact version (e.g. `pnpm@9.1.0`) instead of invalid `@latest`
 - Fixed `bun.lock` (Bun 1.2+) being copied into generated projects
 - Fixed signal-terminated install process reporting misleading `"exit code null"`
