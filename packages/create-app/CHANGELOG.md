@@ -1,12 +1,56 @@
 # Changelog
 
+## [1.0.2] - 2026-04-09
+
+### Fixed
+
+- **Entry point error handling** (`src/index.ts`): replaced `.then()` (no-op) with `.catch()` — ensures top-level fatal
+  errors are never silently swallowed.
+
+- **`packageManager` field in generated `package.json`** (`utils/patch-package.ts`): field was set to `"${pm}@latest"`,
+  which is invalid for corepack. It now uses `execSync("${pm} --version")` to inject the exact installed version (e.g.
+  `pnpm@9.1.0`). If version detection fails the field is skipped with a warning instead of writing a broken value.
+
+- **`bun.lock` not filtered during template copy** (`utils/copier.ts`): `IGNORED_FILES` contained `bun.lockb` but not
+  `bun.lock` (Bun 1.2+ format). The new entry is now included so lock files are never copied into generated projects.
+
+- **Signal-terminated install process** (`utils/installer.ts`): `close` event handler did not distinguish between a
+  normal exit (`code !== 0`) and signal termination (`code === null`). The error message now correctly reports
+  `"terminated by signal SIGTERM"` instead of the misleading `"exit code null"`.
+
+- **`JSON.parse()` without error handling** (`templates/template-loader.ts`, `utils/patch-package.ts`): bare
+  `JSON.parse()` calls would throw a native `SyntaxError` with a raw stack trace on malformed files. Both are now
+  wrapped in `try/catch` and surface a descriptive error message with the file path.
+
+- **`validateRawArgs` skipped multi-argument inputs** (`cli/validate-args.ts`): the early-return guard
+  `if (rawArgs.length !== 1) return` caused the reserved-word check to be bypassed whenever the user passed zero or
+  multiple positional arguments. The function now iterates over every argument regardless of count.
+
+### Changed
+
+- **Windows install process** (`utils/installer.ts`): replaced `shell: true` (which routes through `cmd.exe` and is a
+  potential injection surface) with `shell: false` + `cmd.cmd` suffix resolution. Package managers are now invoked
+  directly as `npm.cmd`, `pnpm.cmd`, etc., matching the standard cross-platform Node.js convention.
+
+### Refactored
+
+- **Eliminated redundant `loadTemplates()` calls** (`cli/resolve-template.ts`, `core/create-app.ts`, `steps/`):
+  templates were loaded three times per CLI session — once as a module-level side effect in `templates.ts`, and once
+  each in `cli/resolve-template.ts` and `resolveTemplateStep`. The CLI now creates a single `TemplateService` instance,
+  resolves and loads the template in one pass, and passes the ready `LoadedTemplate` object directly into the pipeline
+  context. `resolveTemplateStep` has been removed as a consequence.
+
+---
+
 ## [1.0.1] - 2026-03-30
 
 ### Fixed
 
-- **Template Dependencies**: Added `html-webpack-plugin` to `devDependencies` in all templates (`spa-pug-scss-ts`, etc.). This
-resolves the `MODULE_NOT_FOUND` error when running `npm run dev` in a newly generated project, caused by the peer dependency
-requirements of `@razerspine/build`.
+- **Template Dependencies**: Added `html-webpack-plugin` to `devDependencies` in all templates (`spa-pug-scss-ts`,
+  etc.). This
+  resolves the `MODULE_NOT_FOUND` error when running `npm run dev` in a newly generated project, caused by the peer
+  dependency
+  requirements of `@razerspine/build`.
 
 ---
 
