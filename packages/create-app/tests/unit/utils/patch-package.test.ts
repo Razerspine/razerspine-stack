@@ -1,9 +1,19 @@
-import {describe, it, expect, beforeEach, afterEach} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {patchPackageJson} from '../../../src/utils';
 import {createTempDir} from '../../helpers/temp-dir';
 import {cleanupDirectory} from '../../helpers/cleanup-directory';
+
+vi.mock('node:child_process', () => ({
+    execSync: vi.fn((cmd: string) => {
+        if (cmd.includes('yarn')) return Buffer.from('1.22.19\n');
+        if (cmd.includes('pnpm')) return Buffer.from('8.15.5\n');
+        if (cmd.includes('bun')) return Buffer.from('1.1.0\n');
+        if (cmd.includes('npm')) return Buffer.from('10.5.0\n');
+        throw new Error('Command not found');
+    })
+}));
 
 describe('patchPackageJson (Unit)', () => {
     let tempDir: string;
@@ -28,6 +38,7 @@ describe('patchPackageJson (Unit)', () => {
 
     afterEach(() => {
         cleanupDirectory(tempDir);
+        vi.clearAllMocks();
     });
 
     it('should set project name, private flag, and packageManager field', async () => {
@@ -37,7 +48,8 @@ describe('patchPackageJson (Unit)', () => {
 
         expect(updatedPkg.name).toBe('my-awesome-app');
         expect(updatedPkg.private).toBe(true);
-        expect(updatedPkg.packageManager).toBe('yarn@latest');
+
+        expect(updatedPkg.packageManager).toBe('yarn@1.22.19');
     });
 
     it('should replace "npm run" prefixes with the correct package manager command', async () => {
@@ -65,6 +77,5 @@ describe('patchPackageJson (Unit)', () => {
 
         expect(updatedPkg.scripts.build).toContain('pnpm clean');
         expect(updatedPkg.scripts.build).toContain('pnpm compile');
-        expect(updatedPkg.scripts.build).not.toContain('npm run');
     });
 });

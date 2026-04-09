@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {execSync} from 'node:child_process';
 import {PackageManager} from './types';
 
 /**
@@ -32,7 +33,12 @@ export async function patchPackageJson(
         pkg.private = true;
 
         // package manager metadata
-        pkg.packageManager = `${pm}@latest`;
+        try {
+            const pmVersion = execSync(`${pm} --version`).toString().trim();
+            pkg.packageManager = `${pm}@${pmVersion}`;
+        } catch (e) {
+            console.warn(`⚠️ Could not determine ${pm} version, skipping packageManager field.`);
+        }
 
         const runPrefixes: Record<PackageManager, string> = {
             npm: 'npm run ',
