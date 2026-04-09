@@ -324,17 +324,25 @@ export function createBaseConfig(options: ConfigOptionType): Configuration {
     }
 
     /**
-     * Re-dedupe rules after buildPlugins mutations
+     * Re-dedupe rules after buildPlugins mutations.
+     * Filters out "..." spread markers (valid in Webpack 5 rule arrays) before
+     * deduplication, since dedupeRules only handles RuleSetRule objects.
      */
     if (config.module?.rules) {
-        config.module.rules = dedupeRules(config.module.rules as RuleSetRule[]);
+        config.module.rules = dedupeRules(
+            config.module.rules.filter((r): r is RuleSetRule => typeof r !== 'string')
+        );
     }
 
     /**
-     * Re-dedupe plugins after buildPlugins mutations
+     * Re-dedupe plugins after buildPlugins mutations.
+     * Filters out function-style plugins before deduplication, since dedupePlugins
+     * operates on WebpackPluginInstance objects only.
      */
     if (config.plugins) {
-        config.plugins = dedupePlugins(config.plugins as WebpackPluginInstance[]);
+        config.plugins = dedupePlugins(
+            config.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+        );
     }
 
     /**

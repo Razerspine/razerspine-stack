@@ -7,7 +7,7 @@ import {Configuration as WebpackConfiguration, WebpackPluginInstance} from 'webp
 import type {Configuration as DevServerConfiguration} from 'webpack-dev-server';
 import {merge} from 'webpack-merge';
 import {BaseWebpackConfigType} from '../types';
-import {getConfigMeta} from './config-meta';
+import {getConfigMeta, setConfigMeta} from './config-meta';
 import {dedupePlugins} from '../utils';
 
 type DevConfig = BaseWebpackConfigType & {
@@ -68,12 +68,20 @@ export function createDevConfig(
     }) as DevConfig;
 
     /**
+     * Re-bind metadata to the merged config object.
+     * webpack-merge produces a new object, so the WeakMap entry from baseConfig
+     * is not carried over — downstream plugins calling getConfigMeta(finalConfig)
+     * would receive undefined without this step.
+     */
+    if (meta) {
+        setConfigMeta(finalConfig, meta);
+    }
+
+    /**
      * Build Plugins (dev lifecycle)
      */
-    const metaWithPlugins = getConfigMeta(baseConfig);
-
-    if (metaWithPlugins?.buildPlugins) {
-        for (const plugin of metaWithPlugins.buildPlugins) {
+    if (meta?.buildPlugins) {
+        for (const plugin of meta.buildPlugins) {
             plugin.applyDev?.(finalConfig);
         }
     }
@@ -82,7 +90,9 @@ export function createDevConfig(
      * Re-dedupe plugins after merge and buildPlugins mutations
      */
     if (finalConfig.plugins) {
-        finalConfig.plugins = dedupePlugins(finalConfig.plugins as WebpackPluginInstance[]);
+        finalConfig.plugins = dedupePlugins(
+            finalConfig.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+        );
     }
 
     return finalConfig;

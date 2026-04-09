@@ -29,10 +29,6 @@ export function validateOptions(options: ConfigOptionType): void {
         throw new Error('[build] templates.entry should not be provided when templates.type is "none"');
     }
 
-    if (appType === 'mpa' && templateType !== 'none' && !options.templates?.entry) {
-        throw new Error('[build] templates.entry is required for MPA when templates are enabled');
-    }
-
     if (options.templates?.scriptEntry && templateType !== 'html') {
         throw new Error(
             `[build] templates.scriptEntry is only supported when templates.type is "html".\n` +

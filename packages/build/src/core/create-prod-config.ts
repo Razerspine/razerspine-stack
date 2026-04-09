@@ -6,7 +6,7 @@
 import {Configuration, WebpackPluginInstance} from 'webpack';
 import {merge} from 'webpack-merge';
 import {createHostingRoutingPlugin} from '../plugins/hosting-routing-plugin';
-import {getConfigMeta} from './config-meta';
+import {getConfigMeta, setConfigMeta} from './config-meta';
 import {dedupePlugins} from '../utils';
 
 /**
@@ -53,6 +53,16 @@ export function createProdConfig(
     const finalConfig = merge(baseConfig, defaultConfig, options);
 
     /**
+     * Re-bind metadata to the merged config object.
+     * webpack-merge produces a new object, so the WeakMap entry from baseConfig
+     * is not carried over — downstream plugins calling getConfigMeta(finalConfig)
+     * would receive undefined without this step.
+     */
+    if (meta) {
+        setConfigMeta(finalConfig, meta);
+    }
+
+    /**
      * Internal production build plugin.
      *
      * `createHostingRoutingPlugin` follows the same `BuildPluginType` factory pattern
@@ -61,15 +71,13 @@ export function createProdConfig(
      * making deduplication co-located with the plugin definition rather than spread across
      * call sites.
      */
-    createHostingRoutingPlugin({appType}).applyProd!(finalConfig);
+    createHostingRoutingPlugin({appType}).applyProd?.(finalConfig);
 
     /**
      * Build Plugins (prod lifecycle)
      */
-    const metaWithPlugins = getConfigMeta(baseConfig);
-
-    if (metaWithPlugins?.buildPlugins) {
-        for (const plugin of metaWithPlugins.buildPlugins) {
+    if (meta?.buildPlugins) {
+        for (const plugin of meta.buildPlugins) {
             plugin.applyProd?.(finalConfig);
         }
     }
@@ -82,7 +90,9 @@ export function createProdConfig(
      * added via `plugins.extend` alongside the internal tagged instance).
      */
     if (finalConfig.plugins) {
-        finalConfig.plugins = dedupePlugins(finalConfig.plugins as WebpackPluginInstance[]);
+        finalConfig.plugins = dedupePlugins(
+            finalConfig.plugins.filter((p): p is WebpackPluginInstance => typeof p === 'object' && p !== null)
+        );
     }
 
     return finalConfig;
