@@ -119,13 +119,14 @@ function validateEntry(entry: string, appType: AppType): void {
  *
  * Supports:
  * - SPA mode: single `.pug` entry file → outputs `index.html`
- * - MPA mode: directory of `.pug` files → each file outputs its own `.html`,
- *   preserving the full directory structure (e.g. `shop/product.pug` → `shop/product.html`)
+ * - MPA mode: directory of `.pug` files → smart routing normalizes output filenames
  * - Global template data via `data` option
  *
- * Filename convention (MPA only):
- * - A root-level page named exactly `home` is mapped to `index.html` automatically.
- * - All other names, including nested ones, are preserved as-is.
+ * Filename convention (MPA only — smart routing):
+ * - Any file named `home` (regardless of nesting) → `index.html`
+ * - Any file named `404` (regardless of nesting) → `404.html`
+ * - Redundant folder/file pairs (e.g. `about/about.pug`) → `about.html`
+ * - All other paths are preserved as-is.
  *
  * Requires `pug-plugin` to be installed as a peer dependency.
  * If not installed, a clear actionable error is thrown during `applyBase` (not at import time).
@@ -153,9 +154,11 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
          * `dedupePlugins` will scan at the end of `createBaseConfig` — making it fully
          * visible and replaceable by the user via `plugins.override`.
          *
-         * MPA filename resolution:
-         * - Preserves the full chunk-name path so nested pages keep their directory structure.
-         * - Exception: a bare `'home'` chunk name at the root is remapped to `index.html`.
+         * MPA filename resolution (smart routing):
+         * - Any file named `home` (regardless of nesting) → `index.html`
+         * - Any file named `404` (regardless of nesting) → `404.html`
+         * - Redundant structures where folder name matches file name (e.g. `build/build`) → `build.html`
+         * - All other paths are preserved as-is.
          */
         applyBase(config: Configuration): void {
             const PugPlugin = resolvePugPlugin();
@@ -165,24 +168,33 @@ export function createPugTemplatesPlugin(options: PugTemplatesPluginOptions): Bu
             const pugPlugin = markPlugin(new PugPlugin({
                 entry: pluginEntry,
 
-                filename: ({chunk}: any) => {
+                /**
+                 * Dynamically resolves the output filename to support flexible user architectures.
+                 * - Maps any file named 'home' to the root 'index.html'
+                 * - Maps any file named '404' to the root '404.html'
+                 * - Flattens redundant structures (e.g., 'about/about.pug' -> 'about.html')
+                 */
+                filename: (pathData: any) => {
                     if (options.appType === 'spa') {
                         return 'index.html';
                     }
 
-                    // Preserve the full directory path so nested MPA pages retain their structure.
-                    // e.g. chunk name 'shop/product' → 'shop/product.html'
-                    //
-                    // Convention: a root-level page named exactly 'home' is mapped to 'index.html'
-                    // so that `pages/home.pug` becomes the site homepage automatically.
-                    // Sub-directory pages (e.g. 'blog/home') are NOT remapped — only the bare 'home' name.
-                    const name: string = chunk.name;
+                    const chunkName: string = pathData.chunk.name;
+                    const parsedPath = path.parse(chunkName);
 
-                    if (name === 'home') {
+                    if (parsedPath.name === 'home') {
                         return 'index.html';
                     }
 
-                    return `${name}.html`;
+                    if (parsedPath.name === '404') {
+                        return '404.html';
+                    }
+
+                    if (parsedPath.dir && parsedPath.dir.endsWith(parsedPath.name)) {
+                        return `${parsedPath.dir}.html`;
+                    }
+
+                    return `${chunkName}.html`;
                 },
 
                 js: {

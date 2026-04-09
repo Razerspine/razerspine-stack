@@ -11,6 +11,63 @@ describe('createPugTemplatesPlugin', () => {
         vi.mocked(fs.existsSync).mockReturnValue(true);
     });
 
+    describe('MPA filename smart routing', () => {
+        beforeEach(() => {
+            vi.mocked(fs.statSync).mockReturnValue({
+                isFile: () => false,
+                isDirectory: () => true
+            } as any);
+        });
+
+        function getFilenameFunction() {
+            const plugin = createPugTemplatesPlugin({
+                entry: 'pages',
+                mode: 'development',
+                appType: 'mpa'
+            });
+            const config: any = {};
+            plugin.applyBase!(config);
+            const pugPlugin = config.plugins[0] as any;
+            const opts = pugPlugin.options || pugPlugin.option?.options;
+            return opts.filename as (pathData: any) => string;
+        }
+
+        it('maps bare home chunk to index.html', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: 'home'}})).toBe('index.html');
+        });
+
+        it('maps nested home/home chunk to index.html', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: 'home/home'}})).toBe('index.html');
+        });
+
+        it('maps bare 404 chunk to 404.html', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: '404'}})).toBe('404.html');
+        });
+
+        it('maps nested 404/404 chunk to 404.html', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: '404/404'}})).toBe('404.html');
+        });
+
+        it('flattens redundant dir/name pair (e.g. build/build) to build.html', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: 'build/build'}})).toBe('build.html');
+        });
+
+        it('preserves non-redundant nested paths', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: 'about/index'}})).toBe('about/index.html');
+        });
+
+        it('preserves simple non-special names', () => {
+            const filename = getFilenameFunction();
+            expect(filename({chunk: {name: 'contact'}})).toBe('contact.html');
+        });
+    });
+
     it('should throw if SPA entry is not a file', () => {
         vi.mocked(fs.statSync).mockReturnValue({
             isFile: () => false,

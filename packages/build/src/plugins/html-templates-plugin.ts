@@ -300,14 +300,28 @@ export function createHtmlTemplatesPlugin(options: HtmlTemplatesPluginOptions): 
              *
              * `getHtmlFiles` performs a deep scan, so nested MPA structures like
              * `src/views/pages/about/index.html` are correctly included.
-             * The output filename preserves the directory structure relative to
-             * the entry root (e.g. `about/index.html`).
              */
             const files = getHtmlFiles(entry);
 
             files.forEach(filePath => {
                 const relPath = path.relative(entry, filePath);
-                const filename = relPath.replace(/\\/g, '/');
+                const parsedPath = path.parse(relPath);
+
+                let filename = relPath.replace(/\\/g, '/');
+
+                /**
+                 * Smart routing normalizations:
+                 * - Any file named 'home' → 'index.html' (site root)
+                 * - Any file named '404'  → '404.html'   (error page at root)
+                 * - Redundant dir/file pairs (e.g. 'about/about.html') → 'about.html'
+                 */
+                if (parsedPath.name === 'home') {
+                    filename = 'index.html';
+                } else if (parsedPath.name === '404') {
+                    filename = '404.html';
+                } else if (parsedPath.dir && parsedPath.dir.endsWith(parsedPath.name)) {
+                    filename = `${parsedPath.dir.replace(/\\/g, '/')}.html`;
+                }
 
                 (config.plugins as WebpackPluginInstance[]).push(
                     markPlugin(new HtmlWebpackPlugin({

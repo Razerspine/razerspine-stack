@@ -114,6 +114,49 @@ describe('createHtmlTemplatesPlugin', () => {
         expect(config.plugins[1].constructor.name).toBe('HtmlWebpackPlugin');
     });
 
+    it('should apply smart routing for nested MPA HTML files', () => {
+        vi.mocked(fs.existsSync).mockReturnValue(true);
+
+        const mockFiles: Record<string, string[]> = {
+            'pages': ['home', '404', 'build'],
+            'pages/home': ['home.html'],
+            'pages/404': ['404.html'],
+            'pages/build': ['build.html'],
+        };
+
+        vi.mocked(fs.statSync).mockImplementation((filePath: any) => {
+            const p = String(filePath).replace(/\\/g, '/');
+            const isFile = p.endsWith('.html');
+            return {
+                isDirectory: () => !isFile,
+                isFile: () => isFile,
+            } as any;
+        });
+
+        vi.mocked(fs.readdirSync).mockImplementation((dirPath: any) => {
+            const p = String(dirPath).replace(/\\/g, '/');
+            const key = Object.keys(mockFiles).find(k => p.endsWith(k));
+            return (key ? mockFiles[key] : []) as any;
+        });
+
+        const plugin = createHtmlTemplatesPlugin({
+            entry: 'pages',
+            scriptEntry: 'src/app/main.ts',
+            mode: 'development',
+            appType: 'mpa'
+        });
+
+        const config: any = {};
+        plugin.applyBase!(config);
+
+        expect(config.plugins.length).toBe(3);
+
+        const filenames = config.plugins.map((p: any) => (p.userOptions || p.options).filename);
+        expect(filenames).toContain('index.html');
+        expect(filenames).toContain('404.html');
+        expect(filenames).toContain('build.html');
+    });
+
     it('should pass data via templateParameters function and merge correctly', () => {
         vi.mocked(fs.existsSync).mockReturnValue(true);
         vi.mocked(fs.statSync).mockReturnValue({
