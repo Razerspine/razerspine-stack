@@ -9,6 +9,42 @@
   log files, `.env*` variants, common editor directories, and OS metadata files. The step runs after `patchPackageStep`
   and before dependency installation; it is a no-op in `--dry-run` mode.
 
+### Templates
+
+#### Updated
+
+- **Dependency versions** — all 8 templates updated to the latest published versions of core packages:
+  - `@razerspine/build` → `^1.0.2`
+  - `@razerspine/runtime` → `^1.0.2`
+  - `@razerspine/ui` → `^1.0.2`
+
+- **Webpack config migrated to `defineConfig` API** — all 8 templates (`spa-pug-scss-ts`,
+  `spa-pug-scss-js`, `spa-pug-less-ts`, `spa-pug-less-js`, `mpa-pug-scss-ts`, `mpa-pug-scss-js`,
+  `mpa-pug-less-ts`, `mpa-pug-less-js`) have been refactored from the low-level
+  `createBaseConfig` / `createDevConfig` / `createProdConfig` pattern to the high-level `defineConfig`
+  helper exposed by `@razerspine/build`. Manual mode resolution (`argv?.mode || env?.mode || …`) and the
+  dev/prod branching `if` block are fully removed — `defineConfig` handles this internally and returns a
+  Webpack-compatible factory function. The `templates` object now explicitly declares `type: 'pug'`.
+
+#### Fixed
+
+- **`@icons` alias path in SPA TypeScript `tsconfig.json`** (`spa-pug-scss-ts`, `spa-pug-less-ts`): the
+  path mapping was `"assets/icons*"` (missing trailing slash), which caused TypeScript to fail to resolve
+  the alias. Corrected to `"assets/icons/*"`.
+
+- **Missing `tsconfig.json` compiler options in SPA TypeScript templates** (`spa-pug-scss-ts`,
+  `spa-pug-less-ts`): `"isolatedModules": true` and `"sourceMap": true` were present in MPA templates but
+  absent in their SPA counterparts. Both options are now aligned across all TypeScript templates.
+
+#### Removed
+
+- **`dotenv`** removed from `devDependencies` in all 8 templates — the package was never imported or used
+  in any webpack config or source file.
+
+- **`webpack-merge`** removed from `devDependencies` in all 8 templates — manual config merging was
+  previously required with the low-level API. With `defineConfig`, all merging is handled internally by
+  `@razerspine/build`.
+
 ### Fixed
 
 - **Entry point error handling** (`src/index.ts`): replaced `.then()` (no-op) with `.catch()` — ensures top-level fatal

@@ -30,7 +30,7 @@ Razerspine Stack is designed for developers who want:
   Scaffolds production-ready projects with flexible architecture
 
 - ⚙️ **Build System (`@razerspine/build`)**  
-  Modular webpack configuration with smart defaults
+  Modular webpack configuration with smart defaults via the `defineConfig` API
 
 - 🎨 **UI Layer (`@razerspine/ui`)**  
   Pug-based UI toolkit and reusable components
@@ -359,6 +359,32 @@ Removes:
 - `node_modules`
 - `dist`
 - `lock files`
+
+### Webpack configuration
+
+All templates use the `defineConfig` API from `@razerspine/build`:
+
+```js
+const { defineConfig } = require('@razerspine/build');
+const uiKit = require('@razerspine/ui');
+
+module.exports = defineConfig({
+  scripts: 'ts',
+  styles: 'scss',
+  appType: 'spa',
+  templates: {
+    type: 'pug',
+    entry: 'src/app/app.pug',
+  },
+  resolve: {
+    alias: {
+      'pug-mixins': uiKit.paths.mixins,
+    },
+  },
+});
+```
+
+`defineConfig` returns a Webpack-compatible factory function and handles dev/prod branching internally.
 
 ---
 

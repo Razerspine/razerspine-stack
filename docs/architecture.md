@@ -238,14 +238,19 @@ No:
 
 ```ts
 defineConfig({
+  scripts: 'ts',
+  styles: 'scss',
   appType: 'spa',
-  script: 'ts',
-  style: 'scss',
   templates: {
-    entry: 'src/app/app.pug'
-  }
+    type: 'pug',
+    entry: 'src/app/app.pug',
+  },
 });
 ```
+
+`defineConfig` accepts a static object, a synchronous factory `(env) => config`, or an async factory.
+It always returns a Webpack-compatible factory function — mode is resolved from `config.mode` →
+CLI `--mode` → `'development'` (default).
 
 ### Pug Dual Mode
 
