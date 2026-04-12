@@ -1,6 +1,6 @@
 import {loadTemplates} from '../templates/template-loader';
 import {resolveTemplateKey} from '../templates/template-resolver';
-import {TemplateKey} from '../templates/templates';
+import {TemplateKey} from '../templates/types';
 import {LoadedTemplate, TemplateFeatures} from '../templates/types';
 import {getTemplatesPath} from '../utils';
 

@@ -1,24 +1,27 @@
 /**
  * Prevents accidental project creation using reserved words.
+ * Handled gracefully to redirect users who forget the '--' prefix.
+ * Checks every positional argument regardless of total count.
+ *
+ * @param {string[]} rawArgs - The raw positional arguments passed to the CLI.
  */
 export function validateRawArgs(rawArgs: string[]) {
-    if (rawArgs.length !== 1) return;
+    for (const arg of rawArgs) {
+        const normalized = arg.toLowerCase();
 
-    const arg = rawArgs[0].toLowerCase();
+        const isVersion = ['version', 'v'].includes(normalized);
+        const isHelp = ['help', 'h'].includes(normalized);
 
-    if (['version', 'v'].includes(arg)) {
-        console.error(`⚠️ Error: '${rawArgs[0]}' is not a valid project name.`);
-        console.error('Did you mean to check the version? Use one of these:');
-        console.error(' create --version');
-        console.error(' create -v');
-        process.exit(1);
-    }
+        if (isVersion || isHelp) {
+            const type = isVersion ? 'version' : 'help';
+            const flag = isVersion ? '-v' : '-h';
+            const action = isVersion ? 'check the version' : 'ask for help';
 
-    if (['help', 'h'].includes(arg)) {
-        console.error(`⚠️  Error: '${rawArgs[0]}' is not a valid project name.`);
-        console.error('Did you mean to ask for help? Use one of these:');
-        console.error(' create --help');
-        console.error(' create -h');
-        process.exit(1);
+            console.error(`⚠️ Error: '${arg}' is not a valid project name.`);
+            console.error(`Did you mean to ${action}? Use one of these:`);
+            console.error(` create --${type}`);
+            console.error(` create ${flag}`);
+            process.exit(1);
+        }
     }
 }

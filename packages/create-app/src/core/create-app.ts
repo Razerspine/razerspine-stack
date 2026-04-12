@@ -2,20 +2,20 @@ import path from 'path';
 import ora from 'ora';
 import {Pipeline} from './pipeline';
 import {
-    resolveTemplateStep,
     prepareDirectoryStep,
     copyTemplateStep,
     installDepsStep,
-    patchPackageStep
+    patchPackageStep,
+    writeGitignoreStep
 } from '../steps';
 import {log} from '../utils';
-import {CreateAppOptions, BasePipelineContext} from './types';
+import {CreateAppOptions, TemplateResolvedContext} from './types';
 
 /**
  * Main orchestration function for project generation.
  *
  * Responsibilities:
- * - builds initial pipeline context
+ * - builds initial pipeline context (template already resolved by CLI)
  * - assembles pipeline using the Builder pattern
  * - executes pipeline steps sequentially
  * - patches package.json with project-specific metadata
@@ -24,11 +24,13 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
     const spinner = ora();
 
     /**
-     * Initial pipeline context (before template is resolved)
+     * Initial pipeline context — template is already resolved by the CLI layer,
+     * so the pipeline starts with TemplateResolvedContext directly.
      */
-    const ctx: BasePipelineContext = {
+    const ctx: TemplateResolvedContext = {
         projectName: options.projectName,
-        templateKey: options.templateKey,
+        templateKey: options.template.key,
+        template: options.template,
         appType: options.appType,
         targetDir: path.resolve(process.cwd(), options.projectName),
         noInstall: Boolean(options.noInstall),
@@ -39,33 +41,17 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
     /**
      * Execute pipeline with strict type flow.
      *
-     * Type transitions:
-     * 1. create<BasePipelineContext>()
-     * -> initial context
-     *
-     * 2. resolveTemplateStep
-     * BasePipelineContext -> TemplateResolvedContext
-     *
-     * 3. prepareDirectoryStep
-     * TemplateResolvedContext -> TemplateResolvedContext
-     *
-     * 4. copyTemplateStep
-     * TemplateResolvedContext -> TemplateResolvedContext
-     *
-     * 5. patchPackageStep
-     * TemplateResolvedContext -> TemplateResolvedContext
-     *
-     * 6. installDepsStep
-     * TemplateResolvedContext -> TemplateResolvedContext
-     *
-     * Final result:
-     * Promise<TemplateResolvedContext>
+     * 1. prepareDirectoryStep  — TemplateResolvedContext -> TemplateResolvedContext
+     * 2. copyTemplateStep      — TemplateResolvedContext -> TemplateResolvedContext
+     * 3. patchPackageStep      — TemplateResolvedContext -> TemplateResolvedContext
+     * 4. writeGitignoreStep    — TemplateResolvedContext -> TemplateResolvedContext
+     * 5. installDepsStep       — TemplateResolvedContext -> TemplateResolvedContext
      */
-    await Pipeline.create<BasePipelineContext>()
-        .addStep(resolveTemplateStep)
+    await Pipeline.create<TemplateResolvedContext>()
         .addStep(prepareDirectoryStep(spinner))
         .addStep(copyTemplateStep(spinner))
         .addStep(patchPackageStep(spinner))
+        .addStep(writeGitignoreStep(spinner))
         .addStep(installDepsStep(spinner))
         .run(ctx);
 

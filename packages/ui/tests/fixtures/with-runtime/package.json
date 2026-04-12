@@ -5,7 +5,7 @@
     "pug": "^3.0.4"
   },
   "devDependencies": {
-    "@razerspine/runtime": "^1.0.1",
+    "@razerspine/runtime": "^1.0.2",
     "@types/pug": "^2.0.10"
   }
 }

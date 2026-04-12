@@ -1,7 +1,7 @@
 # @razerspine/create-app
 
 [![npm version](https://img.shields.io/npm/v/@razerspine/create-app.svg)](https://www.npmjs.com/package/@razerspine/create-app)
-[![Vitest](https://img.shields.io/badge/Vitest-62_passed-success?logo=vitest)]()
+[![CI](https://github.com/Razerspine/razerspine-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/Razerspine/razerspine-stack/actions)
 [![changelog](https://img.shields.io/badge/docs-changelog-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/npm/l/@razerspine/create-app.svg)](./LICENSE)
 
@@ -20,7 +20,7 @@ Create a modern webpack project using production-ready **SPA or MPA templates** 
 - [Template Resolution](#template-resolution)
 - [Testing](#testing)
 - [How It Works](#how-it-works)
-- [Changelog (1.0.0)](#changelog-100)
+- [Changelog](#changelog)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -105,7 +105,7 @@ Supported:
 
 - Auto script adaptation:
   - `npm run build` → `pnpm build` / `yarn build`
-- Adds `packageManager` field to `package.json`
+- Injects exact `packageManager` version into `package.json` (corepack-compatible, e.g. `pnpm@9.1.0`)
 - Fallback to `npm` if not specified
 
 ---
@@ -202,83 +202,51 @@ Highlights:
 
 ## How It Works
 
-Pipeline-based architecture:
+The CLI resolves and loads the template before the pipeline starts, then passes the ready template object directly into
+the first step:
 
 ```text
-resolve template
+CLI layer
+  resolve template (TemplateService — single load)
   ↓
-prepare directory
+Pipeline
+  prepare directory
   ↓
-copy files
+  copy files
   ↓
-patch package.json
+  patch package.json
   ↓
-install dependencies
+  write .gitignore
+  ↓
+  install dependencies
 ```
 
 ---
 
-## Changelog (1.0.0)
+## Changelog
 
-### Major Release
+### [1.0.2] — Latest
+
+- Added automatic `.gitignore` generation for every scaffolded project (`node_modules/`, `dist/`, `.env*`, logs, editor dirs)
+- Fixed `packageManager` field: now injects exact version (e.g. `pnpm@9.1.0`) instead of invalid `@latest`
+- Fixed `bun.lock` (Bun 1.2+) being copied into generated projects
+- Fixed signal-terminated install process reporting misleading `"exit code null"`
+- Fixed `JSON.parse()` in template loader and package patcher — now surfaces file path on error
+- Fixed `validateRawArgs` skipping checks for 0 or 2+ positional arguments
+- Fixed top-level `run().then()` no-op — replaced with `.catch()`
+- Improved Windows install: `shell: false` + `.cmd` suffix instead of `shell: true`
+- Refactored template resolution: single `TemplateService` load per session, removed redundant `resolveTemplateStep`
+
+### [1.0.0] — Major Release
 
 - Full CLI rewrite
 - New package: `@razerspine/create-app`
 - New command: `create`
-
----
-
-### ⚠️ Breaking Changes
-
-- `create-webpack-starter` → `create-app`
-- New binary: `dist/index.cjs`
-- Switched to `tsup`
-- Removed direct `package.json` imports
-
----
-
-### Features
-
 - Interactive CLI (inquirer)
 - Smart template resolution
-- Dry-run mode
-- Improved validation
-
----
-
-### Package Manager Support
-
-- Added `--pm` flag
-- Supports: npm, pnpm, yarn, bun
-- Script auto-adaptation
-- Injects `packageManager` field
-
----
-
-### Testing
-
-- Vitest migration
-- Full E2E coverage
-- Fixed cleanup race conditions
-
----
-
-### Architecture
-
-- Pipeline-based system
-- Clean separation:
-  - CLI
-  - core
-  - steps
-  - utils
-
----
-
-### DX Improvements
-
-- `tsx` instead of `ts-node`
-- Better logs (ora + kleur)
-- Improved CLI UX
+- Dry-run mode, `--pm` flag
+- Vitest migration, full E2E coverage
+- Pipeline-based architecture
 
 ---
 

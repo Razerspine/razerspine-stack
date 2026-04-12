@@ -3,10 +3,11 @@ import {ResolveInput, LoadedTemplate} from './types';
 
 /**
  * Resolves template key based on feature flags.
+ * Optimized condition checking for better readability.
  *
  * @param templates - available templates map
  * @param input - feature selection
- * @returns matching template key or null
+ * @returns matching template key or null if no match is found
  */
 export function resolveTemplateKey(
     templates: Record<string, LoadedTemplate>,
@@ -19,9 +20,12 @@ export function resolveTemplateKey(
     for (const [key, template] of Object.entries(templates)) {
         const features = template.meta.features;
 
-        if (!features) continue;
-
-        if (features.appType === appType && features.style === style && features.script === script) {
+        if (
+            features &&
+            features.appType === appType &&
+            features.style === style &&
+            features.script === script
+        ) {
             return key as TemplateKey;
         }
     }

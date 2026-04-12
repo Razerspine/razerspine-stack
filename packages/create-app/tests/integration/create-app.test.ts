@@ -3,6 +3,7 @@ import path from 'path';
 import {createApp} from '../../src/core/create-app';
 import {log} from '../../src/utils';
 import type * as StepsNamespace from '../../src/steps';
+import type {LoadedTemplate} from '../../src/templates/types';
 
 vi.mock('ora', () => ({
     default: vi.fn(() => ({
@@ -28,13 +29,10 @@ vi.mock('../../src/steps', (): typeof StepsNamespace => {
     const createStepMock = () => vi.fn(() => vi.fn(async (ctx) => ctx));
 
     return {
-        resolveTemplateStep: vi.fn(async (ctx) => ({
-            ...ctx,
-            template: {filesPath: '/mock/path'} as any
-        })),
         prepareDirectoryStep: createStepMock() as any,
         copyTemplateStep: createStepMock() as any,
         patchPackageStep: createStepMock() as any,
+        writeGitignoreStep: createStepMock() as any,
         installDepsStep: createStepMock() as any,
     };
 });
@@ -52,13 +50,20 @@ describe('createApp (Unit)', () => {
         process.cwd = originalCwd;
     });
 
-    it('should build correct BasePipelineContext and execute pipeline successfully', async () => {
-        const {resolveTemplateStep} = await import('../../src/steps');
+    it('should build correct TemplateResolvedContext and execute pipeline successfully', async () => {
+        const {prepareDirectoryStep} = await import('../../src/steps');
+
+        const mockTemplate: LoadedTemplate = {
+            key: 'spa-scss-ts',
+            meta: {name: 'spa-scss-ts', description: 'SPA + SCSS + TypeScript'},
+            path: '/mock/templates/spa-scss-ts',
+            filesPath: '/mock/templates/spa-scss-ts/files',
+        };
 
         const options = {
             projectName: 'my-test-app',
-            templateKey: 'spa-scss-ts' as any,
-            appType: 'spa' as any,
+            template: mockTemplate,
+            appType: 'spa' as const,
             noInstall: true,
             dryRun: false,
             pm: 'pnpm' as const
@@ -66,10 +71,13 @@ describe('createApp (Unit)', () => {
 
         await createApp(options);
 
-        expect(resolveTemplateStep).toHaveBeenCalledWith(
+        const stepFn = vi.mocked(prepareDirectoryStep).mock.results[0].value;
+
+        expect(stepFn).toHaveBeenCalledWith(
             expect.objectContaining({
                 projectName: 'my-test-app',
                 templateKey: 'spa-scss-ts',
+                template: mockTemplate,
                 appType: 'spa',
                 targetDir: path.resolve('/mock/cwd', 'my-test-app'),
                 noInstall: true,

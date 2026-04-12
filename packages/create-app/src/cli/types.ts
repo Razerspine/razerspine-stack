@@ -1,5 +1,4 @@
-import {TemplateFeatures, AppType} from '../templates/types';
-import {TemplateKey} from '../templates/templates';
+import {TemplateFeatures, AppType, LoadedTemplate} from '../templates/types';
 import {PackageManager} from '../utils';
 
 /**
@@ -17,7 +16,7 @@ export type CliOptions = Partial<TemplateFeatures> & {
  */
 export type CliContext = {
     projectName: string;
-    template: TemplateKey;
+    template: LoadedTemplate;
     appType: AppType;
     noInstall: boolean;
     dryRun: boolean;

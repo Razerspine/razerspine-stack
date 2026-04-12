@@ -4,12 +4,20 @@ import {LoadedTemplate, TemplateMeta} from './types';
 
 /**
  * Safely reads and parses JSON file.
+ * Includes error handling to provide meaningful feedback on parse failures.
  *
  * @param filePath - absolute path to JSON file
+ * @returns parsed JSON content of type T
+ * @throws Error if file cannot be read or JSON is invalid
  */
 function readJson<T>(filePath: string): T {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content) as T;
+    try {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        return JSON.parse(content) as T;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to parse JSON configuration at ${filePath}: ${errorMessage}`);
+    }
 }
 
 /**

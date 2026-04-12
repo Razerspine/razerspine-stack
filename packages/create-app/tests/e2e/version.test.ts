@@ -11,11 +11,10 @@ describe('CLI Version Flag', () => {
         await runCLI(['-v'], {expectedExitCode: 0});
     });
 
-    it('should fail for invalid version commands', async () => {
-        const invalidCommands = ['version', 'Version', 'V', 'v'];
-
-        for (const cmd of invalidCommands) {
+    it.each(['version', 'Version', 'V', 'v'])(
+        'should fail for invalid version command: %s',
+        async (cmd) => {
             await runCLI([cmd], {expectedExitCode: 1});
         }
-    });
+    );
 });

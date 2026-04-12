@@ -6,7 +6,7 @@ import {PackageManager} from '../utils';
  */
 export type CreateAppOptions = {
     projectName: string;
-    templateKey: string;
+    template: LoadedTemplate;
     appType: AppType;
     noInstall?: boolean;
     dryRun?: boolean;

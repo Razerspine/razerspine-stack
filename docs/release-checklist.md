@@ -131,6 +131,7 @@ If releasing `@razerspine/create-app`:
   - `@razerspine/runtime`
   - `@razerspine/build`
   - `@razerspine/ui`
+- [ ] All template `webpack.config.js` files use `defineConfig` API (not `createBaseConfig` / `createDevConfig` / `createProdConfig`)
 - [ ] `--pm` flag works (`npm`, `pnpm`, `yarn`, `bun`)
 - [ ] `--dry-run` works correctly
 - [ ] `--no-install` works correctly
