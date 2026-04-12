@@ -1,10 +1,11 @@
 import {parseCliArgs} from './parse-args';
 import {validateOptions} from './validate-options';
 import {validateRawArgs} from './validate-args';
-import {promptProjectName, promptFeatures} from './prompt';
+import {promptProjectName, promptFeatures, promptPm} from './prompt';
 import {resolveTemplate} from './resolve-template';
 import {CliContext} from './types';
 import {AppType, ScriptType, StyleType} from '../templates/types';
+import {detectPackageManager} from '../utils';
 
 /**
  * Main CLI entry that orchestrates:
@@ -26,6 +27,7 @@ export async function getCliContext(): Promise<CliContext> {
     }
 
     const hasAllFlags = options.appType && options.style && options.script;
+    const isInteractive = !hasAllFlags;
 
     let appType: AppType;
     let style: StyleType;
@@ -42,6 +44,14 @@ export async function getCliContext(): Promise<CliContext> {
         script = answers.script;
     }
 
+    let pm = options.pm;
+
+    if (!pm) {
+        pm = isInteractive
+            ? await promptPm()
+            : detectPackageManager(process.cwd());
+    }
+
     const template = resolveTemplate({appType, style, script});
 
     return {
@@ -50,6 +60,6 @@ export async function getCliContext(): Promise<CliContext> {
         appType,
         noInstall: options.install === false,
         dryRun: Boolean(options.dryRun),
-        pm: options.pm
+        pm
     };
 }

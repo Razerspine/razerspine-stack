@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import {TemplateFeatures} from '../templates/types';
+import {PackageManager} from '../utils';
 
 /**
  * Prompts for project name if not provided.
@@ -15,6 +16,28 @@ export async function promptProjectName(): Promise<string> {
     ]);
 
     return answer.projectName;
+}
+
+/**
+ * Prompts for package manager selection.
+ */
+export async function promptPm(): Promise<PackageManager> {
+    const answer = await inquirer.prompt<{ pm: PackageManager }>([
+        {
+            type: 'list',
+            name: 'pm',
+            message: 'Package manager:',
+            choices: [
+                {name: 'npm', value: 'npm'},
+                {name: 'pnpm', value: 'pnpm'},
+                {name: 'yarn', value: 'yarn'},
+                {name: 'bun', value: 'bun'}
+            ],
+            default: 'npm'
+        }
+    ]);
+
+    return answer.pm;
 }
 
 /**

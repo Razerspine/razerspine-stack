@@ -39,11 +39,11 @@ describe('parseCliArgs (Unit)', () => {
         expect(options.dryRun).toBe(true);
     });
 
-    it('should provide default value for package manager', () => {
+    it('should return undefined for pm when not provided', () => {
         setArgs('my-app');
         const {options} = parseCliArgs();
 
-        expect(options.pm).toBe('npm');
+        expect(options.pm).toBeUndefined();
     });
 
     it('should handle missing project name', () => {

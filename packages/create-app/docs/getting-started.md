@@ -36,6 +36,7 @@ npm run dev
 - Project type (SPA or MPA)
 - Style preprocessor (SCSS or Less)
 - Script language (JavaScript or TypeScript)
+- Package manager (npm / pnpm / yarn / bun)
 
 ### The CLI will automatically:
 
@@ -68,7 +69,7 @@ All feature flags must be provided together when running in non-interactive mode
 | `--app-type`   | `spa \| mpa`                 |
 | `--style`      | `scss \| less`               |
 | `--script`     | `ts \| js`                   |
-| `--pm`         | `npm \| pnpm \| yarm \| bun` |
+| `--pm`         | `npm \| pnpm \| yarn \| bun` |
 | `--no-install` | Skip dependency installation |
 | `--dry-run`    | Do not write files           |
 
@@ -86,7 +87,8 @@ The CLI supports multiple package managers:
 ### Behavior:
 
 - If `--pm` is provided → it is used explicitly
-- If not → CLI attempts detection via lock files:
+- In **interactive mode** (no feature flags passed) → you are prompted to select a package manager
+- In **non-interactive mode** (all feature flags passed, no `--pm`) → CLI attempts detection via lock files:
   - `pnpm-lock.yaml`
   - `yarn.lock`
   - `bun.lockb`

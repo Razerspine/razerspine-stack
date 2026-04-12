@@ -8,7 +8,7 @@ import {PackageManager} from '../utils';
 export type CliOptions = Partial<TemplateFeatures> & {
     install?: boolean;
     dryRun?: boolean;
-    pm: PackageManager
+    pm?: PackageManager;
 };
 
 /**
